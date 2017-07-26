@@ -1,0 +1,10 @@
+.ch-kp-51{ padding:0 15px;overflow:auto; }
+.notSearch+div .table-data{
+	overflow:hidden;
+	font-size:12px;
+	text-align:right;
+	margin-top:-30px;
+}
+.notSearch+div p{
+	padding:0 18px;
+}

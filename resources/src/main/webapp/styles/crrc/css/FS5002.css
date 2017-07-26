@@ -1,0 +1,20 @@
+.notSearch+div .table-data{
+	font-size:12px;
+	margin-top: -30px;
+	padding:0 18px;
+}
+.notSearch+div .table-data .export{
+	margin-left:20px;
+}
+.notSearch+div .table-data .hideCol{
+	margin-left:20px;
+}
+.t_r_title{
+	margin-top:-15px\9;
+}
+.hideColBox .t_r_title{
+	margin-top:0px\9;
+}
+/* 鐞涖劍鐗搁弽宄扮础 */
+.ch-kp-fifty-two table{width:4400px;}
+.ch-kp-fifty-two .t_r_title{width:4420px;}/*鐎硅棄瀹冲В锟� t_r table 婢讹拷20px 閿涘牐鍤︾亸鎴濄亣20閿涘苯鐨禍鍡樼泊閸斻劍娼鎴濆煂閸欏厖鏅堕弰鍓с仛閺堝妫舵０姗堢礆*/

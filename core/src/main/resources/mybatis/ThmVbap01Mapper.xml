@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperThmVbap01">
+
+    <select id="getVbeln" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT VBELN from ${tableName}  
+            where 1=1  and VBELN!='' and VBELN is not null ]]>
+        <if test="vbeln != null and vbeln != ''">
+            <![CDATA[ and VBELN like "%${vbeln}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY VBELN ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+    
+      
+    <select id="getAufnr" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT AUFNR from ${tableName}  
+            where 1=1  and AUFNR!='' and AUFNR is not null ]]>
+        <if test="aufnr != null and aufnr != ''">
+            <![CDATA[ and AUFNR like "%${aufnr}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY AUFNR ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+    
+    <!-- 获取所有的销售订单行号 -->
+   <select id="getLinenum" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT LINENUM from ${tableName}  
+            where 1=1 and LINENUM!='' and LINENUM is not null]]>
+        <if test="linenum != null and linenum != ''">
+            <![CDATA[ and LINENUM like "%${linenum}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY LINENUM desc]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+   </select>
+   
+   <!-- 获取所有的产品型号 -->
+    <select id="getProductmodel" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT RT_SIZE2 from ${tableName}  
+            where 1=1 and RT_SIZE2!='' and RT_SIZE2 is not null]]>
+        <if test="productmodel != null and productmodel != ''">
+            <![CDATA[ and RT_SIZE2 like "%${productmodel}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY RT_SIZE2 ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+   </select>
+    
+
+    <select id="getVbelnByOrgAndBur" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT VBELN from THM_VBAP_01
+            where 1=1 ]]>
+        <if test="vkorgValue != null and vkorgValue != '' and vkorgValue.size != 0">
+            <![CDATA[ and VKORG in]]>
+            <foreach collection="vkorgValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="vkburValue != null and vkburValue != '' and vkburValue.size != 0">
+            <![CDATA[ and VKBUR in]]>
+            <foreach collection="vkburValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="vbeln != null and vbeln != ''">
+            <![CDATA[ and VBELN like "%${vbeln}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY VBELN ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+
+</mapper>
+

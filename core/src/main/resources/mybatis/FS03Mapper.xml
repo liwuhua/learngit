@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS03">
+
+    <!--<select id="selectTest" resultType="com.yjdj.view.core.entity.mybeans.THM_FS03"-->
+    <!--parameterType="Object" resultMap="THM_FS03">-->
+    <!--SELECT MATNR,MEINS,PEINH,MWSKZ,EKGRP,SUM(MENGE),SUM(CASE WHEN ABS(BUALT)>0 THEN BUALT ELSE DMBTR END)/SUM(MENGE) AS DQNOTAX,-->
+    <!--0.00 AS DQTAX,0.00 AS DNNOTAX,0.00 AS DNTAX,0.00 AS SNNOTAX,0.00 AS SNTAX,0.00 AS LSNOTAX,0.00 AS LSTAX,0.00 AS CJTAX,0.00 AS CJNOTAX-->
+    <!--FROM THM_MSEG_03-->
+    <!--WHERE WERKS IN () AND MATNR IN () AND LIFNR IN () AND EKGRP IN () AND BUDAT>=() AND BUDAT<=()-->
+    <!--GROUP BY MATNR-->
+    <!--</select>-->
+
+
+    <!--&lt;!&ndash;第一步：统计当期不含税金额 的select&ndash;&gt;-->
+    <sql id="selectColumns_01">
+        <![CDATA[ SELECT MATNR,TXTMD,MEINS,PEINH,MWSKZ,EKGRP,SUM(MENGE) AS SUM_MENGE,SUM(DMBTR)/SUM(MENGE) AS DQNOTAX,
+        0.00 AS DQTAX,0.00 AS DNNOTAX,0.00 AS DNTAX,0.00 AS SNNOTAX,0.00 AS SNTAX,0.00 AS LSNOTAX,0.00 AS LSTAX,0.00 AS CJTAX,0.00 AS CJNOTAX
+        FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+    <!--第二步：统计当期含税金额 的select-->
+    <sql id="selectColumns_02">
+        <![CDATA[ SELECT MATNR,SUM(DMBTR+DMBTR*coalesce((SELECT KBETR FROM THM_A003_01 WHERE MWSKZ=thm_mseg_03_.MWSKZ),0)/1000)/SUM(MENGE)
+ AS DQTAX FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+    <!--第三步：统计当年不含税金额 的select-->
+    <sql id="selectColumns_03">
+        <![CDATA[SELECT MATNR,SUM(DMBTR)/SUM(MENGE)
+AS DNNOTAX FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+    <!--第四步：统计当年含税金额 的select-->
+    <sql id="selectColumns_04">
+        <![CDATA[ SELECT MATNR,SUM(DMBTR+DMBTR*coalesce((SELECT KBETR FROM THM_A003_01 WHERE MWSKZ=thm_mseg_03_.MWSKZ),0)/1000)/SUM(MENGE)
+ AS DNTAX FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+    <!--第五步：统计上年不含税金额 的select-->
+    <sql id="selectColumns_05">
+        <![CDATA[SELECT MATNR,SUM(DMBTR)/SUM(MENGE)
+AS SNNOTAX FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+    <!--第六步：统计上年含税金额 的select-->
+    <sql id="selectColumns_06">
+        <![CDATA[ SELECT MATNR,SUM(DMBTR+DMBTR*coalesce((SELECT KBETR FROM THM_A003_01 WHERE MWSKZ=thm_mseg_03_.MWSKZ),0)/1000)/SUM(MENGE)
+ AS SNTAX FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+    <!--第七（1）步：取得历史最大日期 的select-->
+    <sql id="selectColumns_071">
+        <![CDATA[ SELECT MATNR,MAX(BUDAT) AS LSBUDAT FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+    <!--第七（2）步：取得历史不含税金额 的select-->
+    <sql id="selectColumns_072">
+        <![CDATA[ SELECT MATNR,SUM(DMBTR)/SUM(MENGE)
+AS LSNOTAX FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+    <!--第七（3）步：取得历史含税金额 的select-->
+    <sql id="selectColumns_073">
+        <![CDATA[ MATNR,SUM(DMBTR+DMBTR*coalesce((SELECT KBETR FROM THM_A003_01 WHERE MWSKZ=thm_mseg_03_.MWSKZ),0)/1000) /SUM(MENGE)
+AS LSTAX FROM THM_MSEG_03 thm_mseg_03_ ]]>
+    </sql>
+
+
+    <!--控制所有where语句中工厂、物料、供应商、采购组的多值-->
+    <sql id="where_fragement_01">
+        where 1=1
+        <!--<if test="entity!=null">-->
+        <if test="werks != null and werks.size != 0">
+            <![CDATA[ and thm_mseg_03_.werks in]]>
+            <foreach collection="werks" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="matnr != null and matnr.size != 0">
+            <![CDATA[ and thm_mseg_03_.matnr in]]>
+            <foreach collection="matnr" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="lifnr != null and lifnr.size != 0">
+            <![CDATA[ and thm_mseg_03_.lifnr in]]>
+            <foreach collection="lifnr" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+
+        <if test="ekgrp != null and ekgrp.size != 0">
+            <![CDATA[ and thm_mseg_03_.ekgrp in]]>
+            <foreach collection="ekgrp" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <!--</if>-->
+    </sql>
+
+    <!--控制时间 当期-->
+    <sql id="where_fragement_02">
+        <if test="budatStart != null and budatStart != ''">  <![CDATA[and thm_mseg_03_.budat >= #{budatStart}]]>
+        </if>
+        <if test="budatEnd != null and budatEnd != ''"> <![CDATA[ and thm_mseg_03_.budat <= #{budatEnd} ]]>
+        </if>
+        group
+        by thm_mseg_03_.matnr
+    </sql>
+    <!--控制时间 当年-->
+    <sql id="where_fragement_03">
+        <if test="budatStart != null and budatStart != ''"> <![CDATA[ and thm_mseg_03_.budat >= concat(LEFT(#{budatEnd},4),'0101')]]>
+        </if>
+        <if test="budatEnd != null and budatEnd != ''"> <![CDATA[ and thm_mseg_03_.budat < #{budatStart}]]>
+        </if>
+        group
+        by thm_mseg_03_.matnr
+    </sql>
+    <!--控制时间 上年-->
+    <sql id="where_fragement_04">
+        <if test="budatStart != null and budatStart != ''"> <![CDATA[ and thm_mseg_03_.budat >= concat((LEFT(#{budatEnd},4)-'1'),'0101')]]>
+        </if>
+        <if test="budatEnd != null and budatEnd != ''"> <![CDATA[ and thm_mseg_03_.budat < concat((LEFT(#{budatEnd},4)-'1'),'1231')]]>
+        </if>
+        group
+        by thm_mseg_03_.matnr
+    </sql>
+    <!--控制时间 第七步的历史最大收获日期71-->
+    <sql id="where_fragement_071">
+        <if test="budatEnd != null and budatEnd != ''"> <![CDATA[ and thm_mseg_03_.budat < concat((LEFT(#{budatEnd},4)-'1'),'0101')]]>
+        </if>
+        group
+        by thm_mseg_03_.matnr
+    </sql>
+    <!--控制时间 第七步的历史最大收获日期年723-->
+    <sql id="where_fragement_0723">
+        <if test="budatStart != null and budatStart != ''"> <![CDATA[ and thm_mseg_03_.budat >= CONCAT(LEFT(tmp_01.LSBUDAT,4),'0101')]]>
+        </if>
+        <if test="budatEnd != null and budatEnd != ''"> <![CDATA[ and thm_mseg_03_.budat < CONCAT(LEFT(tmp_01.LSBUSAT,4),'1231')]]>
+        </if>
+        group
+        by thm_mseg_03_.matnr
+    </sql>
+
+
+
+    <!--第七步总：-->
+    <sql id="selectColumns_07">
+        <![CDATA[
+         select tmp_01.MATNR,tmp_01.TXTMD,tmp_01.MEINS,tmp_01.PEINH,tmp_01.MWSKZ,tmp_01.EKGRP,tmp_01.SUM_MENGE,tmp_01.DQNOTAX,
+      tmp_02.DQTAX,tmp_03.DNNOTAX,tmp_04.DNTAX,tmp_05.SNNOTAX,tmp_06.SNTAX,0 as LSNOTAX,0 AS LSTAX,0.00 AS CJTAX,0.00 AS CJNOTAX,tmp_071.LSBUDAT from (
+        ]]>
+        <include refid="selectColumns_01" />
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_02" />
+        <![CDATA[
+       ) tmp_01 left join (
+        ]]>
+        <include refid="selectColumns_02" />
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_02" />
+        <![CDATA[
+       ) tmp_02
+        on tmp_01.MATNR =tmp_02.MATNR
+        left join (
+        ]]>
+        <include refid="selectColumns_03" />
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_03" />
+        <![CDATA[
+       ) tmp_03
+        on tmp_01.MATNR =tmp_03.MATNR
+         left join (
+        ]]>
+        <include refid="selectColumns_04" />
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_03" />
+        <![CDATA[
+       ) tmp_04
+        on tmp_01.MATNR =tmp_04.MATNR
+         left join (
+        ]]>
+        <include refid="selectColumns_05" />
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_04" />
+        <![CDATA[
+       ) tmp_05
+        on tmp_01.MATNR =tmp_05.MATNR
+         left join (
+        ]]>
+        <include refid="selectColumns_06" />
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_04" />
+        <![CDATA[
+       ) tmp_06
+        on tmp_01.MATNR =tmp_06.MATNR
+          left join (
+        ]]>
+        <include refid="selectColumns_071"/>
+        <include refid="where_fragement_01"/>
+        <include refid="where_fragement_071"/>
+        <![CDATA[
+        ) tmp_071
+        on tmp_01.MATNR =tmp_071.MATNR
+
+        ]]>
+    </sql>
+    <!--第8步：-->
+    <sql id="selectColumns_08">
+        <![CDATA[
+         select tmp_07.MATNR,SUM(thm_mseg_03_.DMBTR)/SUM(thm_mseg_03_.MENGE)
+        AS LSNOTAX,SUM(thm_mseg_03_.DMBTR+thm_mseg_03_.DMBTR*coalesce((SELECT KBETR FROM THM_A003_01 WHERE MWSKZ=thm_mseg_03_.MWSKZ),0)) /SUM(thm_mseg_03_.MENGE)
+        AS LSTAX from (
+        ]]>
+        <include refid="selectColumns_07"/>) tmp_07
+        left join
+        (select *  from THM_MSEG_03 thm_mseg_03_
+        <include refid="where_fragement_01" />
+        ) thm_mseg_03_
+        on tmp_07.MATNR=thm_mseg_03_.MATNR
+        where
+        <![CDATA[ thm_mseg_03_.budat >= CONCAT(LEFT(tmp_07.LSBUDAT,4),'0101') and thm_mseg_03_.budat < CONCAT(LEFT(tmp_07.LSBUDAT,4),'1231')
+        ]]>
+        group by thm_mseg_03_.matnr
+
+    </sql>
+    <!--第9步：-->
+    <sql id="selectColumns_09">
+        <![CDATA[
+         select tmp_091.MATNR,tmp_091.TXTMD,tmp_091.MEINS,tmp_091.PEINH,tmp_091.MWSKZ,tmp_091.EKGRP,tmp_091.SUM_MENGE,tmp_091.DQNOTAX,tmp_091.DQTAX,tmp_091.DNNOTAX,tmp_091.DNTAX,tmp_091.SNNOTAX,tmp_091.SNTAX,tmp_092.LSNOTAX,tmp_092.LSTAX,tmp_091.CJTAX,tmp_091.CJNOTAX,tmp_091.LSBUDAT
+         from (
+        ]]>
+        <include refid="selectColumns_07"/>) tmp_091
+        left join
+        ( <include refid="selectColumns_08"/> ) tmp_092
+        on tmp_091.matnr=tmp_092.matnr
+
+
+    </sql>
+
+
+
+
+    <!--第七步：-->
+    <select id="selectDataTrue_07" resultType="com.yjdj.view.core.entity.mybeans.THM_FS03">
+        <include refid="selectColumns_09" />
+    </select>
+    
+    <!-- 最新计算成本金变动明细 -->
+    <select id="selectData" resultType="com.yjdj.view.core.entity.mybeans.THM_FS03">
+        <![CDATA[
+            select tmp_091.MATNR,
+                tmp_091.TXTMD,
+                tmp_091.MEINS,
+                tmp_091.PEINH,
+                tmp_091.EKGRP,
+                tmp_091.SUM_MENGE,
+                tmp_091.DQNOTAX,
+                tmp_091.DQTAX,
+                tmp_091.DNNOTAX,
+                tmp_091.DNTAX,
+                tmp_091.SNNOTAX,
+                tmp_091.SNTAX,
+                tmp_091.LSNOTAX,
+                tmp_091.LSTAX,
+                tmp_091.CJTAX,
+                tmp_091.CJNOTAX
+            FROM THM_FS03_01_${tblName} tmp_091
+            WHERE 1 = 1
+        ]]>
+        <if test="werks != null and werks.size != 0">
+            <![CDATA[ and tmp_091.werks in]]>
+            <foreach collection="werks" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="matnr != null and matnr.size != 0">
+            <![CDATA[ and tmp_091.matnr in]]>
+            <foreach collection="matnr" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="lifnr != null and lifnr.size != 0">
+            <![CDATA[ and tmp_091.lifnr in]]>
+            <foreach collection="lifnr" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+
+        <if test="ekgrp != null and ekgrp.size != 0">
+            <![CDATA[ and tmp_091.ekgrp in]]>
+            <foreach collection="ekgrp" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <![CDATA[ ORDER BY tmp_091.CJNOTAX DESC,tmp_091.MATNR ]]>
+        <if test="flag == 0">
+            <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+        </if>
+    </select>
+
+</mapper>
+

@@ -1,0 +1,31 @@
+.ch-kp-ninteen{
+	display:none;
+	padding: 0 15px;
+}
+.ch-kp-ninteen table{
+	width:1800px;
+}
+.ch-kp-ninteen .table-data{
+	margin-top:-30px;
+}
+.ch-kp-ninteen table tr:nth-child(3) td:first-child{
+	text-align:center;
+}
+.ch-kp-ninteen table tr:nth-child(7) td:first-child{
+	text-indent:2em;
+}
+.ch-kp-ninteen table tr:nth-child(8) td:first-child,
+.ch-kp-ninteen table tr:nth-child(9) td:first-child,
+.ch-kp-ninteen table tr:nth-child(10) td:first-child,
+.ch-kp-ninteen table tr:nth-child(11) td:first-child,
+.ch-kp-ninteen table tr:nth-child(12) td:first-child,
+.ch-kp-ninteen table tr:nth-child(13) td:first-child{
+	text-indent:5em;
+}
+.ch-kp-ninteen table tr:nth-child(15) td:first-child{
+	text-indent:2em;
+}
+.ch-kp-ninteen table tr:nth-child(16) td:first-child,
+.ch-kp-ninteen table tr:nth-child(17) td:first-child{
+	text-indent:5em;
+}

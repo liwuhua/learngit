@@ -1,0 +1,332 @@
+#body{ font-size:16px;min-width:1900px;min-width:1880px\9; }
+table td,table th{ padding:1px 10px; }
+/* logo��   */
+#date-time{ margin-right:1%; }
+.data-time{ width:140px;font-size: 18px;}
+.logo-jsc{ height:60px;line-height:60px; }
+.logo-jsc img{ height:45px;margin-left:1.25%; }
+.logo-jsc a{ margin-right:1.25%;font-size:18px;}
+/* 管理驾驶舱及日期  */
+#index-head{ height:50px;line-height:50px;font-size:18px; }
+#index-head div:first-child{ font-size: 18px; }
+/*   内容样式   */
+#jsc-content{ width:100%;padding:10px 20px 0 20px;min-width:1900px;min-width:1880px\9; }
+#wrappers h3{ height:40px;line-height:40px;font-size:18px; }
+#wrappers .row{ margin-bottom:10px; }
+#wrappers #zlhshglmb{ margin-bottom:0px; }
+/* 经营管理---营业收入与净利润   */
+/* 仪表盘样式   */
+#jsc_1{ width: 430px;height: 220px; }
+#jsc-1{ width: 430px;height: 220px;}
+#jsc-2{ width: 570px;height: 220px; width: 570px\9; }
+/* 仪表盘图例样式  */
+#jsc_1 .tuli { font-size:14px; }
+#jsc_1 .tuli p s{ width: 12px;height: 12px;margin-bottom: 3px;vertical-align: middle; }
+#jsc_1 .tuli p span{ width:73px; }
+#jsc_1 .tuli .last-child span { width: 87px; }
+
+/* 经营管理--营业收入与净利润  */
+#jsc_1 .seris{
+	top:184px;
+	left:210px;
+	width:10px;
+}
+
+.name{
+    height: 32px;
+    line-height: 32px;
+    padding: 0 10px;
+    margin-bottom:10px;
+}
+.gs th,.gs td{
+    border: 1px solid #000;
+    height: 25px;
+}
+/*  */
+/* �Ǳ�����ʽ  */
+/*һ��������*/
+.yszk-tab1e,.cggl-7{
+    width: 590px;
+    height: 400px;
+    top: 41%;
+    left: 32%;
+}
+.cggl-7{
+    z-index: 36;
+}
+.yszk-tab1e ul,.cg-ycl ul{
+    height: 25px;
+    padding: 0 10px;
+}
+.yszk-tab1e ul li,.cg-ycl ul li{
+    float: left;
+    height: 18px;
+    list-style: none;
+    cursor: pointer;
+    margin: 0 10px 10px 10px;
+}
+.kh,.gs,.pgl,.gzb,.wdt,.wdt2{
+    padding: 0 10px;
+}
+.kh th,.gs th,.pgl th,.gzb th,.wdt th,.wdt2 th{
+    color:#c70019;
+    border:1px solid #DDDDDD;
+}
+.kh th,.kh td,.gs th,.gs td,.pgl td,.gzb td,.wdt td,.wdt2 td{
+    border: 1px solid #DDDDDD;
+    height: 25px;
+}
+
+/*��������*/
+.cggl-3{
+    width: 600px;
+    top: 41%;
+    left: 32%;
+    height: 400px;
+}
+/* 采购仓储管理目标   */
+#cggl-zjzy #gljsc-cg-dh { width: 33%; }
+#cggl-zjzy #gljsc-cg-dh .name{ font-size:18px;line-height: 38px; }
+#cggl-zjzy #gljsc-cg-dh .name span { margin-left:5px; }
+#cggl-zjzy #gljsc-cg-dh .dh-chart { height:22px;margin-top:20px; }
+#cggl-zjzy #gljsc-cg-dh #cg { height:18px;margin-top: 2px; }
+#cggl-zjzy #cggl-zjzy-ycl { width:490px;height:220px; }
+#cggl-zjzy #cggl-zjzy-ccp { width:490px;height:220px;display:none; }
+#cggl-zjzy #cggl-zjzy-tb1 { font-size:14px; }
+#cggl-zjzy #cggl-zjzy-tb1 span:first-child{ margin-right:14px; }
+#cggl-zjzy #cggl-zjzy-tb1 span{ padding-bottom:2px; }
+
+#cggl-zjzy #gljsc-cg-dh .jh { margin-top:15px; }
+#gljsc-cg-dh .jh,#gljsc-cg-dh .zd{ 
+	font-size: 14px;
+    line-height: 20px;
+}
+/* 采购鼠标滑过显示正点率   */
+#gljsc-cg-dh .zdl{ top:87px; }
+#gljsc-cg-dh .jh span,#gljsc-cg-dh .zd span { width: 85px; }
+#gljsc-cg-dh s{ width:12px;height:12px;margin:0 5px -1px 10px; }
+#gljsc-cg-dh .dh-chart{width:180px;height:46px;}
+
+/*  双下钻  */
+#gljsc-cg-dh .xiazuan1 {
+    /* display: none; */
+    top: 8px;
+    left: -470px;
+    height: 22px;
+}
+#gljsc-cg-dh .xiazuan2 {
+    /* display: none; */
+    /* top: 4px; */
+    top:8px;
+    /* top: 8px\9; */
+    left: 403px;
+    /* left: 308px\9; */
+    height: 22px;
+}
+
+/* 生产管理目标 */
+#jsc-sc-jf .chart-1{ height:15px; }
+#jsc-sc-jf .chart-1 span{ height: 15px;}
+/* 生产管理目标---1  */
+#scgl-yx #scmb-1-1 { width:213px;height:125px; }
+#scgl-yx #scmb-1-2 { width:214px;height:125px; }
+.scgl-cpzs {
+    margin-top: 3px;
+}
+.cpqk-title{ 
+	margin-top: 10px;
+    font-size: 18px;
+}
+.cpqk-title span{ width:213px; }
+#scgl-yx .danwei {
+    font-size: 14px;
+     margin-top: 0px;
+}
+#scgl-yx { width: 440px;height: 220px; }
+#scgl-yx .scgl-yx { height:60px;font-size:18px;padding-left:10px;line-height:38px; }
+#scgl-yx .scgl-yx .cpzdj{ line-height: 14px; }
+/* #scgl-yx .kuang1{ margin-top:15px;width:5px;height:130px;margin-left:10px; }
+#scgl-yx .kuang2 { margin-top:15px;width:5px;height:130px;margin-left:0px; } */
+#jsc-sc-dd { width: 562px;height: 220px;}
+/* --- */
+#cpjfzd-1 .tab-title{ line-height: 30px;padding: 0 10px; }
+#cpjfzd-1 .cancel{ font-size:20px; }
+#cpjfzd-1{ position:absolute;top:35%;left:35%;padding:0 0 10px 0; border-radius:10px;height:390px;}
+#cpjfzd-1 ul{ overflow:hidden;margin:10px 0;padding:0 10px; }
+#cpjfzd-1 ul li{ padding:2px 0px;margin: 0px 10px; }
+#cpjfzd-1 #comp{ padding:0 10px; }
+#cpjfzd-1 #all-c{ padding:0 10px; }
+#cpjfzd-1 table th,#cpjfzd-1 table td{ padding:2px 5px;height:25px; }
+/* ��Ʒ������ */
+#jsc-sc-wc .chart-1{ height:15px; }
+#jsc-sc-wc .chart-1 span{ height: 15px;}
+
+/*质量和市场管理目标 */
+#zlhshglmb #deadline5,#deadline1 { display:none;font-size:12px;font-weight:500; }
+#zlhshglmb .cont #ssqs { height:220px;float:left; }
+#zlhshglmb #zlhshglmb-ssqs { width:750px;height:220px; }
+.zlwtfb { height:220px; }
+.zlwtfb #zlhshglmb-cwss,.zlwtfb #zlhshglmb-cnss{ width:100%;height:220px; }
+.cpgztj { height:170px;float:left; }
+.cpgztj #zl-cpgz-tb2 { position:absolute;left:30%;top:4%;z-index:1;font-size: 14px; }
+.cpgztj .zlhshglmb-gz { width:100%;overflow:auto;height: 156px; }
+.cpgztj #zl-cpgz #tldjs1 { width:345px; }
+.cpgztj #zl-cpgz #tldjs2 { width:345px; }
+.cpgztj .cpgztj-title {
+    font-size:18px;
+    line-height: 38px;
+}
+#zl-cpgz-text { padding-left:180px;margin-top: 7px;font-size:14px; }
+
+
+
+#zlhshglmb-tb1,#zlhshglmb-tb2 { position: absolute;margin-top: 8px;font-size:14px; }
+#zlhshglmb-tb1{left: 975px; }
+#zlhshglmb-tb2{left: 75%; }
+#zlhshglmb-tb1 span,#zlhshglmb-tb2 span{ cursor: pointer;margin-left: 14px;padding-bottom: 2px;font-size:14px; }
+#zlhshglmb-tb1 span:first-child,#zlhshglmb-tb2 span:first-child{ color:#c70019;border-bottom:2px solid #c70019;font-weight:bold; }
+/*��������ֲ�һ������*/
+.wtfbss-3,.wtfbss-4,.cg-ycl,.cg-ycl2{
+    width: 420px;
+    height: 320px;
+    position: absolute;
+    left: 35%;
+    top: 35%;
+    z-index: 123;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.cg-ycl,.cg-ycl2{
+	width: 520px;
+	left:42%;
+}
+.wtfbss-3 .cancel2,.wtfbss-2 .can,.wtfbss-1 .cancel1,.wtfbss-4 .can2,.cggl-4 .can,.cggl-5 .can,.cggl-6 .can,.yysryjlr .can,.zczjzy-box .can,.cggl-5 .cancel1,.cggl-3 .cancel1,.yszk-tab1e .can1,.cggl-7 .can,.scBox .can,.cg-ycl .can1,.cg-ycl2 .can1{
+    float: right;
+    font-size: 20px;
+    cursor:pointer;
+    margin-right: 10px;
+}
+/*Ӫ��������������������*/
+.yxdd-table-2,.yxdd-table-3,.zczjzy-table{ padding: 0 10px;}
+.yxdd-table-2 table,.yxdd-table-3 table,.zczjzy-box table{width: 100%;}
+.yxdd-table-2 th,.yxdd-table-2 td,.yxdd-table-3 th,.yxdd-table-3 td,.zczjzy-box th,.zczjzy-box td{
+    border:1px solid #DDDDDD;
+    height: 25px;
+}
+.yxdd-table-2 th,.yxdd-table-3 th,.zczjzy-box th{
+    color: #c70019;
+}
+/* 在产资金占用一级下钻  */
+.zczjzy-box{
+    width: 420px;
+    height: 320px;
+    background: #fff;
+    position: absolute;
+    left: 38%;
+    top: 28%;
+    border-radius: 10px;
+    z-index: 30;
+    overflow: hidden;
+}
+
+/* 市场管理 ---销售收入指标及完成情况   */
+.zbwcBox s{
+    width: 12px;
+    height: 12px;
+    margin-bottom: -1px;
+}
+#scgl-sr #xssr-zbwc{ 
+	margin-top: 20px;
+}
+#scgl-sr #xssr-zbwc{ height: 22px; }
+#scgl-sr #xssr-zbwc #xssr{ height:18px;background:#c70019; }
+#ndht .wc{ line-height: 11px;height: 11px; }
+#scgl-srzb{ width:252px;height:220px; }
+#scgl-sr{ height: 110px; }
+#scgl-sr .s_name{ 
+	font-size:18px;
+    margin-bottom: 15px; 
+    height: 36px;
+    line-height: 36px;
+}
+#scgl-sr .srwcl{ top: 90px;  }
+#scgl-sr .jh,#scgl-sr .zd{ line-height: 20px;font-size:14px; }
+#scgl-sr .jh span { width: 124px; }
+#scgl-sr .zd span { width:96px; }
+#scgl-sr .red-flag {
+    top: 71px;
+    top:73px\9;
+    left: 212px;
+    height: 15px;
+}
+/* 市场管理目标----年度合同签约指标 */
+#ndht{
+	width:270px;
+	top: 40px;
+}
+#ndht p{height: 32px;line-height: 32px;margin: 0;}
+/*  市场管理---销售目标-累计完成--小饼图  */
+#shgl-xssrjwcqk{ width:585px; }
+#shgl-xssrjwcqk .bt{ width: 100%;height: 12px;line-height: 12px;margin-bottom:0;margin-top:10px; }
+#shgl-xssrjwcqk p{font-size:14px;margin:0 30px 0 0;}
+#shgl-xssrjwcqk p b{ width: 12px; height: 12px; }
+#pie0,#pie1,#pie2,#pie3,#pie4,#pie5,#pie6{ width: 145px; height: 95px; }
+#pie4 { margin-left: 73px; }
+.quan { width:106px; }
+div#pie-0 { left: 18px; top: 27px; }
+div#pie-1 { left: 163px;top: 27px; }
+div#pie-2 { left: 309px;top: 27px; }
+div#pie-3 { left: 453px;top: 27px; }
+div#pie-4 { left: 91px;top: 123px; }
+div#pie-5 {
+    top: 122px;
+    left: 236px;
+}
+div#pie-6 {
+    top: 123px;
+    left: 381px;
+}
+/* 市场管理2-饼图下钻 */
+/* .scBox{
+    position: absolute;
+    z-index: 30;
+    width: 440px;
+    height: 320px;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    left: 38%;
+    top: 28%;
+}
+.scBox .can{margin-top: -30px;cursor: pointer;}
+.tabBox{
+    background-color: #EEEEEE;
+    height: 25px;
+    margin-bottom: 10px;
+}
+.tableBox .t_r{
+    padding: 0 10px;
+    width: 420px;
+}
+.tabBox ul li{
+    line-height: 25px;
+    float: left;
+    width: 100px;
+    text-align: center;
+    cursor:pointer;
+}
+.hjBox{padding: 0 10px;width: 420px;}
+.hjBox table{
+    width: 100%;
+}
+.hjBox table td{
+    border:1px solid #DDDDDD;
+    height:25px;
+    border-left:0px;
+} */
+
+/* 采购管理--库存资金占用tab   */
+#zl-cpgz-tb2 span{ padding:2px 0px;margin:0 7px; }
+/* 页面右下角时间  */
+#date { line-height:23px;padding-right:21px; }

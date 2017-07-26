@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperKPI12">
+
+	<resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+        <result column="on_time_rate" property="on_time_rate" jdbcType="DOUBLE" />
+    </resultMap>
+	
+	<!-- 产品正点交付率 -->
+	<select id="selectProOTDeliverRate" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+		<![CDATA[ SELECT IFNULL(on_time_rate,0) AS on_time_rate FROM THM_KPI12_11  WHERE GLTRPYM = ${yearMonth} ]]>
+	</select>
+	
+	<!-- 产品完成数量-->
+	<select id="selectProCompCount" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT IFNULL(tiqian_complete_sum,0)as tiqian_complete_sum,IFNULL(dangqi_complete_sum,0)as dangqi_complete_sum,
+		IFNULL(yanqi_complete_sum,0) as yanqi_complete_sum,IFNULL((tiqian_complete_sum+dangqi_complete_sum+yanqi_complete_sum),0)as product_complete_sum 
+		FROM THM_KPI12_16 WHERE GLTRPYM = ${yearMonth} ]]>
+	</select>
+	
+	<!-- 产品累计未完成数量 -->
+	<select id="selectProUnCompSum" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT IFNULL(qianqi_uncomplete_sum,0) as qianqi_uncomplete_sum,IFNULL(dangqi_uncomplete_sum,0) as dangqi_uncomplete_sum,
+		IFNULL((qianqi_uncomplete_sum+dangqi_uncomplete_sum),0) as product_uncomplete_sum 
+		FROM THM_KPI12_21 WHERE GLTRPYM = ${yearMonth}
+		]]>
+	</select>
+	
+	<!-- 产品正点交付钻取下钻 -->
+	<select id="selectProOTDeliverGoDown" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT ARKTX as arktx,plan_menge as plan_menge,on_time_menge as on_time_menge,cast(on_time_rate as DECIMAL) on_time_rate FROM THM_KPI12_10 WHERE GLTRPYM = ${yearMonth} ORDER BY 4 DESC ]]>
+	</select>
+	<select id="selectProOTDeliverGoDownSum" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT "合计" as arktx,sum(plan_menge) as plan_menge,sum(on_time_menge) as on_time_menge,sum(on_time_menge)/sum(plan_menge) on_time_rate FROM THM_KPI12_10 WHERE GLTRPYM = ${yearMonth} ORDER BY 4 DESC ]]>
+	</select>
+	
+	<!-- 产品正点交付钻取下钻 查询公司-->
+	<select id="selectProOTDeliverCompany" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT DISTINCT BUKRS as bukrs,TXTMD as txtmd FROM THM_KPI12_09 WHERE GLTRPYM = ${yearMonth} ]]>
+	</select>
+	<!-- 公司下产品正点交付钻取下钻  ProOT 是 Product On Time 缩写-->
+	<select id="selectProOTRateDeliverByBukrsGoDown" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT TXTMD as txtmd,ARKTX as arktx,plan_menge,on_time_menge,cast(on_time_rate as DECIMAL) on_time_rate FROM THM_KPI12_09 
+		WHERE GLTRPYM = ${yearMonth} AND BUKRS = '${bukrs}' ORDER BY 5 DESC]]>
+	</select>
+	<select id="selectProOTRateDeliverByBukrsGoDownSum" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT sum(plan_menge)as plan_menge,sum(on_time_menge)as on_time_menge,
+		(sum(on_time_menge)/sum(plan_menge)) on_time_rate FROM THM_KPI12_09 
+		WHERE GLTRPYM = ${yearMonth} AND BUKRS = '${bukrs}' ]]>
+	</select>
+	
+	
+	<!-- 选择公司 -->
+	<select id="selectProUnCompCompany" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT DISTINCT BUKRS as bukrs,TXTMD as txtmd FROM THM_KPI12_19 WHERE GLTRPYM = '${yearMonth}']]>
+	</select>
+	<!-- 产品累计未完成总数钻取 -->
+	<select id="selectProUnCompSumGoDown" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ 
+            SELECT
+                    ARKTX AS arktx,
+                    qianqi_uncomplete_sum + dangqi_uncomplete_sum AS uncomplete_sum
+            FROM
+                    THM_KPI12_20
+            WHERE
+                    GLTRPYM = '${yearMonth}'
+            AND (
+                    qianqi_uncomplete_sum > 0.0
+                    OR dangqi_uncomplete_sum > 0.0
+            )
+            UNION ALL
+            SELECT
+                    "合计" AS arktx,
+                    sum(qianqi_uncomplete_sum + dangqi_uncomplete_sum) AS uncomplete_sum
+            FROM
+                    THM_KPI12_20
+            WHERE
+                    GLTRPYM = '${yearMonth}'
+            AND (
+                    qianqi_uncomplete_sum > 0.0
+                    OR dangqi_uncomplete_sum > 0.0
+            )
+            ORDER BY
+                    2 DESC
+        ]]>
+	</select>
+	<!-- 公司下产品累计未完成总数钻取 -->
+	<select id="selectProUnCompSumByBukrsGoDown" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ 
+            SELECT
+                    ARKTX AS arktx,
+                    qianqi_uncomplete_sum + dangqi_uncomplete_sum AS uncomplete_sum
+            FROM
+                    THM_KPI12_19
+            WHERE
+                    GLTRPYM = '${yearMonth}'
+            AND BUKRS = '${bukrs}'
+            AND (
+                    qianqi_uncomplete_sum > 0.0
+                    OR dangqi_uncomplete_sum > 0.0
+            )
+            UNION ALL
+            SELECT
+                    "合计" AS arktx,
+                    sum(qianqi_uncomplete_sum + dangqi_uncomplete_sum) AS uncomplete_sum
+            FROM
+                    THM_KPI12_19
+            WHERE
+                    GLTRPYM = '${yearMonth}'
+            AND BUKRS = '${bukrs}'
+            AND (
+                    qianqi_uncomplete_sum > 0.0
+                    OR dangqi_uncomplete_sum > 0.0
+            )
+            ORDER BY
+                    2 DESC
+        ]]>
+	</select>
+	
+	
+	<!-- 选择公司 -->
+	<select id="selectProCompCompany" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT DISTINCT BUKRS as bukrs,TXTMD as txtmd FROM THM_KPI12_14 WHERE GLTRPYM = '${yearMonth}']]>
+	</select>
+	<!-- 产品累计完成总数钻取 -->
+	<select id="selectProCompSumGoDown" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT ARKTX as arktx,tiqian_complete_sum+dangqi_complete_sum+yanqi_complete_sum as complete_sum FROM 
+		THM_KPI12_15 WHERE GLTRPYM  = '${yearMonth}' AND (tiqian_complete_sum > 0.0 OR dangqi_complete_sum > 0.0 OR yanqi_complete_sum > 0.0) ORDER BY 2 DESC]]>
+	</select>
+	<select id="selectProCompSumGoDownSum" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT '合计' as arktx,sum(tiqian_complete_sum+dangqi_complete_sum+yanqi_complete_sum) as complete_sum FROM 
+		THM_KPI12_15 WHERE GLTRPYM  = '${yearMonth}' AND (tiqian_complete_sum > 0.0 OR dangqi_complete_sum > 0.0 OR yanqi_complete_sum > 0.0) ORDER BY 2 DESC]]>
+	</select>
+	
+	
+	<!-- 公司下产品累计完成总数钻取 -->
+	<select id="selectProCompSumByBukrsGoDown" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT ARKTX as arktx,tiqian_complete_sum+dangqi_complete_sum+yanqi_complete_sum as complete_sum FROM THM_KPI12_14
+		WHERE GLTRPYM = '${yearMonth}' AND BUKRS = '${bukrs}' AND (tiqian_complete_sum > 0.0 OR dangqi_complete_sum > 0.0 OR yanqi_complete_sum > 0.0) ORDER BY 2 DESC]]>
+	</select>
+	<select id="selectProCompSumByBukrsGoDownSum" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP12">
+	<![CDATA[ SELECT "合计" as arktx,sum(tiqian_complete_sum+dangqi_complete_sum+yanqi_complete_sum) as complete_sum FROM THM_KPI12_14
+		WHERE GLTRPYM = '${yearMonth}' AND BUKRS = '${bukrs}' AND (tiqian_complete_sum > 0.0 OR dangqi_complete_sum > 0.0 OR yanqi_complete_sum > 0.0) ORDER BY 2 DESC]]>
+	</select>
+	
+</mapper>
+

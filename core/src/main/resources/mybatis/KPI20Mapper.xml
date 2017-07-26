@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperKPI20">
+
+	<select id="getLedgercheck" resultType="map">
+		
+		<!-- 订单在产金额 -->
+		<!--总帐与分类帐差异-->
+		<if test="CZBS==1">
+		   
+		   SELECT YEARMONTH,KEMU,MONEY from THM_KPI20_01 
+		   where YEARMONTH=#{MONTH} and KEMU =#{KEMU}
+
+		</if>
+		
+		<!-- 库存金额  -->
+		<if test="CZBS==2">
+           
+       SELECT TB.YEARMONTH YEARMONTH ,IFNULL(REPLACE(CONVERT(FORMAT(sum(TB.MONEY),2),CHAR),",",""),0) MONEY 
+         FROM (
+         select YEARMONTH,REPLACE(CONVERT(FORMAT(sum(STOCK_MONEY),2),CHAR),",","")MONEY from THM_KPI1516_1721_02
+        where YEARMONTH=#{MONTH}
+			UNION ALL
+		select YEARMONTH,REPLACE(CONVERT(FORMAT(STOCK_MONEY,2),CHAR),",","")MONEY from THM_KPI1516_1721_05
+         where YEARMONTH=#{MONTH}
+         )TB
+         
+		</if>
+		 
+		<!-- 其中:分包商库存金额 -->
+		<if test="CZBS==3">
+
+		  select YEARMONTH,REPLACE(CONVERT(FORMAT(STOCK_MONEY,2),CHAR),",","")MONEY 
+          from THM_KPI1516_1721_05
+          where YEARMONTH=#{MONTH}    
+
+		</if> 
+		
+		
+		
+		
+		<!-- 无物料号手工账  -->
+	<!-- 	<if test="CZBS==2">
+     
+      <![CDATA[
+		   SELECT YEARMONTH,KEMU,sum(MONEY) MONEY from THM_KPI20_01 
+		   where YEARMONTH =#{MONTH} and KEMU =#{KEMU}  ]]>
+
+		</if> -->
+		
+	 	<!-- 未分摊  -->
+		<!-- <if test="CZBS==3">
+
+		   SELECT sum(MONEY) MONEY from THM_KPI20_01 
+		   where YEARMONTH &lt;=#{MONTH} 
+
+		</if>
+		
+		
+		<if test="CZBS==4">
+
+		   SELECT sum(MONEY) MONEY from THM_KPI20_02 
+		   where YEARMONTH =#{MONTH} 
+
+		</if>  -->
+					
+	</select>
+		
+</mapper>
+

@@ -1,0 +1,247 @@
+#body{ font-size:12px;min-width:1024px;min-width:1000px\9;}
+/* logo行  */
+.logo-jsc{ height: 36px;line-height: 36px; }
+.logo-jsc img { height: 20px; margin-left: 5px; }
+.logo-jsc a { margin-right: 5px; }
+/* 页面整体标题部分  */
+#index-head {
+	height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+}
+#index-head div:first-child {
+    padding-left: 10px;
+    font-size: 12px;
+}
+#date-time {
+    margin-right: 5px;
+}
+.data-time {
+    width: 80px;
+    font-size: 12px;
+}
+#jsc-content{ padding: 5px 5px 0 5px;min-width:1024px;min-width:1000px\9; }
+/* 整体内容样式 */
+#wrappers h3{
+	height:20px;
+	font-size:12px;
+	line-height: 20px;
+    padding-left: 5px;
+}
+#wrappers .row {
+    margin-bottom: 3px;
+}
+/* 经营管理--营业收入与净利润   */
+#jsc_1{ width: 200px;height: 160px;font-size:9px; }
+#jsc-1{ width: 200px;height: 160px;}
+#jsc-2{ width: 338px;width:330px\9;height: 160px; }
+#jsc_1 .tuli{
+	margin-left:130px; 
+	margin-top:-17px;
+	line-height: 11px;
+	font-size:8px;
+	top: 26px;
+	left: -35px; 
+}
+#jsc_1 .tuli span{ text-align:right;width:46px;display:inline-block; }
+#jsc_1 .tuli .last-child span { width:54px; }
+#jsc_1 .tuli p s{ 
+	margin-right:5px;width:8px;height:8px;
+	vertical-align: middle;
+	margin-top: -2px; 
+}
+#jsc_1 .seris{
+	position:absolute;
+	top:134px;
+	left:97px;
+	width:7px;
+}
+/* 市场管理 */
+/* 市场管理---销售收入指标及完成情况  */
+#scgl-srzb { width: 160px; height: 160px; }
+#scgl-sr { height: 90px; }
+#scgl-sr .s_name { font-size:10px;height: 29px; line-height: 29px; margin-top: 0; margin-left: 5px; }
+#scgl-sr .jh, #scgl-sr .zd { line-height: 11px; font-size: 8px; }
+#scgl-sr .jh span { width:76px; }
+#scgl-sr .zd span { width:60px; }
+.zbwcBox s { 
+	width: 8px; 
+	height: 8px; 
+	margin: 0 5px 0 5px;
+	vertical-align: middle;
+}
+#scgl-sr .srwcl {
+	top: 50px;
+}
+/* 市场管理-1-小红旗  */
+#scgl-sr .red-flag {
+	top:39px;
+	left:128px;
+	height:10px;
+}
+/* 市场管理---2---红色圆圈 */
+.quan {
+	width:78px;
+}
+div#pie-0 {
+    left: -3px;
+    top: 25px;
+}
+div#pie-1 {
+    left: 66px;
+    top: 25px;
+}
+div#pie-2 {
+    left: 136px;
+    top: 25px;
+}
+div#pie-3 {
+    left: 206px;
+    top: 25px;
+}
+div#pie-4 {
+    left: 36px;
+    top: 93px;
+}
+div#pie-5 {
+    top: 93px;
+    left: 106px;
+}
+div#pie-6 {
+    top: 93px;
+    left: 176px;
+}
+#scgl-sr #xssr-zbwc{ margin-top: 20px;margin-left:5px;height:14px;width:120px; overflow:hidden;padding-top:2px;}
+#scgl-sr #xssr-zbwc #xssr{ height:10px; }
+/* 下钻 */
+.cggl-2,.wtfbss-2,.cggl-4,.cggl-5,.cggl-6,.yysryjlr{
+    left: 210px;
+}
+.yszk-tab1e,.cggl-7{
+	left: 210px;
+}
+/* 市场管理---年度合同   */
+#ndht {
+	width: 165px;
+	padding-left: 5px;
+	font-size: 10px;
+	margin-top:10px;
+	margin-left:5px;
+	height: 40px;
+	padding:3px 5px 0px 5px; 
+}
+#ndht .zb ,#ndht .wc { height: 18px;line-height: 18px; }
+#ndht p b { width:70px; }
+/* 下钻 */
+.cggl-4,.cggl-5 { top: 24%;left: 32%; }
+/* 在产和库存资金下钻 */
+#gljsc-cg-dh .xiazuan1 {
+    top: 6px;
+    left: -285px;
+    height:11px;
+    top:8px\9;
+    left: -283px\9;
+}
+#gljsc-cg-dh .xiazuan2 {
+    top: 6px;
+    top:8px\9;
+    left: 228px;
+    height: 11px;
+}
+#gljsc-cg-dh .xiazuan img { height:100%; }
+/* 市场管理目标---С��ͼ */
+#shgl-xssrjwcqk {width: 288px;width:285px\9;}
+#shgl-xssrjwcqk .bt { margin-top:8px; }
+#shgl-xssrjwcqk .bt div {
+	height: 11px;
+	top:8.5px;
+	top: 9px\9;
+	right: 6px;
+}
+#shgl-xssrjwcqk .bt div img{ height:100%; }
+#shgl-xssrjwcqk p { float: right; font-size: 8px;margin-right: 20px; }
+#shgl-xssrjwcqk p b { width: 8px;height: 8px; margin-right: 5px; vertical-align: middle;}
+#pie0, #pie1, #pie2, #pie3, #pie4, #pie5, #pie6 {
+    width: 70px;
+    height: 68px;
+}
+#pie4 { margin-left: 40px; }
+/* 产品正点交付率   */
+#scgl-yx { width: 200px;height: 160px; }
+/* #scgl-yx .kuang1 { margin-left:5px;width:2px; }
+#scgl-yx .kuang2 { margin-left:-1px;width:2px; } */
+.scgl-cpzs{ margin-left:5px;margin-top:-2px; }
+#scgl-yx #scmb-1-1 { width:95px;height:100px;}
+#scgl-yx #scmb-1-2 { width:95px;height:100px; }
+.cpqk-title { position:absolute;z-index:4;margin-left:5px;font-size:10px;}
+.cpqk-title span{ width:96px;padding-left:3px; }
+.cpqk-title .cpwc{ padding-left:5px; }
+#scgl-yx .danwei{ font-size:8px;margin-top:3px; }
+
+#jsc-sc-dd { width: 338px;height: 160px;width: 335px\9;}
+
+/* ��������Ŀ��----1 */
+#scgl-yx .scgl-yx {
+    height: 40px;
+    font-size: 10px;
+    padding-left: 5px;
+    line-height: 20px;
+    margin-top: 4px;
+    margin-top:5px\9;
+    
+}
+#cpjfzd-1 { top: 25%;left: 25%; }
+#scgl-yx .scgl-yx #scmb-1-1{ width:130px;height:110px;margin-left:-5px; }
+#scgl-yx .scgl-yx #scmb-1-2 { width:160px;height:110px; }
+/* 采购管理---原材料/产成品  */
+#cggl-zjzy #gljsc-cg-dh{ width:155px;height:160px; }
+#cggl-zjzy #cggl-zjzy-ycl,#cggl-zjzy #cggl-zjzy-ccp {
+    width: 290px;
+    height: 160px;
+}
+#cggl-zjzy #gljsc-cg-dh .name {font-size:10px;height:30px;line-height:30px; margin:0;margin-left: 5px; }
+#gljsc-cg-dh .jh, #gljsc-cg-dh .zd { font-size: 8px; line-height: 11px; }
+#gljsc-cg-dh .zdl{ top:67px; }
+/* #cggl-zjzy #gljsc-cg-dh .jh{ margin-top: 0px; } */
+#gljsc-cg-dh .jh span, #gljsc-cg-dh .zd span{
+	width: 40px;
+}
+
+#gljsc-cg-dh s {
+    width: 8px;
+    height: 8px;
+    margin: 0 5px -2px 5px;
+}
+
+.cg-ycl,.cg-ycl2 { left: 15%;top: 25%; }
+#cggl-zjzy #gljsc-cg-dh .dh-chart { margin-top:20px;margin-left: 5px;height:14px;width:120px; }
+#cggl-zjzy #gljsc-cg-dh #cg { height:10px; }
+/* 原材料/产成品---切换   */
+#cggl-zjzy-tb1 { font-size:8px; position:absolute; top:9px;left:260px; }
+/* �������ۺ����Ŀ��  */
+/* ������ʧ����  */
+#zlhshglmb .cont #ssqs{ height:160px; }
+#zlhshglmb #zlhshglmb-ssqs {width: 425px;height: 160px;}
+/* ��������ֲ�  */
+.zlwtfb { height: 160px; }
+.zlwtfb #zlhshglmb-cwss, .zlwtfb #zlhshglmb-cnss { height: 160px; }
+#zlhshglmb-tb1 { font-size:8px;left: 52%; }
+/* ��Ʒ����ͳ��  */
+.cpgztj { height: 160px; }
+#zl-cpgz-tb2 { font-size:8px;margin-top:2px; }
+.cpgztj #zl-cpgz #tldjs1,.cpgztj #zl-cpgz #tldjs2 {
+    width: 170px;
+}
+#zl-cpgz-text { margin-top:0px;font-size:8px; }
+
+/* 后勤存货资金与财务存货总账对账  ---  下钻 */
+.zzdz{ 
+	top: 200px;
+	left: 100px;
+}
+	
+/* 产品故障 */
+.cpgztj .zlhshglmb-gz {
+    height: 107px;
+}
+#date{ padding-right: 5px; }

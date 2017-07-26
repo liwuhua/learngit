@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS13">
+    <!--管库员-->
+    <select id="getLgpbe" resultType="java.lang.String">
+        <![CDATA[ SELECT DISTINCT LGPBE FROM THM_STOCK_06 where 1=1]]>
+        <if test="lgpbe != null and lgpbe != ''">
+            <![CDATA[ AND LGPBE LIKE "%${lgpbe}%" ]]>
+        </if>
+    </select>
+
+    <select id="getData" resultType="java.util.HashMap">
+        <![CDATA[ SELECT DISTINCT * FROM THM_STOCK_06 ]]>
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+        <!-- 物料多值与多区间 -->
+        <if test="matnrValue != null and matnrValue.size != 0">
+            <![CDATA[ and MATNR in]]>
+            <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="matnrInterval != null and matnrInterval.size != 0">
+            <foreach collection="matnrInterval" index="index" item="item">
+                <!--#{item}-->
+                <foreach collection="item" index="start"  item="end" separator="union">
+                    OR MATNR BETWEEN #{start} AND #{end}
+                </foreach>
+            </foreach>
+        </if>
+        <![CDATA[ and 1=1)]]>
+        <!-- 工厂 -->
+        <if test="plantValue != null and plantValue.size != 0">
+            <![CDATA[ and WERKS in]]>
+            <foreach collection="plantValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 库存地点 -->
+        <if test="lgortValue != null and lgortValue.size != 0">
+            <![CDATA[ and LGORT in]]>
+            <foreach collection="lgortValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 管库员 -->
+        <if test="lgpbeValue != null and lgpbeValue.size != 0">
+            <![CDATA[ and LGPBE in]]>
+            <foreach collection="lgpbeValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 供应商 -->
+        <if test="vendorValue != null and vendorValue.size != 0">
+            <![CDATA[ and LIFNR in]]>
+            <foreach collection="vendorValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 供应商类别 -->
+        <if test="vendorTypeValue != null and vendorTypeValue.size != 0">
+            <![CDATA[ and XASUPPTY in]]>
+            <foreach collection="vendorTypeValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 库存天数 -->
+        <if test="dayNumStart != null and dayNumStart != ''">
+            <![CDATA[ and STCOU >= #{dayNumStart}]]>
+        </if>
+        <if test="dayNumEnd != null and dayNumEnd != ''">
+            <![CDATA[ and STCOU <= #{dayNumEnd}]]>
+        </if>
+
+        <![CDATA[ and BUDAT = #{dateTime}]]>
+        </trim>
+        <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+   </select>
+
+
+    <select id="getSumData" resultType="java.util.HashMap">
+        <![CDATA[ SELECT DISTINCT sum(BWMNG) as sum_bwmng,sum(kcje) as sum_kcje FROM (SELECT DISTINCT * from THM_STOCK_06) t ]]>
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+            <!-- 物料多值与多区间 -->
+            <if test="matnrValue != null and matnrValue.size != 0">
+                <![CDATA[ and MATNR in]]>
+                <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <if test="matnrInterval != null and matnrInterval.size != 0">
+                <foreach collection="matnrInterval" index="index" item="item">
+                    <!--#{item}-->
+                    <foreach collection="item" index="start"  item="end" separator="union">
+                        OR MATNR BETWEEN #{start} AND #{end}
+                    </foreach>
+                </foreach>
+            </if>
+            <![CDATA[ and 1=1)]]>
+            <!-- 工厂 -->
+            <if test="plantValue != null and plantValue.size != 0">
+                <![CDATA[ and WERKS in]]>
+                <foreach collection="plantValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 库存地点 -->
+            <if test="lgortValue != null and lgortValue.size != 0">
+                <![CDATA[ and LGORT in]]>
+                <foreach collection="lgortValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 管库员 -->
+            <if test="lgpbeValue != null and lgpbeValue.size != 0">
+                <![CDATA[ and LGPBE in]]>
+                <foreach collection="lgpbeValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 供应商 -->
+            <if test="vendorValue != null and vendorValue.size != 0">
+                <![CDATA[ and LIFNR in]]>
+                <foreach collection="vendorValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 供应商类别 -->
+            <if test="vendorTypeValue != null and vendorTypeValue.size != 0">
+                <![CDATA[ and XASUPPTY in]]>
+                <foreach collection="vendorTypeValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 库存天数 -->
+            <if test="dayNumStart != null and dayNumStart != ''">
+                <![CDATA[ and STCOU >= #{dayNumStart}]]>
+            </if>
+            <if test="dayNumEnd != null and dayNumEnd != ''">
+                <![CDATA[ and STCOU <= #{dayNumEnd}]]>
+            </if>
+
+            <![CDATA[ and BUDAT = #{dateTime}]]>
+        </trim>
+    </select>
+
+</mapper>
+

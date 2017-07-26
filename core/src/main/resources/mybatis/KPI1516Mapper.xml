@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperKPI1516">
+
+    <resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_KIP1516">
+        <result column="days" property="days" jdbcType="DOUBLE" />
+        <result column="time" property="time" jdbcType="VARCHAR" />
+        <result column="bwmng_sum" property="bwmng_sum" jdbcType="DOUBLE" />
+        <result column="balance" property="balance" jdbcType="DOUBLE" />
+    </resultMap>
+    
+    <!-- 订单在产金额 -->
+    <!-- one 是减去13个月之后所得月，two是减去12个月之后所得月，three 是减去11个月后所得月，以此类推至thirteen -->
+    <!-- 每条sql解释：每条sql（不包含union all）所查询结果为一个月内订单在产金额，使用union all 将13个月合并在一起 -->
+    <select id="selectOrderInProductionMoney" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP1516">
+	<![CDATA[ 
+		SELECT round(
+        (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${one}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${one}',1,6))),0) AS balance,substring('${one}',1,6) AS TIME 
+				UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${two}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${two}',1,6))),0) AS balance,substring('${two}',1,6) AS TIME
+				UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${three}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${three}',1,6))),0) AS balance,substring('${three}',1,6) AS TIME
+				UNION ALL
+      SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${four}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${four}',1,6))),0) AS balance,substring('${four}',1,6) AS TIME
+			    UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${five}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${five}',1,6))),0) AS balance,substring('${five}',1,6) AS TIME
+		        UNION ALL
+     SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${six}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${six}',1,6))),0) AS balance,substring('${six}',1,6) AS TIME  
+				UNION ALL 
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${seven}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${seven}',1,6))),0) AS balance,substring('${seven}',1,6) AS TIME 
+				UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${eight}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${eight}',1,6))),0) AS balance,substring('${eight}',1,6) AS TIME
+				UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${nine}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${nine}',1,6))),0) AS balance,substring('${nine}',1,6) AS TIME
+				UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${ten}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${ten}',1,6))),0) AS balance,substring('${ten}',1,6) AS TIME	
+				UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${eleven}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${eleven}',1,6))),0) AS balance,substring('${eleven}',1,6) AS TIME
+				UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${twelve}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${twelve}',1,6))),0) AS balance,substring('${twelve}',1,6) AS TIME
+				UNION ALL
+	  SELECT round(
+      (
+         (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))= substring('${thirteen}',1,6))+
+         (SELECT STOCK_MONEY AS BWMNG_SUM FROM THM_KPI1516_1721_02 WHERE FLAG='SC' and YEARMONTH=substring('${thirteen}',1,6))),0) AS balance,substring('${thirteen}',1,6) AS TIME  
+	 ]]>
+    </select>
+	
+    <!-- 在产资金周转天数 -->
+    <!-- -14(one)  -13(two) -12(three) -11(four) -10(five) -9(six) -8(seven) -7(eight) -6(nine) -5(ten) -4(eleven) -3(twelve) -2(thirteen) -1(fourteen) -->
+    <!-- one 是减去13个月之后所得月，two是减去12个月之后所得月，three 是减去11个月后所得月，以此类推至fourteen -->
+    <!-- 每条sql(不包含union all)的计算公式列如计算7月份：
+    (所选日期月份 – 7个月）所得月份在产资金周转天数=30/(当月营业成本(从导入的合并报表取数)/((所选日期月份 – 8个月)所得月份车间仓材料总金额+(所选日期月份 – 8个月)订单在产金额+(所选日期月份 – 7个月)订单在产金额+(所选日期月份 – 7个月)所得月份车间仓材料总金额)/2) -->
+    <select id="selectInProductionMoneyDays" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP1516">
+	<![CDATA[ 	
+		SELECT round(((360*MONTH(${one}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${one}) AND a.MONAT = MONTH(${one}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		 (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${one}) = 2015 AND MONTH(${one}) >=4,201504,CONCAT(YEAR(${one})-1,"12")) AND FLAG = 'SC')+
+		 (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${one}) = 2015 AND MONTH(${one}) >=4,201504,CONCAT(YEAR(${one})-1,"12")))+
+		 (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${one},1,6))+
+		 (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${one},1,6) AND FLAG = 'SC')
+		)/2)),0) AS days,SUBSTR(${one},1,6) AS TIME from DUAL  
+		
+		UNION ALL 
+		SELECT round(((360*MONTH(${two}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${two}) AND a.MONAT = MONTH(${two}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		 (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${two}) = 2015 AND MONTH(${two}) >=4,201504,CONCAT(YEAR(${two})-1,"12")) AND FLAG = 'SC')+
+		 (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${two}) = 2015 AND MONTH(${two}) >=4,201504,CONCAT(YEAR(${two})-1,"12")))+
+		 (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${two},1,6))+
+		 (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${two},1,6) AND FLAG = 'SC')
+		)/2)),0) AS days,SUBSTR(${two},1,6) AS TIME from DUAL 
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${three}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${three}) AND a.MONAT = MONTH(${three}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		 (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${three}) = 2015 AND MONTH(${three}) >=4,201504,CONCAT(YEAR(${three})-1,"12")) AND FLAG = 'SC')+
+		 (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${three}) = 2015 AND MONTH(${three}) >=4,201504,CONCAT(YEAR(${three})-1,"12")))+
+		 (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${three},1,6))+
+		 (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${three},1,6) AND FLAG = 'SC')
+		)/2)),1) AS days,SUBSTR(${three},1,6) AS TIME from DUAL  
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${four}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${four}) AND a.MONAT = MONTH(${four}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${four}) = 2015 AND MONTH(${four}) >=4,201504,CONCAT(YEAR(${four})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${four}) = 2015 AND MONTH(${four}) >=4,201504,CONCAT(YEAR(${four})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${three},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${four},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${four},1,6) AS TIME from DUAL 
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${five}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${five}) AND a.MONAT = MONTH(${five}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${five}) = 2015 AND MONTH(${five}) >=4,201504,CONCAT(YEAR(${five})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${five}) = 2015 AND MONTH(${five}) >=4,201504,CONCAT(YEAR(${five})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${five},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${five},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${five},1,6) AS TIME from DUAL 
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${six}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${six}) AND a.MONAT = MONTH(${six}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${six}) = 2015 AND MONTH(${six}) >=4,201504,CONCAT(YEAR(${six})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${six}) = 2015 AND MONTH(${six}) >=4,201504,CONCAT(YEAR(${six})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${six},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${six},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${six},1,6) AS TIME from DUAL 
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${seven}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${seven}) AND a.MONAT = MONTH(${seven}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${seven}) = 2015 AND MONTH(${seven}) >=4,201504,CONCAT(YEAR(${seven})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${seven}) = 2015 AND MONTH(${seven}) >=4,201504,CONCAT(YEAR(${seven})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${seven},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${seven},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${seven},1,6) AS TIME from DUAL  
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${eight}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${eight}) AND a.MONAT = MONTH(${eight}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${eight}) = 2015 AND MONTH(${eight}) >=4,201504,CONCAT(YEAR(${eight})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${eight}) = 2015 AND MONTH(${eight}) >=4,201504,CONCAT(YEAR(${eight})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${eight},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${eight},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${eight},1,6) AS TIME from DUAL   
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${nine}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${nine}) AND a.MONAT = MONTH(${nine}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${nine}) = 2015 AND MONTH(${nine}) >=4,201504,CONCAT(YEAR(${nine})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${nine}) = 2015 AND MONTH(${nine}) >=4,201504,CONCAT(YEAR(${nine})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${nine},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${nine},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${nine},1,6) AS TIME from DUAL  
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${ten}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${ten}) AND a.MONAT = MONTH(${ten}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${ten}) = 2015 AND MONTH(${ten}) >=4,201504,CONCAT(YEAR(${ten})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${ten}) = 2015 AND MONTH(${ten}) >=4,201504,CONCAT(YEAR(${ten})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${ten},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${ten},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${ten},1,6) AS TIME from DUAL  
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${eleven}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${eleven}) AND a.MONAT = MONTH(${eleven}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${eleven}) = 2015 AND MONTH(${eleven}) >=4,201504,CONCAT(YEAR(${eleven})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${eleven}) = 2015 AND MONTH(${eleven}) >=4,201504,CONCAT(YEAR(${eleven})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${eleven},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${eleven},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${eleven},1,6) AS TIME from DUAL  
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${twelve}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${twelve}) AND a.MONAT = MONTH(${twelve}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${twelve}) = 2015 AND MONTH(${twelve}) >=4,201504,CONCAT(YEAR(${twelve})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${twelve}) = 2015 AND MONTH(${twelve}) >=4,201504,CONCAT(YEAR(${eleven})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${twelve},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${twelve},1,6) AND FLAG = 'SC') 
+		)/2)),1) AS days,SUBSTR(${twelve},1,6) AS TIME from DUAL  
+		
+		UNION ALL
+		SELECT round(((360*MONTH(${thirteen}))/12)/((SELECT a.ZYYCB - sum(b.ZYYCB) - sum(b.ZGSJY) as ZYYCB FROM MDM_B485 a,MDM_B485 b WHERE a.GJAHR = b.GJAHR and a.MONAT = b.MONAT and a.GJAHR = YEAR(${thirteen}) AND a.MONAT = MONTH(${thirteen}) AND a.ZTYP = 1 and b.ZTYP = 3)/(
+		(
+		  (SELECT  STOCK_MONEY  AS BWMNG_SUM  FROM THM_KPI1516_1721_02   WHERE  YEARMONTH = IF(YEAR(${thirteen}) = 2015 AND MONTH(${thirteen}) >=4,201504,CONCAT(YEAR(${thirteen})-1,"12")) AND FLAG = 'SC')+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = IF(YEAR(${thirteen}) = 2015 AND MONTH(${thirteen}) >=4,201504,CONCAT(YEAR(${thirteen})-1,"12")))+
+		  (SELECT IFNULL(SUM(BALANCE),0)AS BALANCE FROM THM_FAGLFLEXT_01 WHERE  concat(substring(fiscper,1,4),substring(fiscper,6,2)) = SUBSTR(${thirteen},1,6))+
+		  (SELECT STOCK_MONEY FROM THM_KPI1516_1721_02  WHERE YEARMONTH = SUBSTR(${thirteen},1,6) AND FLAG = 'SC')  
+		)/2)),1) AS days,SUBSTR(${thirteen},1,6) AS TIME from DUAL  
+		 ]]>
+    </select>	
+    <resultMap id="detailFirst" type="com.yjdj.view.core.entity.mybeans.THM_KIP1516_01">
+        <result column="val_class" property="val_class" jdbcType="VARCHAR" />
+        <result column="workshop_sum" property="workshop_sum" jdbcType="DOUBLE" />
+        <result column="order_sum" property="order_sum" jdbcType="DOUBLE" />
+        
+        <result column="ordertype" property="ordertype" jdbcType="VARCHAR" />
+        <result column="auart" property="auart" jdbcType="VARCHAR" />
+        <result column="comp_name" property="comp_name" jdbcType="VARCHAR" />
+        
+        <result column="al_s" property="al_s" jdbcType="DOUBLE" />
+        <result column="wdtal_s" property="wdtal_s" jdbcType="DOUBLE" />
+        <result column="one_s" property="one_s" jdbcType="DOUBLE" />
+        <result column="two_s" property="two_s" jdbcType="DOUBLE" />
+        <result column="three_s" property="three_s" jdbcType="DOUBLE" />
+    </resultMap>
+    <!-- 订单在产金额,车间仓材料总金额 ，一级钻取，传入具体月份-->
+	
+    <select id="getFirstDetail" resultMap="detailFirst" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP1516_01">
+	<![CDATA[ 	
+	 select round(t.order_sum,2) as order_sum,
+	  round(h.workshop_sum,2) as workshop_sum,t.dt  from 
+    (SELECT IFNULL(SUM( BALANCE),0)AS  order_sum,'${yearmonth}'  as dt   FROM THM_FAGLFLEXT_01 WHERE concat(substring(fiscper,1,4),substring(fiscper,6,2))  = '${yearmonth}' )  t
+    join 
+     (SELECT STOCK_MONEY as workshop_sum,'${yearmonth}'  as dt   FROM THM_KPI1516_1721_02  WHERE YEARMONTH = '${yearmonth}' AND FLAG = 'SC')  h 
+     on t.dt = h.dt  
+	]]> 
+    </select>
+	
+    <!-- 车间仓评估类二级下钻-->
+    <select id="getVClassShopDetail" resultMap="detailFirst" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP1516_01">
+	<![CDATA[ 	
+		SELECT
+			round(tt.workshop_sum, 2) AS workshop_sum,
+			m.txtmd,
+			tt.val_class
+		FROM
+			(
+				SELECT
+					t.val_class,
+					STOCK_MONEY AS workshop_sum
+				FROM
+					THM_KPI1516_1721_04 t
+				WHERE
+					t.YEARMONTH = '${yearmonth}'
+			) tt
+		LEFT JOIN MDM_TVAL_CLASS m ON tt.val_class = m.val_class
+		UNION ALL
+			SELECT
+				round(SUM(STOCK_MONEY), 2) AS workshop_sum,
+				"合计",
+				""
+			FROM
+				THM_KPI1516_1721_04 t
+			WHERE
+				t.YEARMONTH = '${yearmonth}';
+
+	]]>
+    </select>
+	
+	
+    <!-- 订单在产下钻2层-订单分类-->
+    <select id="getOrderDetail" resultMap="detailFirst" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP1516_01">
+	<![CDATA[ 	
+            SELECT
+		a.ordertype,
+		a.order_sum,
+		a.auart
+            FROM
+                (
+                SELECT
+                    t.auart,
+                    CASE t.auart 
+                    WHEN 'ZXXX' THEN '在产订单差异'
+                    WHEN 'ZZZZ' THEN '未指定订单'
+                    ELSE m.txtmd 
+                    END ordertype,
+                    sum(t.dmbtr) AS order_sum
+                FROM
+                    THM_BSIS_02 t
+                LEFT JOIN MDM_TORD_TYP m ON m.ORD_TYP = t.AUART
+                WHERE
+                    t.yearMonth <= '${yearmonth}'
+                GROUP BY
+                    t.AUART
+                UNION ALL 
+                SELECT
+                    "" auart,
+                    "合计" ordertype,
+                    round(sum(t.dmbtr),2) AS order_sum
+                FROM
+                    THM_BSIS_02 t
+                WHERE
+                    t.yearMonth <= '${yearmonth}'
+                ) a
+            ORDER BY
+                a.order_sum DESC;
+	]]>
+    </select>
+	
+	
+	
+    <!-- 车间仓材料无动态下钻 -->
+    <select id="getWuDongTaiDetail" resultMap="detailFirst" resultType="com.yjdj.view.core.entity.mybeans.THM_KIP1516_01">
+	<![CDATA[ 	
+	   select  all_sum.COMP_CODE,all_sum.TXTMD,all_sum.VAL_CLASS,all_sum.al_s as wdtal_s,one_sum.one_s,two_sum.two_s,three_sum.three_s  from 
+			(
+			  select   COMP_CODE, TXTMD,VAL_CLASS,round(sum(IFNULL(BWMNG_SUM,0.00)) ,2)  as al_s from   THM_KPI1721_06   where   fiscper='201602'  and   STCOU>'180'  group by COMP_CODE, TXTMD,VAL_CLASS    
+			)   all_sum 
+			left join 
+			(
+			  select   COMP_CODE, TXTMD,VAL_CLASS,round(sum(IFNULL(BWMNG_SUM,0.00)) ,2)  as one_s from   THM_KPI1721_06   where fiscper='201602'  and  STCOU>'180'  and STCOU<='360'  group by COMP_CODE, TXTMD,VAL_CLASS    
+			)   one_sum   
+			  on  all_sum.COMP_CODE = one_sum.COMP_CODE  and   all_sum.VAL_CLASS = one_sum.VAL_CLASS 
+			left join 
+			(
+			  select   COMP_CODE, TXTMD,VAL_CLASS,round(sum(IFNULL(BWMNG_SUM,0.00)) ,2)  as two_s  from   THM_KPI1721_06   where fiscper='201602'  and  STCOU>'360'  and STCOU<='720'  group by COMP_CODE, TXTMD,VAL_CLASS    
+			)   two_sum   
+			  on  all_sum.COMP_CODE = two_sum.COMP_CODE  and   all_sum.VAL_CLASS = two_sum.VAL_CLASS 
+			left join 
+			(
+			  select   COMP_CODE, TXTMD,VAL_CLASS,round(sum(IFNULL(BWMNG_SUM,0.00)) ,2)  three_s  from   THM_KPI1721_06   where  fiscper='201602'  and   STCOU>'720'    group by COMP_CODE, TXTMD,VAL_CLASS    
+			)   three_sum   
+			  on  all_sum.COMP_CODE = three_sum.COMP_CODE  and   all_sum.VAL_CLASS = three_sum.VAL_CLASS     
+		 ]]>
+    </select> 
+	
+    <!-- 过质保下钻 -->
+    <select id="getGuoZhiBaoDetail"  resultType="com.yjdj.view.core.entity.mybeans.THM_KIP1516_01">
+	<![CDATA[
+	    Select MATNR, sum(IFNULL(BWMNG_SUM,0)) as zyjy from THM_KPI1721_06 where CHARG!=' ' and CHARG!=''    
+	     and VFDAT<'${date}' group by MATNR ORDER BY zyjy desc  
+	]]>
+    </select>
+	
+    <!-- 订单在产资金下钻 -->
+	
+	
+</mapper>
+

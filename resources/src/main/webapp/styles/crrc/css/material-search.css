@@ -1,0 +1,199 @@
+.content-page{
+	position: relative;
+}
+
+.searchBox_first{
+	width: 500px;
+	margin: 0 50px;
+}
+.searchBox_first tr{
+	height: 50px;
+}
+.button{
+	float: right;
+}
+.button button{
+	margin-right: 20px;
+}
+.closeBtn{
+	float: right;
+	margin-right: 20px;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+/*涓夌骇寮瑰嚭妗�*/
+.smallMask{
+	width: 290px;
+	background: #fff;
+	border: 1px solid #666;
+	position: absolute;
+	right: 0px;
+	top: 20px;
+	 display: none; 
+}
+.searchBox_second{
+	width: 250px;
+	margin-left: 25px;
+}
+.searchBox_second tr{
+	height: 50px;
+}
+
+
+
+.tabMask{
+	width: 400px;
+	background: #ccc;
+	position: absolute;
+	left: 305px;
+	top: 80px;
+	/**/display: none;
+}
+.tabMask ul{
+	height: 31px;
+	padding: 0;
+	border-bottom: 1px solid #999;
+	margin-bottom:0;
+}
+.tabMask li{
+	list-style: none;
+	line-height: 30px;
+	height: 30px;
+	float: left;
+	width: 30%;
+	padding-left: 5%;
+	
+	border-right: 1px solid #999;
+}
+.tabMask .bg{
+	background: #2894FF;
+}
+.multiBox{
+	width: 300px;
+	margin-left: 50px;
+
+}
+.multiBox p{
+	margin-top: 8px;
+
+}
+
+.tabMask tr{
+	height: 30px; 
+}
+
+.multiValued{
+	width: 300px;
+	height: auto;
+	
+	/*margin-left: 50px;*/
+}
+.multiValued th,.multiValued td{
+	text-align: center;
+}
+.cancel{
+	margin-right: 10px;
+}
+.multiBoxThird{
+	width: 400px;
+	height: auto;
+	background: #999;
+	padding: 25px;
+	position: absolute;
+	left: 600px;
+	top: 130px;
+	display: none;
+}
+.multiBoxThird p input{
+	width: 100px;
+
+}
+.multiBoxThird p a{
+	display: inline-block;
+	padding: 5px;
+}
+.multiValInterval{
+	width: 300px;
+	height: auto;
+}
+
+.intervalBox{
+	float: left;
+	width: 300px;
+	margin-left: 50px;
+	display: none;
+}
+.intervalBox p{
+	margin-top: 10px;
+}
+.sureInterval{
+	text-align: center;
+	padding-top: 80px;
+}
+.intervalBox input{
+	width: 50px;
+}
+.ch-kp-bb{
+	text-align: center;
+}
+.ch-kp-bb th{
+	text-align: center;
+}
+.multiBoxChoice{
+	width: 300px;
+	background: #999;
+	position: absolute;
+	left: 48px;
+	top: 75px;
+	display: none;
+}
+.multiBoxChoice table{
+	width: 260px;
+	margin-left: 20px;
+}
+/*閮ㄩ棬鍜岀粍缁囧鏀煡璇㈢涓�涓脊鍑烘*/
+.maskBox,.maskBox1{
+	width: 380px;
+	/*height: 300px;*/
+	background:#ccc;
+	/**/display: none;
+	position: absolute;
+	left: 320px;
+	top: 84px;
+	padding: 30px;
+
+}
+
+
+/*瀛樿揣-寮�绁�-琛ㄦ牸*/
+.ch-kp-bb,.ch-kp-bb th{
+	text-align: center;
+}
+.ch-kp-bb {
+	display: none;
+	border:none;
+	border-collapse:collapse;
+	font-size: 16px;
+	line-height: 30px;
+}
+.ch-kp-bb thead,.ch-kp-bb tbody {
+	border: 1px solid #000;
+}
+/*澶氬尯闂�*/
+.intervalTwo {
+	position: absolute;
+	top: 30px;
+	left: 600px;
+	width: 380px;
+	background-color: #ccc;
+	padding: 30px;
+	display: none;
+
+}
+.intervalTwo table,.intervalTwo table th {
+	width: 300px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+}

@@ -1,0 +1,23 @@
+大数据分析平台
+
+http://www.mstardata.com/xyzh/login             账号和密码  ci 123456
+http://192.168.188.25/resources  		账号 admin    密码  123456
+
+
+dwz框架学习 网址   http://jui.org/ 
+
+/rest/src/main/java/com/yjdj/view/rest/controller/security/IndexController.java  跳转到登录页面              login(){}
+/rest/src/main/java/com/yjdj/view/rest/controller/security/IndexController.java  登陆成功后首页跳转  	public String index(HttpServletRequest request) {
+
+/core/src/main/java/com/yjdj/view/core/web/shiro/ShiroDbRealm.java  用户名账号验证
+
+UserDAO.findByUsername()  验证账号
+
+
+
+
+/view/core/src/main/java/com/yjdj/view/core/web/service/impl/UserServiceImpl.java 位置
+
+在登录页面上的提交  直接进行shiro的验证了 不走/rest/src/main/java/com/yjdj/view/rest/controller/security/IndexController.java了
+成功后跳转到首页
+ 

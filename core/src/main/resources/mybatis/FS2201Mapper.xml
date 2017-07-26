@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS22">
+
+	<resultMap id="fs22" type="com.yjdj.view.core.entity.mybeans.THM_FS22_01">
+		<result column="aufnr" property="aufnr" jdbcType="VARCHAR" />
+		<result column="auart" property="auart" jdbcType="VARCHAR" />
+		<result column="ktext" property="ktext" jdbcType="VARCHAR" />
+		<result column="bukrs" property="bukrs" jdbcType="VARCHAR" />
+		<result column="all_buget" property="all_buget" jdbcType="DOUBLE" />
+		<result column="bef_years_cost" property="bef_years_cost" jdbcType="DOUBLE" />
+		<result column="bug_aufnr" property="bug_aufnr" jdbcType="VARCHAR" />
+		<result column="wtjhv" property="wtjhv" jdbcType="DOUBLE" />
+		<result column="peroid_cost" property="peroid_cost" jdbcType="DOUBLE" />
+		<result column="curr_year_cost" property="curr_year_cost" jdbcType="DOUBLE" />
+		<result column="1_cl" property="cailiao" jdbcType="DOUBLE" />
+		<result column="2_rl" property="ranliao" jdbcType="DOUBLE" />
+		<result column="3_dl" property="dongli" jdbcType="DOUBLE" />
+		<result column="4_gz" property="rengong" jdbcType="DOUBLE" />
+		<result column="5_zj" property="zhejiu" jdbcType="DOUBLE" />
+		<result column="6_wx" property="wuxingzichan" jdbcType="DOUBLE" />
+		<result column="7_gj" property="gongju" jdbcType="DOUBLE" />
+		<result column="8_sy" property="shiyan" jdbcType="DOUBLE" />
+		<result column="9_jd" property="jianding" jdbcType="DOUBLE" />
+		<result column="10_zl" property="zhuanli" jdbcType="DOUBLE" />
+		<result column="11_js" property="jishu" jdbcType="DOUBLE" />
+		<result column="12_zr" property="zhuanrang" jdbcType="DOUBLE" />
+		<result column="13_zl" property="ziliao" jdbcType="DOUBLE" />
+		<result column="14_cl" property="chailv" jdbcType="DOUBLE" />
+		<result column="15_bg" property="bangong" jdbcType="DOUBLE" />
+		<result column="16_xl" property="xiuli" jdbcType="DOUBLE" />
+		<result column="17_ot" property="qita" jdbcType="DOUBLE" />
+	</resultMap>
+
+<!-- 研发费用一级明细 -->
+<select id="getYanFaCost" parameterType="map" resultMap="fs22"  resultType="com.yjdj.view.core.entity.mybeans.THM_FS22_01">
+    CALL FS22 (${start_date},${end_date},${order_type},${compCodeValue},${inner_order},${offset},${rowcount})
+
+</select>
+
+<!-- 研发费用二级明细 -->
+<resultMap id="fs2202" type="com.yjdj.view.core.entity.mybeans.THM_FS22_02">
+		<result column="aufnr" property="aufnr" jdbcType="VARCHAR" />
+		<result column="all_detail" property="all_detail" jdbcType="VARCHAR" />
+</resultMap>
+
+<sql id="selectColumnsSecond">
+	    <![CDATA[ select  t1.AUFNR,GROUP_CONCAT(t1.id_BYHM) as all_detail from (
+          select   t.AUFNR ,concat(t.KSTAR,'#',round(sum(t.BYHM),2))  as  id_BYHM from  THM_FS22_01  t 
+          ]]>
+</sql>
+
+<sql id="where_fragementSecond">
+	<![CDATA[where t.AUFNR='${aufnr}' and t.FISCPER>='${start_date}' and t.FISCPER<='${end_date}' ]]>
+	<if test="(bukrs != null and bukrs != '')">
+				<![CDATA[  and t.BUKRS='${bukrs}'
+				]]>
+    </if>
+</sql>
+<sql id="group_by_fragementSecond">
+<!--  limit ${offset},${rowcount} -->
+  <![CDATA[group by t.AUFNR ,t.cost_type,t.KSTAR order by t.KSTAR)  t1 group by t1.AUFNR]]>
+</sql>
+
+<select id="getYanFaCostDetail" resultMap="fs2202" resultType="com.yjdj.view.core.entity.mybeans.THM_FS22_02">
+	<include refid="selectColumnsSecond" />
+	<include refid="where_fragementSecond" />
+	<include refid="group_by_fragementSecond" />
+</select>
+
+<!-- 查询二级明细费用代码 -->
+
+<sql id="selectColumns_SecondDetailCode">
+	    <![CDATA[ select t.id,t.description,t.column_EX from  MDM_SECOND_COST t  order by t.column_EX]]>
+</sql>
+
+<resultMap id="fsSecondCode" type="com.yjdj.view.core.entity.mybeans.MdmSecondCost">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="column_EX" property="column_ex" jdbcType="INTEGER" />
+</resultMap>
+
+<select id="getSecondCostCode" resultMap="fsSecondCode" resultType="com.yjdj.view.core.entity.mybeans.MdmSecondCost">
+	<include refid="selectColumns_SecondDetailCode" />
+</select>
+
+<!-- 模糊查询所有内部订单 -->
+<select id="getInnerOrder" parameterType="map" resultType="java.lang.String">
+        <![CDATA[ select distinct
+                AUFNR from  THM_FS22_01
+                t  WHERE t.AUART='Z002' ]]>
+                <if test="aufnr != null and aufnr != ''">
+                  <![CDATA[and t.AUFNR like "%${aufnr}%" ]]>
+                </if>
+                  <![CDATA[  ORDER BY AUFNR]]>
+</select>
+
+<!-- 查询当前项目号的权限 -->
+<select id="getAuth" parameterType="map" resultType="java.lang.String">
+ <![CDATA[ select distinct  a.bukrs from   THM_FS22_01 a  where a.aufnr='${aufnr}']]>
+</select>
+
+<!-- 数据导入 -->
+<insert id="saveOrUpdateData" >
+     <selectKey keyProperty="count" resultType="int" order="BEFORE">
+         select count(*) from THM_FS22_04 where  aufnr = '${aufnr}' and impdate = '${impdate}'
+     </selectKey>
+     <if test="count > 0">
+        UPDATE THM_FS22_04
+         <set>
+            curr_year_buget = ${curr_year_buget},before_year_cost = ${before_year_cost}
+         </set>
+            where  aufnr = '${aufnr}' and impdate = '${impdate}'
+     </if>
+     <if test="count==0">
+         insert into THM_FS22_04(aufnr,impdate,curr_year_buget,before_year_cost) values('${aufnr}','${impdate}',${curr_year_buget},${before_year_cost})
+     </if>
+</insert>
+
+
+</mapper>

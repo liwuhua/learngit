@@ -1,0 +1,160 @@
+﻿BEGIN
+DECLARE selectColumns VARCHAR (512);
+DECLARE total18 VARCHAR (512);
+DECLARE total20 VARCHAR (512);
+
+SET selectColumns = CONCAT(' AND FISCPER >=',ymStart,' AND FISCPER <=',ymEnd);
+
+IF 'lastYear' = p_year THEN
+	-- 18
+select sum(if(b.lastyeardmbtr  is null,IFNULL(thisDMBTR, 0),IFNULL(b.lastyeardmbtr, 0)))  into total18
+from   (SELECT sum(DMBTR) thisDMBTR, BUKRS, CONCAT(SUBSTRing(FISCPER,1,4), SUBSTRing(FISCPER,6,7)) FISCPER
+           FROM THM_FS09_01
+           WHERE FKBER in (5101,5001) AND HKONT='5000170000'  AND FISCPER BETWEEN ymStart AND ymEnd
+           GROUP BY BUKRS, FISCPER) a
+           LEFT JOIN THM_IMP_FS09 b on a.BUKRS = b.COMCODE and a.FISCPER = b.STARTYEARMONTH and b.itemno = 18;
+        -- 20
+select sum(if(b.lastyeardmbtr  is null,IFNULL(thisDMBTR, 0),IFNULL(b.lastyeardmbtr, 0)))  into total20
+from   (SELECT sum(DMBTR) thisDMBTR, BUKRS, CONCAT(SUBSTRing(FISCPER,1,4), SUBSTRing(FISCPER,6,7)) FISCPER
+           FROM THM_FS09_01
+           WHERE FKBER in (5101,5001) AND HKONT='5000190000'  AND FISCPER BETWEEN ymStart AND ymEnd
+           GROUP BY BUKRS, FISCPER) a
+           LEFT JOIN THM_IMP_FS09 b on a.BUKRS = b.COMCODE and a.FISCPER = b.STARTYEARMONTH  and b.itemno = 20;
+
+ELSE
+	-- 18
+select sum(if(b.thisyeardmbtr  is null,IFNULL(thisDMBTR, 0),IFNULL(b.thisyeardmbtr, 0)))  into total18
+from   (SELECT sum(DMBTR) thisDMBTR, BUKRS, CONCAT(SUBSTRing(FISCPER,1,4), SUBSTRing(FISCPER,6,7)) FISCPER
+           FROM THM_FS09_01
+           WHERE FKBER in (5101,5001) AND HKONT='5000170000'  AND FISCPER BETWEEN ymStart AND ymEnd
+           GROUP BY BUKRS, FISCPER) a
+           LEFT JOIN THM_IMP_FS09 b on a.BUKRS = b.COMCODE and a.FISCPER = b.STARTYEARMONTH  and b.itemno = 18;
+        -- 20
+select sum(if(b.thisyeardmbtr  is null,IFNULL(thisDMBTR, 0),IFNULL(b.thisyeardmbtr, 0)))  into total20
+from   (SELECT sum(DMBTR) thisDMBTR, BUKRS, CONCAT(SUBSTRing(FISCPER,1,4), SUBSTRing(FISCPER,6,7)) FISCPER
+           FROM THM_FS09_01
+           WHERE FKBER in (5101,5001) AND HKONT='5000190000'  AND FISCPER BETWEEN ymStart AND ymEnd
+           GROUP BY BUKRS, FISCPER) a
+           LEFT JOIN THM_IMP_FS09 b on a.BUKRS = b.COMCODE and a.FISCPER = b.STARTYEARMONTH  and b.itemno = 20;
+END IF;
+
+IF compCodeValue is not null and length(trim(compCodeValue)) > 0 then
+	SET selectColumns = CONCAT(' AND find_in_set(BUKRS,',"'",compCodeValue,"')",selectColumns);
+
+	IF 'lastYear' = p_year THEN
+	-- 18   into total18
+	select sum(if(b.lastyeardmbtr  is null,IFNULL(thisDMBTR, 0),IFNULL(b.lastyeardmbtr, 0)))  into total18
+	from   (SELECT sum(DMBTR) thisDMBTR, BUKRS, CONCAT(SUBSTRing(FISCPER,1,4), SUBSTRing(FISCPER,6,7)) FISCPER
+						 FROM THM_FS09_01
+						 WHERE FKBER in (5101,5001) AND HKONT='5000170000'  AND FISCPER BETWEEN ymStart AND ymEnd AND FIND_IN_SET(BUKRS,compCodeValue)
+						 GROUP BY BUKRS, FISCPER) a
+						 LEFT JOIN THM_IMP_FS09 b on a.BUKRS = b.COMCODE and a.FISCPER = b.STARTYEARMONTH  and b.itemno = 18;
+					-- 20
+	select sum(if(b.lastyeardmbtr  is null,IFNULL(thisDMBTR, 0),IFNULL(b.lastyeardmbtr, 0)))  into total20
+	from   (SELECT sum(DMBTR) thisDMBTR, BUKRS, CONCAT(SUBSTRing(FISCPER,1,4), SUBSTRing(FISCPER,6,7)) FISCPER
+						 FROM THM_FS09_01
+						 WHERE FKBER in (5101,5001) AND HKONT='5000190000'  AND FISCPER BETWEEN ymStart AND ymEnd AND FIND_IN_SET(BUKRS,compCodeValue)
+						 GROUP BY BUKRS, FISCPER) a
+						 LEFT JOIN THM_IMP_FS09 b on a.BUKRS = b.COMCODE and a.FISCPER = b.STARTYEARMONTH  and b.itemno = 20;
+	ELSE
+		-- 18
+	select sum(if(b.thisyeardmbtr  is null,IFNULL(thisDMBTR, 0),IFNULL(b.thisyeardmbtr, 0)))  into total18
+	from   (SELECT sum(DMBTR) thisDMBTR, BUKRS, CONCAT(SUBSTRing(FISCPER,1,4), SUBSTRing(FISCPER,6,7)) FISCPER
+						 FROM THM_FS09_01
+						 WHERE FKBER in (5101,5001) AND HKONT='5000170000'  AND FISCPER BETWEEN ymStart AND ymEnd AND FIND_IN_SET(BUKRS,compCodeValue)
+						 GROUP BY BUKRS, FISCPER) a
+						 LEFT JOIN THM_IMP_FS09 b on a.BUKRS = b.COMCODE and a.FISCPER = b.STARTYEARMONTH  and b.itemno = 18;
+					-- 20
+	select sum(if(b.thisyeardmbtr  is null,IFNULL(thisDMBTR, 0),IFNULL(b.thisyeardmbtr, 0)))  into total20
+	from   (SELECT sum(DMBTR) thisDMBTR, BUKRS, CONCAT(SUBSTRing(FISCPER,1,4), SUBSTRing(FISCPER,6,7)) FISCPER
+						 FROM THM_FS09_01
+						 WHERE FKBER in (5101,5001) AND HKONT='5000190000'  AND FISCPER BETWEEN ymStart AND ymEnd AND FIND_IN_SET(BUKRS,compCodeValue)
+						 GROUP BY BUKRS, FISCPER) a
+						 LEFT JOIN THM_IMP_FS09 b on a.BUKRS = b.COMCODE and a.FISCPER = b.STARTYEARMONTH  and b.itemno = 20;
+	END IF;
+END IF;
+
+
+set @ex_sql = CONCAT('SELECT DISTINCT (SELECT  SUM(DMBTR) FROM THM_FS09_01  WHERE FKBER=5101  AND  HKONT=5000160100',selectColumns,') AS  "3",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160212',selectColumns,') AS "4",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160401',selectColumns,') AS "5",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160405',selectColumns,') AS "6",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160402',selectColumns,') AS "7",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160403',selectColumns,') AS "8",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160404',selectColumns,') AS "9",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160407',selectColumns,') AS "10",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160406',selectColumns,') AS "11",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160801',selectColumns,') AS "12",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160600',selectColumns,') AS "14",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160500',selectColumns,') AS "15",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER in (5101,5001) AND HKONT in (5000210100,5000010100,5000020100,5000030100,5000040100,5000050100,5000060100)',selectColumns,') AS "21",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000220400',selectColumns,') AS "22",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT IN (5000240100,5000240200,5000241200)  ',selectColumns,') AS "25",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000250100',selectColumns,') AS "26",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000260100',selectColumns,') AS "27",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000270000',selectColumns,') AS "28",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT IN (5000280000,5000220200)  ',selectColumns,') AS "29",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER=5101 AND HKONT=5000160700',selectColumns,') AS "30",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000290000',selectColumns,') AS "31",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000300000',selectColumns,') AS "32",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000330000',selectColumns,') AS "33",
+(SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000990000',selectColumns,') AS "35"
+	INTO @v_03,@v_04,@v_05,@v_06,@v_07,@v_08,@v_09,@v_10,@v_11,@v_12,@v_14,@v_15,
+@v_21,@v_22,@v_25,@v_26,@v_27,@v_28,@v_29,@v_30,@v_31,@v_32,@v_33,@v_35
+	FROM THM_FS09_01');
+
+#预处理需要执行的动态SQL，其中stmt是一个变量
+PREPARE stmt
+FROM
+	@ex_sql;
+
+#执行SQL语句
+EXECUTE stmt;#释放掉预处理段
+DEALLOCATE PREPARE stmt;
+
+IF b THEN
+set @ex_sql = CONCAT('SELECT SUM(DMBTR) into @temp FROM THM_FS09_01 WHERE FKBER IN (5101,5001) AND HKONT=5000190000 AND BUKRS IN (5004,5005)  ',' AND FISCPER >=',ymStart,' AND FISCPER <=',ymEnd);
+#预处理需要执行的动态SQL，其中stmt是一个变量
+PREPARE stmt
+FROM
+	@ex_sql;
+#执行SQL语句
+EXECUTE stmt;#释放掉预处理段
+DEALLOCATE PREPARE stmt;
+set @v_18 = total18+@temp;
+set @v_20 = total20-@temp;
+END IF;
+
+SET @v_02 = IFNULL(@v_03,0)+IFNULL(@v_04,0)+IFNULL(@v_05,0)+IFNULL(@v_06,0)+IFNULL(@v_07,0)+IFNULL(@v_08,0)+IFNULL(@v_09,0)+IFNULL(@v_10,0)+IFNULL(@v_11,0)+IFNULL(@v_12,0)+IFNULL(@v_14,0)+IFNULL(@v_15,0);
+SET @v_01 = IFNULL(@v_02,0)+IFNULL(@v_18,0)+IFNULL(@v_20,0)+IFNULL(@v_21,0)+IFNULL(@v_22,0)+IFNULL(@v_25,0)+IFNULL(@v_26,0)+IFNULL(@v_27,0)+IFNULL(@v_28,0)+IFNULL(@v_29,0)+IFNULL(@v_30,0)+IFNULL(@v_31,0)+IFNULL(@v_32,0)+IFNULL(@v_33,0)+IFNULL(@v_35,0);
+select 	@v_01 as '1',
+		@v_02 as '2',
+		@v_03 as '3',
+	  	@v_04 as '4',
+		@v_05 as '5',
+		@v_06 as '6',
+		@v_07 as '7',
+	  	@v_08 as '8',
+		@v_09 as '9',
+		@v_10 as '10',
+		@v_11 as '11',
+	  	@v_12 as '12',
+		@v_14 as '14',
+		@v_15 as '15',
+		@v_18 as '18',
+	        @v_20 as '20',
+		@v_21 as '21',
+		@v_22 as '22',
+		@v_25 as '25',
+	  	@v_26 as '26',
+		@v_27 as '27',
+		@v_28 as '28',
+		@v_29 as '29',
+	  	@v_30 as '30',
+		@v_31 as '31',
+		@v_32 as '32',
+		@v_33 as '33',
+	  	@v_35 as '35'
+from DUAL;
+
+END

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yjdj.view.core.mapper.CodeTypeMapper">
+	<resultMap id="CodeType" type="com.yjdj.view.core.entity.mybeans.CodeType" />
+	<!-- 添加元数据类型 -->
+	<insert id="save">
+        <![CDATA[
+			INSERT INTO t_sys_code_type
+				(id,
+				ename,
+				name,
+				codeLength,
+				description,
+				parentId
+				) 
+			VALUES 
+				(
+				#{id},
+				#{ename},
+				#{name},
+				#{codeLength},
+				#{description},
+				#{parentId}
+			)  
+        ]]>
+	</insert>
+
+	<!-- 修改元数据类型信息 -->
+	<update id="update">
+        <![CDATA[
+			UPDATE t_sys_code_type
+			SET ename=#{ename},
+				name=#{name},
+				description=#{description},
+				codeLength=#{codeLength},
+				parentId=#{parentId}
+			WHERE id=#{id}
+        ]]>
+	</update>
+
+	<!-- 根据id获取元数据 -->
+	<select id="getCodeTypeById" resultType="CodeType">
+        <![CDATA[
+       		SELECT *
+			FROM t_sys_code_type 
+       		WHERE id=#{id}
+        ]]>
+	</select>
+
+	<!-- 根据id删除元数据 -->
+	<delete id="delete">
+     <!--
+         <![CDATA[
+        	DELETE FROM t_sys_code_type 
+        	WHERE id=#{id}
+        ]]> -->
+        
+        update t_sys_code_type set  isDeleted=1   WHERE id=#{id} 
+           
+	</delete>
+
+	<!-- 取得所有的元数据类型 -->
+	<select id="getAllCodeType" resultType="CodeType" >
+		<!-- SELECT *  FROM t_sys_code_type -->   
+		<!-- 不包括逻辑删除的 0 -->
+		<if test="indentify==0 ">
+			<![CDATA[ SELECT *  FROM t_sys_code_type where isDeleted=0 ]]>
+		</if>
+	    
+	    	<!-- 不包括逻辑删除的 1 -->
+		<if test="indentify==1">
+			SELECT *  FROM t_sys_code_type 
+		</if>
+		
+        <!-- 不包括逻辑删除的及本级和父级 -->
+		<if test="indentify==2">  
+		
+		 <if test="parentId!=null">
+		    SELECT *  FROM t_sys_code_type where id not in (#{parentId},#{codeTypeId}) and isDeleted=0;
+		 
+		 </if>
+		
+		 <if test="parentId==null">
+		 
+		    SELECT *  FROM t_sys_code_type where id is not #{parentId} and  id!=#{codeTypeId} and isDeleted=0; 
+		
+		 </if>
+             
+		
+		</if>
+
+	</select>
+	
+	
+</mapper>

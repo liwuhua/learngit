@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS14">
+    <!--库存状态-->
+    <select id="getSttyp" resultType="java.lang.String">
+        <![CDATA[ SELECT DISTINCT sttyp FROM THM_STOCK_07 where 1=1]]>
+        <if test="sttyp != null and sttyp != ''">
+            <![CDATA[ AND sttyp LIKE "%${sttyp}%" ]]>
+        </if>
+    </select>
+    <!--特殊库存标识-->
+    <select id="getSobkz" resultType="java.lang.String">
+        <![CDATA[ SELECT DISTINCT sobkz FROM THM_STOCK_07 where 1=1]]>
+        <if test="sobkz != null and sobkz != ''">
+            <![CDATA[ AND sobkz LIKE "%${sobkz}%" ]]>
+        </if>
+    </select>
+    <!--管库员-->
+    <select id="getLgpbe" resultType="java.lang.String">
+        <![CDATA[ SELECT DISTINCT LGPBE FROM THM_STOCK_07 where 1=1]]>
+        <if test="lgpbe != null and lgpbe != ''">
+            <![CDATA[ AND LGPBE LIKE "%${lgpbe}%" ]]>
+        </if>
+    </select>
+
+    <sql id="condition">
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+        <!-- 物料多值与多区间 -->
+        <if test="matnrValue != null and matnrValue.size != 0">
+            <![CDATA[ and MATNR in]]>
+            <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="matnrInterval != null and matnrInterval.size != 0">
+            <foreach collection="matnrInterval" index="index" item="item">
+                <!--#{item}-->
+                <foreach collection="item" index="start"  item="end" separator="union">
+                    OR MATNR BETWEEN #{start} AND #{end}
+                </foreach>
+            </foreach>
+        </if>
+        <![CDATA[ and 1=1)]]>
+        <!-- 工厂 -->
+        <if test="plantValue != null and plantValue.size != 0">
+            <![CDATA[ and WERKS in]]>
+            <foreach collection="plantValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 库存地点 -->
+        <if test="lgortValue != null and lgortValue.size != 0">
+            <![CDATA[ and LGORT in]]>
+            <foreach collection="lgortValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 管库员 -->
+        <if test="lgpbeValue != null and lgpbeValue.size != 0">
+            <![CDATA[ and LGPBE in]]>
+            <foreach collection="lgpbeValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 特殊库存标识 -->
+        <if test="sobkzValue != null and sobkzValue.size != 0">
+            <![CDATA[ and SOBKZ in]]>
+            <foreach collection="sobkzValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 库存状态 -->
+        <if test="sttypValue != null and sttypValue.size != 0">
+            <![CDATA[ and STTYP in]]>
+            <foreach collection="sttypValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 物料组 -->
+        <if test="matlGroupValue != null and matlGroupValue.size != 0">
+            <![CDATA[ and MATL_GROUP in]]>
+            <foreach collection="matlGroupValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 评估类 -->
+        <if test="valClassValue != null and valClassValue.size != 0">
+            <![CDATA[ and VAL_CLASS in]]>
+            <foreach collection="valClassValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <!-- 无动态日期 -->
+        <if test="startTime != null and startTime != ''">
+            <![CDATA[ and zjflrq < #{startTime}]]>
+        </if>
+
+        <![CDATA[ and BUDAT = #{dateTime}]]>
+        </trim>
+    </sql>
+
+    <sql id="limitPage">
+        <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+    </sql>
+
+    <select id="getDataFir" resultType="java.util.HashMap">
+        <![CDATA[ select DISTINCT WERKS,VAL_CLASS,VALTXT,MATNR,ARKTX,MATL_GROUP,TXTSH,LGORT,LOCTXT,LGPBE,MEINS,
+PRICE_BASE,MATPRICE,zjflrq,zjflsl,zjflje,qmkcsl,qmkcje,kcsl90,kcje90,kcsl180,kcje180,kcsl360,kcje360,
+kcsl720,kcje720,kcsl1080,kcje1080,kcsl1080s,kcje1080s from THM_STOCK_07 ]]>
+        <include refid="condition" />
+        <include refid="limitPage" />
+   </select>
+
+    <select id="getDataSec" resultType="java.util.HashMap">
+        <![CDATA[ select DISTINCT WERKS,VAL_CLASS,VALTXT,MATNR,ARKTX,MATL_GROUP,TXTSH,LGORT,LOCTXT,LGPBE,MEINS,
+PRICE_BASE,MATPRICE,SOBKZ,STTYP,zjflrq,zjflsl,zjflje,qmkcsl,qmkcje,kcsl90,kcje90,kcsl180,kcje180,kcsl360,kcje360,
+kcsl720,kcje720,kcsl1080,kcje1080,kcsl1080s,kcje1080s from THM_STOCK_07 ]]>
+        <include refid="condition" />
+        <include refid="limitPage" />
+    </select>
+
+
+    <select id="getSumDataFir" resultType="java.util.HashMap">
+        <![CDATA[ select DISTINCT sum(zjflje) as sum_zjflje,sum(qmkcje) as sum_qmkcje,sum(kcje90) as sum_kcje90,
+sum(kcje180) as sum_kcje180,sum(kcje360) as sum_kcje360,sum(kcje720) as sum_kcje720,
+sum(kcje1080) as sum_kcje1080,sum(kcje1080s) as sum_kcje1080s
+from  (select DISTINCT WERKS,VAL_CLASS,VALTXT,MATNR,ARKTX,MATL_GROUP,TXTSH,LGORT,LOCTXT,LGPBE,MEINS,
+PRICE_BASE,MATPRICE,zjflrq,zjflsl,zjflje,qmkcsl,qmkcje,kcsl90,kcje90,kcsl180,kcje180,kcsl360,kcje360,
+kcsl720,kcje720,kcsl1080,kcje1080,kcsl1080s,kcje1080s from THM_STOCK_07 ]]>
+        <include refid="condition" />
+        <![CDATA[ ) t ]]>
+    </select>
+
+    <select id="getSumDataSec" resultType="java.util.HashMap">
+        <![CDATA[ select DISTINCT sum(zjflje) as sum_zjflje,sum(qmkcje) as sum_qmkcje,sum(kcje90) as sum_kcje90,
+sum(kcje180) as sum_kcje180,sum(kcje360) as sum_kcje360,sum(kcje720) as sum_kcje720,
+sum(kcje1080) as sum_kcje1080,sum(kcje1080s) as sum_kcje1080s
+from  (select DISTINCT WERKS,VAL_CLASS,VALTXT,MATNR,ARKTX,MATL_GROUP,TXTSH,LGORT,LOCTXT,LGPBE,MEINS,
+PRICE_BASE,MATPRICE,SOBKZ,STTYP,zjflrq,zjflsl,zjflje,qmkcsl,qmkcje,kcsl90,kcje90,kcsl180,kcje180,kcsl360,kcje360,
+kcsl720,kcje720,kcsl1080,kcje1080,kcsl1080s,kcje1080s from THM_STOCK_07 ]]>
+        <include refid="condition" />
+        <![CDATA[ ) t ]]>
+    </select>
+
+</mapper>
+

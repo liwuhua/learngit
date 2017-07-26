@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yjdj.view.core.mapper.CodeInfoMapper">
+
+	<resultMap id="CodeInfo" type="com.yjdj.view.core.entity.mybeans.CodeInfo" />
+	<!-- 添加元数据 -->
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+			INSERT INTO t_sys_code
+				(codeTypeId,
+				code1,
+				code2,
+				code3,
+				code4,
+				name,
+				ename,
+				level,
+				stage,
+				reserve1,
+				reserve2,
+				reserve3,
+				reserve4,
+				reserve5,
+				extend,
+				descript,
+				isDeleted,
+				lastUpdateUser,
+				lastUpdateTime
+				) 
+			VALUES 
+				(
+				#{codeTypeId},
+				#{code1},
+				#{code2},
+				#{code3},
+				#{code4},
+				#{name},
+				#{ename},
+				#{level},
+				#{stage},
+				#{reserve1},
+				#{reserve2},
+				#{reserve3},
+				#{reserve4},
+				#{reserve5},
+				#{extend},
+				#{descript},
+				#{isDeleted},
+				#{lastUpdateUser},
+				#{lastUpdateTime}
+				)
+        ]]>
+	</insert>
+
+	<!-- 修改元数据信息 -->
+	<update id="update">
+        <![CDATA[
+			UPDATE t_sys_code
+			SET codeTypeId=#{codeTypeId},
+				code1=#{code1},
+				code2=#{code2},
+				code3=#{code3},
+				code4=#{code4},
+				name=#{name},
+				ename=#{ename},
+				level=#{level},
+				stage=#{stage},
+				reserve1=#{reserve1},
+				reserve2=#{reserve2},
+				reserve3=#{reserve3},
+				reserve4=#{reserve4},
+				reserve5=#{reserve5},
+				extend=#{extend},
+				descript=#{descript},
+				isDeleted=#{isDeleted},
+				lastUpdateUser=#{lastUpdateUser},
+				lastUpdateTime=#{lastUpdateTime}
+			WHERE id=#{id}
+        ]]>
+	</update>
+	
+	<!-- 根据id删除元数据 -->
+	<delete id="delete">
+        <![CDATA[
+        	DELETE FROM t_sys_code
+        	WHERE id=#{id}
+        ]]>
+	</delete>
+	
+	
+	<!-- 根据typeid和codeid逻辑删除元数据 -->
+	<delete id="deleteByidAndcode">
+       <!--  <![CDATA[
+        	DELETE FROM t_sys_code
+        	WHERE code4=#{id} and codeTypeId=#{codeTypeId}
+        ]]> -->
+        update t_sys_code set  isDeleted=1    WHERE code4=#{id} and codeTypeId=#{codeTypeId}
+	</delete>
+
+	<!-- 获取某种类型的某级code下的所有直接子节点。如获取某个省下面的市的信息 -->
+	<select id="getCodeInfoByCodeTypeandCode" resultType="CodeInfo">
+		SELECT *
+		FROM t_sys_code
+		WHERE codeTypeId=#{codeTypeId}
+		and code1=#{code1}
+		<if test="code2 != null and code2 != ''">
+			and code2=#{code2}
+			<if test="code3 != null and code3 != ''">
+				and code3=#{code3}
+				and level = 4
+			</if>
+			<if test="code3 == null OR code2 == ''">
+				and level = 3
+			</if>
+		</if>
+		<if test="code2 == null and code2 == ''">
+			and level = 2
+		</if>
+		order by code1,CONVERT(name USING GBK),code2,code3,code4
+	</select>
+
+	<!-- 根据code1,code2,code3,codeTypeId取得元数据信息 -->
+	<select id="getCodeInfosByCode1Code2Code3" resultType="CodeInfo">
+		SELECT *
+		FROM t_sys_code
+		WHERE codeTypeId=#{codeTypeId}
+		and code1=#{code1}
+		and
+		code2=#{code2}
+		and code3=#{code3}
+		ORDER BY
+		code1,code2,code3
+	</select>
+
+	<!-- 根据id获取元数据 -->
+	<select id="getById" resultType="CodeInfo">
+        <![CDATA[
+       		SELECT *
+			FROM t_sys_code 
+       		WHERE id=#{id}
+        ]]>
+	</select>
+	
+	<!-- 根据类型id和code id获取元数据 -->
+	<select id="getByTypeIdAndId" resultType="CodeInfo">
+        <![CDATA[
+       		SELECT *
+			FROM t_sys_code 
+       		WHERE code4=#{id}
+       		and codeTypeId=#{codeTypeId}
+        ]]>
+	</select>
+	
+	
+	
+
+	<!-- 根据code类型，code1，code2，code3，code4，level来获取元数据 -->
+	<select id="getCodeInfoByCodeTypeandCode1234andLevel"
+		resultType="CodeInfo">
+		SELECT *
+		FROM t_sys_code
+		WHERE codeTypeId=#{codeTypeId}
+		<if test="code1 != null and code1 != ''">
+			and code1=#{code1}
+		</if>
+		<if test="code2 != null and code2 != ''">
+			and code2=#{code2}
+		</if>
+		<if test="code3 != null and code3 != ''">
+			and code3=#{code3}
+		</if>
+		<if test="code4 != null and code4 != ''">
+			and code4=#{code4}
+		</if>
+		<if test="level != null and level != ''">
+			and level=#{level}
+		</if>
+	</select>
+
+	<!-- 获取某种类型的所有元数据编码，返回结果是List(包括已经删除的)-->
+	<select id="getAllCodeInfoByType" resultType="CodeInfo">
+       
+          <if test="codeId!=null">
+           SELECT *
+	        FROM t_sys_code 
+           	WHERE codeTypeId= #{codeTypeId} and id=#{codeId}
+               UNION 
+	         SELECT *
+			 FROM t_sys_code 
+	       	 WHERE codeTypeId= #{codeTypeId} and id!=#{codeId}
+          </if>
+          
+          <if test="codeId==null">
+                    
+	         <![CDATA[
+	       		SELECT *
+				FROM t_sys_code 
+	       		WHERE codeTypeId=#{codeTypeId}
+	       		ORDER BY code1,code2,code3,code4
+	           ]]>
+          </if>
+           
+	</select>
+	
+	<select id="getAllCodeInfoByTypeOrderByReserve1" resultType="CodeInfo">
+        <![CDATA[
+       		SELECT *
+			FROM t_sys_code 
+       		WHERE codeTypeId=#{codeTypeId}
+       		ORDER BY reserve1
+        ]]>
+	</select>
+
+
+	<!-- 分页获取某种类型的所有元数据，返回结果是List -->
+	<select id="getAllCode4Page" resultType="CodeInfo">
+     <!--   SELECT *
+			FROM t_sys_code 
+       		WHERE codeTypeId=#{codeTypeId}
+       		and isDeleted = '0'
+       		ORDER BY code1,code2,code3,code4 
+       		LIMIT #{start},#{fetchSize} -->
+       		
+       	    SELECT *
+			FROM t_sys_code 
+       		WHERE codeTypeId=#{codeTypeId}
+       		and isDeleted = '0'
+       		ORDER BY  code4 
+       		LIMIT #{start},#{fetchSize}
+	</select>
+
+	<!-- 获取某种类型的元数据记录数（包括已经删除的） -->
+	<!-- 修改  获取某种类型的元数据记录数（不包括已经删除的） -->
+	<select id="getAllCodeInfoCountByType" resultType="java.lang.Integer">
+	      <!--   <![CDATA[
+	       		SELECT COUNT(1)
+				FROM t_sys_code 
+	       		WHERE codeTypeId=#{codeTypeId}
+	        ]]> -->
+        
+	          <![CDATA[
+	       		SELECT COUNT(1)
+				FROM t_sys_code  
+	       		WHERE codeTypeId=#{codeTypeId} 
+	       		and isDeleted = '0'
+	        ]]>
+	</select>
+
+	
+	
+	<!-- 取得所有的元数据类型 -->
+	<select id="getAllTypeCode" resultType="CodeInfo">
+		
+		    SELECT *  FROM t_sys_code
+		
+	</select>
+	
+	<!-- 通过typeid取得所有的code -->
+	<select id="getCodesByTypeid" resultType="map">
+		
+		    SELECT max(code4)maxCodeId  FROM t_sys_code where codeTypeId=#{codeTypeId}
+		
+	</select>
+
+	<!-- 情况某一类元数据 -->
+	<delete id="deleteAllCodes">
+		<!-- 
+		DELETE FROM t_sys_code
+		WHERE codeTypeId=#{codeTypeId}
+		 -->
+		 update t_sys_code set isDeleted=1 WHERE  codeTypeId=#{codeTypeId}
+		 
+	</delete>
+	
+	
+</mapper>

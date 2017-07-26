@@ -1,0 +1,21 @@
+.notSearch+div .table-data{
+	font-size:12px;
+	margin-top: -30px;
+	padding:0 18px;
+	overflow:hidden;
+}
+.notSearch+div .table-data .export{
+	margin-left:20px;
+}
+.notSearch+div .table-data .hideCol{
+	margin-left:20px;
+}
+.t_r_title{
+	margin-top:-15px\9;
+}
+.hideColBox .t_r_title{
+	margin-top:0px\9;
+}
+/* 琛ㄦ牸鏍峰紡 */
+.ch-kp-fifty-one table{width:3100px;}
+.ch-kp-fifty-one .t_r_title{width:3120px;}/*瀹藉害姣� t_r table 澶�20px 锛堣嚦灏戝ぇ20锛屽皬浜嗘粴鍔ㄦ潯婊戝埌鍙充晶鏄剧ず鏈夐棶棰橈級*/

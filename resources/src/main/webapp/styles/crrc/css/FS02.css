@@ -1,0 +1,54 @@
+/* form 表单样式 */
+#endTime,#endTimeTwo{
+	margin-right:15px;
+}
+.container .productType b{
+	margin-right:0px;
+}
+.container .productType input{
+	margin-left:4px;
+}
+.container .productType input:nth-child(2){
+	margin-right:15px;
+}
+/* 表格样式 */
+.notSearch+div p,.notSearch+div p{
+	padding:0 18px;
+}
+.notSearch+div .table-data{
+	font-size:12px;
+	text-align:right;
+	margin-top:-30px;
+}
+.notSearch+div table tr{
+	border:1px solid #ddd;
+	border-bottom:none;
+}
+.notSearch+div table tr th,.notSearch+div table tr th{
+	border-left:1px solid #ddd;
+}
+.t_r_title{
+	margin-top:-15px\9;
+}
+.hideColBox .t_r_title{
+	margin-top:0px\9;
+}
+.notSearch+div .t_r table{width:2000px;}
+.notSearch+div .t_r_title{width:2020px;}/*宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题）*/
+
+#t_r_content2 .wmeng,#t_r_content .before_complete_amount_total,#t_r_content .current_complete_amount,#t_r_content .ontime_complete_amount,#t_r_content .wmeng{
+	text-align:right;
+}
+#t_r_content{
+	overflow:auto;
+	height: 175px;
+}
+.ch-kp-cb1 table td div{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width:120px;
+}
+.hj{
+	width:86.5%;
+}

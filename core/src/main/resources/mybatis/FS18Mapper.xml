@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS18">
+                   
+<select id="getMarorderdeliver" parameterType="map" resultType="map">
+   
+        SELECT
+			distinct 
+			VBELN,POSNR,MATNR,ARKTX,WERKS,SALESERDAT,EDATU,DAUAT,AUFNR,PSMNG,
+			DWERK,FTRMI,GLTRP,ERNAM,PRODUCEERDAT,PRODUCECOUNT,ORDERWAREEDATE,SHOWMARK,RSNUM
+		FROM
+			  THM_VBAP_04_01  
+        where 1=1
+
+            <!-- 销售订单 -->
+	     <if test="vbelnValue != null  and vbelnValue.size!=0"> 
+				       and VBELN  in
+				<foreach collection="vbelnValue" item="item"
+					index="index" open="(" separator="," close=")"> #{item} 
+				</foreach>
+			</if>
+			<!-- 物料编码 -->
+			 <if test="matnrInterval != null  and matnrInterval.size!=0"> 
+				       and MATNR  in
+				<foreach collection="matnrInterval" item="item"
+					index="index" open="(" separator="," close=")"> #{item} 
+				</foreach>
+			</if>
+			<!-- 销售订单工厂 -->
+			<if test="werksValue != null  and werksValue.size!=0"> 
+				       and WERKS  in
+				<foreach collection="werksValue" item="item"
+					index="index" open="(" separator="," close=")"> #{item} 
+				</foreach>
+			</if>
+			
+			<!-- 生产工厂  1000-->
+			<if test="dwerkValue != null  and  dwerkValue.size!=0"> 
+				       and DWERK  in
+				<foreach collection="dwerkValue" item="item"
+					index="index" open="(" separator="," close=")"> #{item} 
+				</foreach>
+			</if>
+			<!-- 订单类型  zp01-->
+			<if test="dauatValue != null  and  dauatValue.size!=0"> 
+				       and DAUAT  in
+				<foreach collection="dauatValue" item="item"
+					index="index" open="(" separator="," close=")"> #{item} 
+				</foreach>
+			</if>
+			
+			<!-- 显示标识 -->
+			<if test="showmarks != null  and  showmarks.size!=0"> 
+				       and SHOWMARK  in
+				<foreach collection="showmarks" item="item"
+					index="index" open="(" separator="," close=")"> #{item} 
+				</foreach>
+			</if>
+			
+			 <if test="startTime != null and  startTime !=''" > 
+				       and EDATU &gt;= #{startTime}  
+			</if> 
+			
+			<if test="endTime != null and  endTime != ''"> 
+				      AND EDATU &lt;= #{endTime}  
+			</if>
+			
+			<if test="startTimeTwo != null  and startTimeTwo != ''"> 
+				       AND GLTRP &gt;= #{startTimeTwo}  
+			</if>
+			
+			<if test="endTimeTwo != null  and endTimeTwo != ''"> 
+				     AND GLTRP &lt;= #{endTimeTwo}   
+			</if>
+			
+			<if test="startTimeThree  != null  and startTimeThree != ''"> 
+				     and ORDERWAREEDATE &gt;= #{startTimeThree}  
+			</if>
+			
+			<if test="endTimeThree != null  and endTimeThree != ''"> 
+				      and ORDERWAREEDATE &lt;= #{endTimeThree} 
+			</if> 
+			     
+			    limit #{startitem},#{pageitem};
+			 
+</select>
+
+
+
+
+ <select id="getVbeln" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT VBELN from THM_VBAP_01
+            where 1=1 ]]>
+        <if test="vbeln != null and vbeln != ''">
+            <![CDATA[ and VBELN like "%${vbeln}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY VBELN ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+</select>
+
+<select id="getVbelnByOrgAndBur" resultType="java.lang.String">
+    <![CDATA[ select DISTINCT VBELN from THM_VBAP_01
+        where 1=1 ]]>
+    <if test="vkorgValue != null and   vkorgValue.size != 0">
+        <![CDATA[ and VKORG in]]>
+        <foreach collection="vkorgValue" item="item"
+                 index="index" open="(" separator="," close=")"> #{item} </foreach>
+    </if>
+    <if test="vkburValue != null  and vkburValue.size != 0">
+        <![CDATA[ and VKBUR in]]>
+        <foreach collection="vkburValue" item="item"
+                 index="index" open="(" separator="," close=")"> #{item} </foreach>
+    </if>
+    <if test="vbeln != null and vbeln != ''">
+        <![CDATA[ and VBELN like "%${vbeln}%" ]]>
+    </if>
+    <![CDATA[ ORDER BY VBELN ]]>
+    <if test="start != null and limit != null">
+        <![CDATA[ limit #{start},#{limit}]]>
+    </if>
+</select>
+
+
+</mapper>
+
+

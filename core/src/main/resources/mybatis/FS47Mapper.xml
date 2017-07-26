@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS47">
+    <!-- 根据车型取所有的车号 -->
+    <select id="getTrainNum" resultType="java.util.Map">
+        select distinct train_num from THM_FS47_ALLOCATION_new where train_type = #{TRAIN_TYPE}
+    </select>
+    <!-- 根据查询条件取数据 -->
+    <select id="getData" resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_ALLOCATION">
+        select
+	    allc.*
+        from
+            THM_FS47_ALLOCATION_new allc
+        left join THM_FS47_MAP_new map
+        on allc.train_type = map.train_type
+        and allc.map_category = map.map_category
+        and allc.map_position = map.map_position
+        where 1=1
+        and allc.train_type = #{TRAIN_TYPE}
+        and allc.train_num = #{TRAIN_NUM}
+        and allc.repair_level = #{REPAIR_LEVEL}
+        <if test="MANUFACTURER != null and MANUFACTURER != '' and MANUFACTURER.size != 0">
+            and manufacturer in
+            <foreach collection="MANUFACTURER" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+
+        </if>
+        <if test="BUREAU_SUBJECTION != null and BUREAU_SUBJECTION != '' and BUREAU_SUBJECTION.size != 0">
+            and bureau_subjection in
+            <foreach collection="BUREAU_SUBJECTION" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+
+        </if>
+        <if test="PLACE_SUBJECTION != null and PLACE_SUBJECTION != '' and PLACE_SUBJECTION.size != 0">
+            and place_subjection in
+            <foreach collection="PLACE_SUBJECTION" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+
+        </if>
+        <if test="MOTOR_SERIAL_NUM != null and MOTOR_SERIAL_NUM != '' and MOTOR_SERIAL_NUM.size != 0">
+            and motor_serial_num in
+            <foreach collection="MOTOR_SERIAL_NUM" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+
+        </if>
+        order by map.map_category_order,map.map_position_order
+    </select>
+    <!-- 取总走行里程 -->
+    <select id="getTotalDistance" resultType="java.util.Map">
+        select total_distance from THM_FS47_TOTAL_DISTANCE
+        where 1=1
+        and train_type = #{TRAIN_TYPE}
+        and train_num = #{TRAIN_NUM}
+        limit 1
+    </select>
+    <!-- 获取车型对应的配属map -->
+    <select id="getMotorMap" resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_MAP">
+        select * from THM_FS47_MAP_new where train_type = #{TRAIN_TYPE}
+        order by map_category_order,map_position_order
+    </select>
+    <!-- 插入或更新数据 -->
+    <insert id="saveOrUpdateData" >
+    <selectKey keyProperty="count" resultType="int" order="BEFORE">
+        select count(*) from THM_FS47_ALLOCATION_new
+        where train_type = #{DATA.train_type}
+        and train_num = #{DATA.train_num}
+        and repair_level = #{DATA.repair_level}
+        and map_category = #{DATA.map_category}
+        and map_position = #{DATA.map_position}
+    </selectKey>
+        <if test="count > 0">
+            update THM_FS47_ALLOCATION_new
+            <set>
+                manufacturer = #{DATA.manufacturer},
+                bureau_subjection = #{DATA.bureau_subjection},
+                place_subjection = #{DATA.place_subjection},
+                repair_date = #{DATA.repair_date},
+                distance_reach_repairlvl = #{DATA.distance_reach_repairlvl},
+                motor_serial_num = #{DATA.motor_serial_num},
+                remarks = #{DATA.remarks},
+                report_name = #{DATA.report_name},
+                report_time = #{DATA.report_time}
+            </set>
+            where train_type = #{DATA.train_type}
+            and train_num = #{DATA.train_num}
+            and repair_level = #{DATA.repair_level}
+            and map_category = #{DATA.map_category}
+            and map_position = #{DATA.map_position}
+        </if>
+        <if test="count == 0">
+            insert into THM_FS47_ALLOCATION_new values
+            (#{DATA.train_type},#{DATA.train_num},#{DATA.manufacturer},#{DATA.bureau_subjection},#{DATA.place_subjection},
+            #{DATA.repair_date},#{DATA.repair_level},#{DATA.distance_reach_repairlvl},#{DATA.map_category},#{DATA.map_position},
+            #{DATA.motor_serial_num},#{DATA.remarks},#{DATA.report_name},#{DATA.report_time})
+        </if>
+    </insert>
+
+
+
+    <!-- 以下的查询是暂时的，以后要换成主数据查询 -->
+    <select id="getListTrainModel" resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_ALLOCATION">
+        SELECT DISTINCT NAME train_type FROM t_sys_code t1
+        JOIN ( SELECT id FROM t_sys_code_type WHERE 1 = 1
+        AND NAME IN ("车型")
+        <if test="TRAIN_TYPE != null and TRAIN_TYPE != '' and TRAIN_TYPE.size != 0">
+            AND train_type LIKE "%#{TRAIN_TYPE}%"
+        </if>
+        ) t2 ON t1.codeTypeId = t2.id ORDER BY t2.id, t1.code4
+    </select>
+
+    <select id="getListTrainNum" resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_ALLOCATION">
+        select distinct train_num from THM_FS47_ALLOCATION_new
+        where 1=1
+        <if test="TRAIN_NUM != null and TRAIN_NUM != '' and TRAIN_NUM.size != 0">
+            AND train_num LIKE "%#{TRAIN_NUM}%"
+        </if>
+    </select>
+
+    <select id="getListManufacturer"  resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_ALLOCATION">
+        select distinct manufacturer from THM_FS47_ALLOCATION_new
+        where 1=1
+        <if test="MANUFACTURER != null and MANUFACTURER != '' and MANUFACTURER.size != 0">
+            AND manufacturer LIKE "%#{MANUFACTURER}%"
+        </if>
+    </select>
+
+    <select id="getListBureau_subjection"  resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_ALLOCATION">
+        select distinct bureau_subjection from THM_FS47_ALLOCATION_new
+        where 1=1
+        <if test="BUREAU_SUBJECTION != null and BUREAU_SUBJECTION != '' and BUREAU_SUBJECTION.size != 0">
+            AND bureau_subjection LIKE "%#{BUREAU_SUBJECTION}%"
+        </if>
+    </select>
+
+    <select id="getListPlace_subjection"  resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_ALLOCATION">
+        select distinct place_subjection from THM_FS47_ALLOCATION_new
+        where 1=1
+        <if test="PLACE_SUBJECTION != null and PLACE_SUBJECTION != '' and PLACE_SUBJECTION.size != 0">
+            AND place_subjection LIKE "%#{PLACE_SUBJECTION}%"
+        </if>
+    </select>
+
+    <select id="getListRepair_level"  resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_ALLOCATION">
+        select distinct name repair_level from t_sys_code t1 join (
+        select id from t_sys_code_type where name in ( "机车产品寿命阶段","动车产品寿命阶段" )
+        ) t2 on t1.codeTypeId = t2.id
+        where 1=1
+        <if test="REPAIR_LEVEL != null and REPAIR_LEVEL != '' and REPAIR_LEVEL.size != 0">
+            and t1.name like "%#{REPAIR_LEVEL}%"
+        </if>
+        order by t2.id,t1.code4
+    </select>
+
+    <select id="getListMotor_serial_num"  resultType="com.yjdj.view.core.entity.mybeans.THM_FS47_ALLOCATION">
+        select distinct motor_serial_num from THM_FS47_ALLOCATION_new
+        where 1=1
+        <if test="MOTOR_SERIAL_NUM != null and MOTOR_SERIAL_NUM != '' and MOTOR_SERIAL_NUM.size != 0">
+            AND motor_serial_num LIKE "%#{MOTOR_SERIAL_NUM}%"
+        </if>
+    </select>
+
+</mapper>

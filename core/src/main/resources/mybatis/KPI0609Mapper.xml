@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperKPI0609">
+   
+    <!-- ZZC 销售目标 ,SIGNKPI 年度合同签约指标 ,TOTALACTUAL 实际销售收入,TOTALSIGNED 年度合同签约完成   实际收入*-1-->
+    <select id="incomeAndCompleIndex" parameterType="map"  resultType="map" >
+    <![CDATA[ 	
+        SELECT DISTINCT
+                (
+                        SELECT
+                                max(ZZC) as ZZC
+                        FROM
+                                THM_KPI0609_01 t
+                        WHERE
+                                t.GJAHR = t0.GJAHR
+                        AND t.BUDAT_MONTH <= #{YEARMONTH}
+                ) AS ZZC,
+                (
+                        SELECT
+                                max(SIGNKPI) as SIGNKPI
+                        FROM
+                                THM_KPI0609_01 t
+                        WHERE
+                                t.GJAHR = t0.GJAHR
+                        AND t.BUDAT_MONTH <= #{YEARMONTH}
+                ) AS SIGNKPI,
+                (
+                        SELECT
+                                sum(TOTALACTUAL) as TOTALACTUAL
+                        FROM
+                                THM_KPI0609_01 t
+                        WHERE
+                                t.GJAHR = t0.GJAHR
+                        AND t.BUDAT_MONTH <= #{YEARMONTH}
+                ) AS TOTALACTUAL,
+                (
+                        SELECT
+                                max(TOTALSIGNED) as TOTALSIGNED
+                        FROM
+                                THM_KPI0609_01 t
+                        WHERE
+                                t.GJAHR = t0.GJAHR
+                        AND t.BUDAT_MONTH <= #{YEARMONTH}
+                ) AS TOTALSIGNED
+        FROM
+                THM_KPI0609_01 t0
+        WHERE
+                t0.GJAHR = SUBSTR(#{YEARMONTH} FROM 1 FOR 4)
+    ]]>   
+    </select>
+
+    <!--销售收入实际下钻  第一层 -->            
+    <select id="saleIncomeFiLayer" parameterType="map"  resultType="map">
+	<![CDATA[
+            SELECT
+                    '---' AS KDGRP,
+                    '合计' AS KDGRPTXTMD,
+                    SUM(totalactual) AS  totalAccou,
+                    SUM(totalactual20) AS totalactual20,
+                    ROUND(SUM(totalactual)/ (SELECT SUM(totalactual) FROM THM_KPI0609_05 WHERE BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}) * 100,2) AS rate
+            FROM
+                    THM_KPI0609_05
+            WHERE
+                BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}
+            UNION ALL
+            SELECT
+                    KDGRP,
+                    KDGRPTXTMD,
+                    SUM(totalactual) AS  totalAccou,
+                    SUM(totalactual20) AS totalactual20,
+                    ROUND(SUM(totalactual)/ (SELECT SUM(totalactual) FROM THM_KPI0609_05 WHERE BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}) * 100,2) AS rate
+            FROM
+                    THM_KPI0609_05
+            WHERE
+                BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}
+            GROUP BY 
+                KDGRP,
+                KDGRPTXTMD
+            ORDER BY
+                    3 DESC
+        ]]>  	   
+    </select>
+ 
+    <!-- 点选某市场板块下钻至客户	-->
+    <select id="getcustoByKdgrp" parameterType="map"  resultType="map">
+        <![CDATA[			
+            SELECT
+                    *
+            FROM
+                (
+                    SELECT
+                        BZIRK,
+                        BZIRKTMD,
+                        KUNRG,
+                        KUNRGTMD,
+                        sum(actual) AS actual,
+                        sum(totalactual20) AS totalactual20,
+                        ROUND(SUM(actual)/ (SELECT SUM(actual) FROM THM_KPI0609_02 WHERE BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH} AND KDGRP = #{KDGRP}) * 100,2) AS KDGRPRATE
+                    FROM
+                        THM_KPI0609_02
+                    WHERE
+                        BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}
+                        AND KDGRP = #{KDGRP} 
+        ]]> 
+                        <if test="FLAG == 1">
+                            AND totalactual20 &gt; 0 
+                        </if>
+        <![CDATA[
+                 GROUP BY KUNRGTMD
+                 UNION  all
+                SELECT
+                    "" BZIRK,
+                    "" BZIRKTMD,
+                    "" KUNRG,
+                    "合计" KUNRGTMD,
+                    sum(actual) actual,
+                    sum(totalactual20) totalactual20,
+                    ROUND(SUM(actual)/ (SELECT SUM(actual) FROM THM_KPI0609_02 WHERE BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH} AND KDGRP = #{KDGRP}) * 100,2) AS KDGRPRATE
+            FROM
+                (
+                    SELECT
+                        BZIRK,
+                        BZIRKTMD,
+                        KUNRG,
+                        KUNRGTMD,
+                        sum(actual) AS actual,
+                        sum(totalactual20) AS totalactual20,
+                        KDGRP
+                    FROM
+                        THM_KPI0609_02
+                    WHERE
+                        BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}
+                    AND KDGRP = #{KDGRP} 
+        ]]> 
+                    <if test="FLAG == 1">
+                        AND totalactual20 &gt; 0 
+                    </if>
+                    <![CDATA[
+                        GROUP BY KUNRGTMD
+                    ) t
+                )a 
+            ORDER BY  KDGRPRATE desc 
+        ]]>
+    </select>
+
+    <!-- 年度合同签订金额下钻  -->
+    <select id="signedLayer" parameterType="map"  resultType="map">
+        <![CDATA[ 
+        SELECT
+                VKBURTMD,
+                ROUND(SUM(TOTALSIGNED),2) AS TOTALSIGNED,
+                        ROUND(SUM(TOTALSIGNED) / (
+                                SELECT
+                                        SUM(TOTALSIGNED)
+                                FROM
+                                        THM_KPI0609_03
+                                WHERE
+                                         BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}
+                        )
+                 * 100,2) AS RATE_TOTALSIGNED
+        FROM
+                THM_KPI0609_03
+        WHERE
+                BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}
+        GROUP BY
+                VKBURTMD
+        ORDER BY
+                2 DESC
+        ]]>
+    </select>
+
+
+    <!-- 饼图  -->
+    <select id="getRatePie" parameterType="map"  resultType="map">
+    <![CDATA[ 
+        SELECT
+	        *
+        FROM
+            (
+            SELECT
+                    T08.ZNUM,
+                    T08.ZTXT,
+                    ROUND(
+                            IFNULL(SUM(T24.TOTALBUDGET), 0),
+                            0
+                    ) AS BUDGET,
+                    ROUND(
+                            IFNULL(SUM(T04.TOTALACTUAL), 0),
+                            2
+                    ) AS ZNUMTOTAL
+            FROM
+                    THM_KPI0609_08 T08
+            INNER JOIN (
+                    SELECT
+                            MAX(GJAHRYM) AS GJAHRYM
+                    FROM
+                            THM_KPI0609_08 T08
+                    WHERE
+                            T08.GJAHRYM <= #{YEARMONTH}
+            ) TP ON T08.GJAHRYM = TP.GJAHRYM
+            LEFT JOIN THM_KPI0609_24 T24 ON T24.GJAHR = SUBSTR(#{YEARMONTH} FROM 1 FOR 4)
+            AND T24.VKBUR = T08.VKBUR
+            LEFT JOIN (SELECT T0.VKBUR,SUM(T0.TOTALACTUAL) AS TOTALACTUAL  
+                        FROM THM_KPI0609_04 T0 
+                        WHERE T0.BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH} 
+                        GROUP BY T0.VKBUR) T04 ON T08.VKBUR = T04.VKBUR
+            GROUP BY
+                    T08.ZNUM,
+                    T08.ZTXT
+            UNION
+                    SELECT
+                            '0' AS ZNUM,
+                            '未指定销售部门' AS ZTXT,
+                            0.00 AS BUDGET,
+                            ROUND(SUM(T04.TOTALACTUAL),2) AS TOTALACTUAL
+                    FROM
+                            THM_KPI0609_04 T04
+                    WHERE
+                        T04.VKBUR NOT IN (
+                            SELECT DISTINCT T08.VKBUR
+                            FROM THM_KPI0609_08 T08
+                            INNER JOIN (
+                                SELECT MAX(GJAHRYM) AS GJAHRYM
+                                FROM THM_KPI0609_08 T08
+                                WHERE T08.GJAHRYM <= #{YEARMONTH}
+                            ) TP ON T08.GJAHRYM = TP.GJAHRYM)
+                    AND T04.BUDAT_MONTH BETWEEN CONCAT(SUBSTR(#{YEARMONTH} FROM 1 FOR 4),'01') AND #{YEARMONTH}
+                    GROUP BY ZNUM,ZTXT
+            ) TP
+        ORDER BY
+                TP.ZNUM
+     ]]>  						
+    </select>
+</mapper>
+
+

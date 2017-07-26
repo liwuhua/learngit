@@ -1,0 +1,25 @@
+.notSearch+div .table-name,.notSearch+div .table-data{
+    margin:0;
+}
+.notSearch+div .table-data{
+    overflow:hidden;
+    padding: 0 0 0 16px;
+    margin-bottom: 10px;
+}
+.ch-kp-fiftyNine table{ width: 390px;width: 390px\9;}
+.ch-kp-fiftyNine .t_r_title{ width: 410px }
+
+
+.table-name{
+    width: 423px;
+    width: 423px\9;
+}
+#table-data {
+    width: 423px;
+    width: 423px\9;
+}
+#ch-kp-fiftyNine{
+    width: 423px;
+    width: 423px\9;
+    padding: 0 0 0 16px;
+}

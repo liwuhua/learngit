@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS00">
+
+    <select id="getMapListByThmlips01Test" resultType="java.util.HashMap">
+        <![CDATA[ SELECT * FROM THM_LIPS_01 ]]>
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+        <if test="matnrValue != null and matnrValue.size != 0">
+            <![CDATA[ and MATNR in]]>
+            <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="matnrInterval != null and matnrInterval.size != 0">
+            <foreach collection="matnrInterval" index="index" item="item">
+                <!--#{item}-->
+                <foreach collection="item" index="start"  item="end" separator="union">
+                    OR MATNR BETWEEN #{start} AND #{end}
+                </foreach>
+            </foreach>
+        </if>
+        <![CDATA[ and 1=1)]]>
+        <if test="vkorgValue != null and vkorgValue.size != 0">
+            <![CDATA[ and VKORG in]]>
+            <foreach collection="vkorgValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="vkburValue != null and vkburValue.size != 0">
+            <![CDATA[ and VKBUR in]]>
+            <foreach collection="vkburValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        </trim>
+    </select>
+
+</mapper>
+

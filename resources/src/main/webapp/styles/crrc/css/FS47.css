@@ -1,0 +1,14 @@
+.notSearch+div .table-name,.notSearch+div .table-data{
+    overflow:hidden;
+   	margin:0 16px;
+}
+.notSearch+div .table-data{
+	margin-top:-20px;
+	margin-bottom:10px;
+}
+/* 琛ㄦ牸鏍峰紡 */
+/*.t_r table{width:100%;}
+.t_r_title{width:100%;}*//*瀹藉害姣� t_r table 澶�20px 锛堣嚦灏戝ぇ20锛屽皬浜嗘粴鍔ㄦ潯婊戝埌鍙充晶鏄剧ず鏈夐棶棰橈級*/
+.ch-kp-fortySeven table{ width: 100%;}
+.ch-kp-fortySeven .t_r_title{ width: 100% }
+.fortySeven{margin:0 16px;}

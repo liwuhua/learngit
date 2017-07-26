@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS58">
+	
+    <select id="getData" resultType="com.yjdj.view.core.entity.mybeans.THM_FS58">
+		<![CDATA[ CALL FS58(#{werksValue},#{groesValue},#{zlevelValue},#{matnrValue},#{startTime},#{endTime})
+		]]>
+    </select>
+    <!-- limit查询条件 -->
+    <sql id="limit_fragement">
+        <if test="flag == 0">
+			<![CDATA[ limit #{startItem},#{pageItem}; ]]>
+        </if>
+    </sql>
+    
+    <select id="selectData" resultType="com.yjdj.view.core.entity.mybeans.THM_FS58">
+		<![CDATA[ 
+			SELECT DISTINCT tb1.IWERK AS iwerk,tb1.MATNR AS matnr,tb1.GROES AS groes,tb1.ZLEVEL AS zlevel,
+			tb1.PJWLBM AS pjwlbm,tb1.PJWLMS AS pjwlms,tb1.OHJS AS ohjs,
+			tb1.JXTS AS jxts,tb1.OHTS AS ohts,tb1.OHTL AS ohtl,tb2.TYL AS tyl,tb2.OHL AS ohl FROM THM_FS58_01 tb1,THM_FS58_02 tb2 
+			WHERE tb2.MATNR = tb1.MATNR AND tb2.IDNRK = tb1.PJWLBM ORDER BY tb1.MATNR,tb1.ZLEVEL 
+		]]>
+		<include refid="limit_fragement" />
+    </select>
+    
+    <!-- 查询电机型号 -->
+    <select id="selectGroesJson" resultType="java.lang.String">
+    	SELECT DISTINCT tb.GROES AS groes FROM THM_FS58 tb WHERE 1=1
+		<if test="id != null and id != ''">
+            <![CDATA[ AND tb.GROES like "%${id}%" ]]>
+        </if>
+    </select>
+    <!-- 查询维修级别  -->
+    <select id="selectZlevelJson" resultType="java.lang.String">
+		SELECT DISTINCT tb.ZLEVEL AS zlevel FROM THM_FS58 tb WHERE 1=1
+		<if test="id != null and id != ''">
+            <![CDATA[ AND tb.ZLEVEL like "%${id}%" ]]>
+        </if>
+    </select>
+    <!-- 查询配件物料编码 -->  
+    <select id="selectPjwlbmJson" resultType="java.util.Map">
+		SELECT DISTINCT tb.PJWLBM AS pjwlbm,tb.PJWLMS AS pjwlms FROM THM_FS58 tb WHERE 1=1 
+        <if test="id != null and id != ''">
+            <![CDATA[ AND  tb.PJWLBM like "%${id}%" ]]>
+        </if>
+        <if test="name != null and name != ''">
+            <![CDATA[ AND  tb.PJWLMS like "%${name}%" ]]>
+        </if>
+		limit #{start},#{limit};
+    </select>
+     
+</mapper>

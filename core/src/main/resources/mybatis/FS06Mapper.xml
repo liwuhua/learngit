@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS06">
+
+    <sql id="where_fragement">
+        where 1=1
+        <if test="vbelnValue != null and vbelnValue != '' and vbelnValue.size!=0">
+            and a.vbeln in
+            <foreach collection="vbelnValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="vkorgValue != null and vkorgValue != '' and vkorgValue.size!=0">
+            and a.vkorg in
+            <foreach collection="vkorgValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="vkburValue != null and vkburValue != '' and vkburValue.size!=0">
+            and a.vkbur in
+            <foreach collection="vkburValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <![CDATA[AND (1=1]]>
+        <if test="(matnrValue != null and matnrValue.size != 0) or (matnrInterval != null and matnrInterval.size != 0)">
+            <![CDATA[ and ]]>
+        </if>
+        <trim prefix="" prefixOverrides="AND|OR">
+
+            <if test="matnrValue != null and matnrValue.size != 0">
+                <![CDATA[ and a.MATNR in]]>
+                <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <if test="matnrInterval != null and matnrInterval.size != 0">
+                <foreach collection="matnrInterval" index="index" item="item">
+                    <foreach collection="item" index="start"  item="end" separator="union">
+                        OR a.MATNR BETWEEN #{start} AND #{end}
+                    </foreach>
+                </foreach>
+            </if>
+            )
+            <if test="startTime != null and startTime != ''">
+                <![CDATA[ and a.erdat >= #{startTime}]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+                <![CDATA[ and a.erdat <= #{endTime} ]]>
+            </if>
+            <if test="kunnrValue != null and kunnrValue != '' and kunnrValue.size!=0">
+                and a.kunnr in
+                <foreach collection="kunnrValue" item="item"
+                         index="index" open="(" separator="," close=")"> #{item}
+                </foreach>
+            </if>
+            <if test="auartValue != null and auartValue != '' and auartValue.size!=0">
+                and a.auart in
+                <foreach collection="auartValue" item="item"
+                         index="index" open="(" separator="," close=")"> #{item}
+                </foreach>
+            </if>
+        </trim>
+    </sql>
+<!--判断分页-->
+    <sql id="limit_fragement">
+        <if test="flag == 0">
+            <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+        </if>
+    </sql>
+
+    <select id="selectData_01" resultType="com.yjdj.view.core.entity.mybeans.THM_VBAP_02">
+        select a.vkorg,a.vkbur,a.kunnr,b.txtmd,a.matnr,a.arktx,a.vbeln,a.posnr,a.erdat,a.netwr,a.werks,a.auart,a.zmeng,a.unit,a.sum_unit,a.ddcount,a.fhcount,a.kpcount,a.ddstock,a.uddstock from THM_VBAP_02 a
+        join MDM_TCUSTOMER b on a.kunnr = b.customer
+        <include refid="where_fragement" />
+        ORDER BY matnr,vbeln,posnr
+        <include refid="limit_fragement" />
+    </select>
+
+    <select id="selectData_02" resultType="com.yjdj.view.core.entity.mybeans.THM_LIPS_02">
+        Select lips_erdat,kunnr,txtmd,lips_vbeln,posnr,kdauf,kdpos,vbak_erdat,kwmeng,contnbr,contitm,lgmng,vbrp_erdat,fklmg,vbrp_vbeln,group_concat(sernr) as sernr
+        from (select distinct * from THM_LIPS_02) t where contnbr = #{CONTNBR} and contitm = #{CONTITM} group by lips_vbeln,posnr
+        limit #{start},#{limit}
+    </select>
+
+
+
+</mapper>

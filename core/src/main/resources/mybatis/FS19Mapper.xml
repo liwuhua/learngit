@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS19">
+
+    <resultMap id="result" type="com.yjdj.view.core.entity.mybeans.THM_FS19">
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="balance" property="balance" jdbcType="DOUBLE"/>
+        <result column="rbukrs" property="rbukrs" jdbcType="VARCHAR"/>
+        <result column="curtype" property="curtype" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--sql语句
+select TYPE,BALANCE,RBUKRS,CURTYPE from THM_FS19
+where CURTYPE in ('00','10')
+and TYPE in ('2','4','5','6','7','8','12','13','14')
+
+and RBUKRS in ('5003','5006','5005','5500','5004','5025','5026','5142')  用户输入
+and FISCPER = '2015012'  用户输入
+    -->
+    <select id="getResultData" resultMap="result"
+            resultType="com.yjdj.view.core.entity.mybeans.THM_FS19">
+        <![CDATA[select type,balance,rbukrs,curtype from THM_FS19
+        where curtype in ('00','10')
+        and TYPE in ('2','4','5','6','7','8','12','13','14')]]>
+        <if test="rbukrs != null and rbukrs != '' and rbukrs.size != 0">
+            <![CDATA[and rbukrs in ]]>
+            <foreach collection="rbukrs" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <![CDATA[and fiscper = #{fiscper}]]>
+    </select>
+    <select id="getAllTcompCode" resultType="com.yjdj.view.core.entity.mybeans.MdmTcompCode">
+        <![CDATA[ SELECT DISTINCT RBUKRS as comp_code,TXTMD as txtmd
+                  from THM_FS19 fs JOIN MDM_TCOMP_CODE comp on comp.COMP_CODE = fs.RBUKRS
+                  where 1=1 ]]>
+    </select>
+    <select id="getCompCode" resultType="com.yjdj.view.core.entity.mybeans.MdmTcompCode">
+        <![CDATA[ SELECT DISTINCT RBUKRS as comp_code,TXTMD as txtmd
+                  from THM_FS19 fs JOIN MDM_TCOMP_CODE comp on comp.COMP_CODE = fs.RBUKRS
+                  where 1=1 ]]>
+        <if test="comp_code != null and comp_code != ''">
+            <![CDATA[ AND fs.RBUKRS LIKE "%${comp_code}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND comp.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+    </select>
+    <select id="selectCompanyCode" resultType="java.util.Map">
+        <![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE WHERE TXTMD = #{txtmd}]]>
+    </select>
+    <!--取用户导入的数据-->
+    <select id="getUserImportData" resultType="com.yjdj.view.core.entity.mybeans.THM_IMP_FS19">
+        <![CDATA[SELECT TYPE,BALANCE,RBUKRS,CURTYPE FROM THM_IMP_FS19 WHERE 1=1 and FISCPER = #{fiscper}]]>
+        <if test="rbukrs != null and rbukrs != '' and rbukrs.size != 0">
+            <![CDATA[and rbukrs in ]]>
+            <foreach collection="rbukrs" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+    </select>
+    <!--导入数据-->
+    <!--<insert id="saveOrUpdateData" >-->
+        <!--<selectKey keyProperty="count" resultType="int" order="BEFORE">-->
+           <!--select count(*) from THM_IMP_FS19 where FISCPER = #{fiscper}-->
+        <!--</selectKey>-->
+        <!--<if test="count > 0">-->
+            <!--<if test="list != null and list != '' and list.size != 0">-->
+                <!--<foreach collection="list" item="item" index="index" separator=";" >-->
+                    <!--UPDATE THM_IMP_FS19-->
+                    <!--<set>-->
+                        <!--BALANCE = #{item.balance}-->
+                    <!--</set>-->
+                    <!--WHERE TYPE = #{item.type} and RBUKRS = #{item.rbukrs}-->
+                    <!--and CURTYPE = #{item.curtype} and FISCPER = #{item.fiscper}-->
+                <!--</foreach>-->
+            <!--</if>-->
+        <!--</if>-->
+        <!--<if test="count==0">-->
+            <!--insert into THM_IMP_FS19(TYPE,RBUKRS,CURTYPE,BALANCE,FISCPER) values-->
+            <!--<if test="list != null and list != '' and list.size != 0">-->
+                <!--<foreach collection="list" item="item" index="index" separator="," >-->
+                    <!--(#{item.type},#{item.rbukrs},#{item.curtype}, #{item.balance}, #{item.fiscper})-->
+                <!--</foreach>-->
+            <!--</if>-->
+        <!--</if>-->
+    <!--</insert>-->
+    <insert id="saveOrUpdateData" >
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_IMP_FS19 where FISCPER = #{fiscper}
+            and TYPE = #{list.type}
+            and RBUKRS = #{list.rbukrs}
+            and CURTYPE = #{list.curtype}
+            and FISCPER = #{list.fiscper}
+        </selectKey>
+        <if test="count > 0">
+            UPDATE THM_IMP_FS19
+            <set>
+                BALANCE = #{list.balance}
+            </set>
+            WHERE TYPE = #{list.type} and RBUKRS = #{list.rbukrs}
+            and CURTYPE = #{list.curtype} and FISCPER = #{list.fiscper}
+        </if>
+        <if test="count == 0">
+            insert into THM_IMP_FS19(TYPE,RBUKRS,CURTYPE,BALANCE,FISCPER)
+            values(#{list.type},#{list.rbukrs},#{list.curtype}, #{list.balance}, #{list.fiscper})
+        </if>
+    </insert>
+
+    <update id="deleteErrorData">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_IMP_FS19
+            where TYPE = #{list.type}
+            and RBUKRS = #{list.rbukrs}
+            and CURTYPE = #{list.curtype}
+            and FISCPER = #{list.fiscper}
+        </selectKey>
+        <if test="count > 0">
+            delete from THM_IMP_FS19
+            WHERE TYPE = #{list.type} and RBUKRS = #{list.rbukrs}
+            and CURTYPE = #{list.curtype} and FISCPER = #{list.fiscper}
+        </if>
+    </update>
+</mapper>
+

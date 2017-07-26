@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS52">
+
+
+    <resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_FS52">
+        <result column="YEARMONTH" property="yearMonth" jdbcType="VARCHAR" />
+        <result column="NUM" property="num" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="selectColumns"> 
+	    <![CDATA[ select MONTH AS YEARMONTH,COUNT(XXBH) AS NUM 
+	     from THM_FS50]]>
+    </sql>
+
+    <sql id="where_fragement">
+        where 1=1
+        <if test="yearMonthList != null and yearMonthList != '' and yearMonthList.size != 0">
+				<![CDATA[and MONTH in]]>
+            <foreach collection="yearMonthList" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+    </sql> 
+    
+    <sql id="groupby_fragement">
+		<![CDATA[ GROUP BY MONTH ]]>
+    </sql>
+    
+    
+    <select id="selectData" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_FS52">
+        <include refid="selectColumns" />
+        <include refid="where_fragement" /> 
+        <include refid="groupby_fragement" /> 
+    </select>
+</mapper>
+

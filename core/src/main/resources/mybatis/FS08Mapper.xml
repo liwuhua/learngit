@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS08">
+
+    <select id="getListFs08" resultType="java.util.HashMap">
+        <![CDATA[ select index_02.vkbur,index_02.bezei,index_02.gjahr,index_02.zsale,index_02.dqwce,index_02.dnwce,index_02.sntqwce,index_02.sntqljwce,
+            index_02.dqwce/index_02.zsale as dqwcl,
+            index_02.dnwce/index_02.zsale as dnljwcl,
+            index_02.dnwce-index_02.sntqljwce as ndtbzje,
+            index_02.dqwce-index_02.sntqwce as dqtbzje
+            from(
+            select index_01.vkbur,index_01.bezei,index_01.gjahr,index_01.zsale,
+            case index_01.vkbur when '9001' then  ( select sum(dqwce) as dqwce from (SELECT VKORG, VKBUR,SUM(NETWR) AS dqwce   FROM THM_VBRK_01   WHERE DATE_FORMAT(FKDAT,'%Y%m%d')>=DATE_FORMAT(#{dateStart},'%Y%m%d')   AND DATE_FORMAT(FKDAT,'%Y%m%d')<=DATE_FORMAT(#{dateEnd},'%Y%m%d')    group by VKORG, VKBUR) as tmp_01
+            where  index_01.vkbur = tmp_01.vkbur
+            and  FIND_IN_SET(tmp_01.vkorg,index_01.vkorg))  else ( select dqwce from (SELECT VKORG, VKBUR,SUM(NETWR) AS dqwce   FROM THM_VBRK_01   WHERE DATE_FORMAT(FKDAT,'%Y%m%d')>=DATE_FORMAT(#{dateStart},'%Y%m%d')   AND DATE_FORMAT(FKDAT,'%Y%m%d')<=DATE_FORMAT(#{dateEnd},'%Y%m%d')    group by VKORG, VKBUR) as tmp_01
+            where index_01.vkorg = tmp_01.vkorg
+            and index_01.vkbur = tmp_01.vkbur )  end as dqwce,
+            case index_01.vkbur when '9001' then  ( select sum(dnwce) as dnwce from (SELECT  VKORG, VKBUR,SUM(NETWR) AS dnwce   FROM THM_VBRK_01   WHERE DATE_FORMAT(FKDAT,'%Y%m%d')>=DATE_FORMAT(#{dateBegin},'%Y%m%d')   AND DATE_FORMAT(FKDAT,'%Y%m%d')<DATE_FORMAT(#{dateStart},'%Y%m%d')    group by VKORG, VKBUR) as tmp_02
+            where index_01.vkbur = tmp_02.vkbur
+            and  FIND_IN_SET(tmp_02.vkorg,index_01.vkorg))  else ( select dqwce from (SELECT  VKORG, VKBUR,SUM(NETWR) AS dnwce   FROM THM_VBRK_01   WHERE DATE_FORMAT(FKDAT,'%Y%m%d')>=DATE_FORMAT(#{dateBegin},'%Y%m%d')   AND DATE_FORMAT(FKDAT,'%Y%m%d')<DATE_FORMAT(#{dateStart},'%Y%m%d')    group by VKORG, VKBUR) as tmp_02
+            where  index_01.vkorg = tmp_02.vkorg
+            and index_01.vkbur = tmp_02.vkbur )  end as dnwce,
+            case index_01.vkbur when '9001' then  ( select sum(sntqwce) as sntqwce from (SELECT  VKORG, VKBUR,SUM(NETWR) AS sntqwce   FROM THM_VBRK_01   WHERE DATE_FORMAT(FKDAT,'%Y%m%d')>=DATE_FORMAT(#{lastDateStart},'%Y%m%d')   AND DATE_FORMAT(FKDAT,'%Y%m%d')<=DATE_FORMAT(#{lastDateEnd},'%Y%m%d')    group by VKORG, VKBUR) as tmp_03
+            where  index_01.vkbur = tmp_03.vkbur
+            and  FIND_IN_SET(tmp_03.vkorg,index_01.vkorg)) else ( select sntqwce from (SELECT  VKORG, VKBUR,SUM(NETWR) AS sntqwce   FROM THM_VBRK_01   WHERE DATE_FORMAT(FKDAT,'%Y%m%d')>=DATE_FORMAT(#{lastDateStart},'%Y%m%d')   AND DATE_FORMAT(FKDAT,'%Y%m%d')<=DATE_FORMAT(#{lastDateEnd},'%Y%m%d')    group by VKORG, VKBUR) as tmp_03
+            where index_01.vkorg = tmp_03.vkorg
+            and index_01.vkbur = tmp_03.vkbur )  end as sntqwce,
+            case index_01.vkbur when '9001' then  ( select sum(sntqljwce) as sntqljwce from (SELECT  VKORG, VKBUR,SUM(NETWR) AS sntqljwce   FROM THM_VBRK_01   WHERE DATE_FORMAT(FKDAT,'%Y%m%d')>=DATE_FORMAT(#{lastDateBegin},'%Y%m%d')   AND DATE_FORMAT(FKDAT,'%Y%m%d')<DATE_FORMAT(#{lastDateStart},'%Y%m%d')    group by VKORG, VKBUR) as tmp_04
+            where index_01.vkbur = tmp_04.vkbur
+            and  FIND_IN_SET(tmp_04.vkorg,index_01.vkorg)) else ( select sntqljwce from (SELECT  VKORG, VKBUR,SUM(NETWR) AS sntqljwce   FROM THM_VBRK_01   WHERE DATE_FORMAT(FKDAT,'%Y%m%d')>=DATE_FORMAT(#{lastDateBegin},'%Y%m%d')   AND DATE_FORMAT(FKDAT,'%Y%m%d')<DATE_FORMAT(#{lastDateStart},'%Y%m%d')    group by VKORG, VKBUR) as tmp_04
+            where  index_01.vkorg = tmp_04.vkorg
+            and index_01.vkbur = tmp_04.vkbur )  end as sntqljwce
+            from DEF_INDEX_01 as index_01 ) as index_02 where index_02.gjahr = DATE_FORMAT(#{dateStart},'%Y')
+            order by index_02.vkbur ]]>
+    </select>
+
+</mapper>
+

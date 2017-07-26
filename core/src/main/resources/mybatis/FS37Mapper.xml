@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS37">
+
+ 	<resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_FS37">
+		<result column="dstuf" property="dstuf" jdbcType="VARCHAR" />
+	</resultMap>
+
+<!--  -->
+	<select id="getData" resultMap="fs"  resultType="java.util.Map">
+ 		<![CDATA[
+ 		CALL FS37(replace(ltrim(replace (#{matnr}, '0', ' ')),' ','0'),#{werks},#{dateTime})
+ 		]]>
+ 	</select>
+	<select id="selectData" resultMap="fs"  resultType="java.util.Map">
+ 		<![CDATA[
+ 		SELECT fs3702.DSTUF,fs3702.POSNR,fs3702.IDNRK,tmaterial.TXTMD,fs3702.WERKS,fs3702.MEINS,fs3702.MEINB,fs3702.MENGE,
+			fs3702.MENGA,fs3702.EKGRP,fs3702.LAST_PRICE,fs3702.LAST_COST,fs3702.LAST_MONTH_PRICE,
+			fs3702.LAST_MONTH_COST,fs3702.LAST_YEAR_PRICE,fs3702.LAST_YEAR_COST,fs3702.STANDARD_PRICE,fs3702.UNIT_PRICE,
+			fs3702.STANDARD_COST FROM THM_FS37_02 fs3702 LEFT JOIN MDM_TMATERIAL tmaterial ON tmaterial.MATERIAL = fs3702.IDNRK
+			ORDER BY fs3702.DSTUF,fs3702.POSNR;
+ 		]]>
+ 	</select>
+    
+</mapper>
+

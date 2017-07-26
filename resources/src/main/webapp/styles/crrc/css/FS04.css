@@ -1,0 +1,30 @@
+/* form表单 */
+.dataday{
+	margin-right:15px;
+}
+.notSearch+div .table-name span{
+	float:right;
+	margin-right:20px;
+}
+.t_r_title {
+	margin-top:-15px\9;
+}
+.hideTable .t_r_title {
+	margin-top:0px\9;
+}
+.ch-kp-four table{width:1870px;} 
+.ch-kp-four .t_r_title{width:1890px;}/*宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题）*/ 
+
+
+#t_r_content .menge{
+	text-align:right;
+}
+/* .table-name b{
+	float:left;
+	font-size:12px;
+	padding-left:16px;
+	padding-top:15px;
+} */
+.dataDay{
+    margin-right:15px;
+}

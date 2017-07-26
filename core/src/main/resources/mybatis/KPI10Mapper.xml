@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperKPI10">
+   
+    <!-- 交付正点率   '%'   pundelirate  -->
+    <select id="punDeliRate" parameterType="map"  resultType="map" >
+        SELECT
+        CONCAT(REPLACE(CONVERT(FORMAT(ON_TIME_RATE, 2),CHAR),",",""),'%') pundelirate
+        FROM
+          THM_KPI10_14
+        WHERE
+        EDATU_YM = #{dateYearMonth};
+						 
+	                    
+    </select>
+
+    <!--  正点率第一层下钻    dateYearMonth   研发当月正点交付率 工程化当月正点交付率-->            
+    <select id="firstLayer" parameterType="map"  resultType="map">
+
+  <!--        select 
+        VBTYP,VBTYPCODE,PLAN_SUM,ON_TIME_SUM,IFNULL(ON_TIME_RATE,0.00) ontimerate
+        from 
+        (
+        select a.VBTYP,a.VBTYPCODE,ifnull(b.PLAN_SUM,0.00)PLAN_SUM,ifnull(b.ON_TIME_SUM,0.00)ON_TIME_SUM,b.ON_TIME_RATE
+        from (
+        select '研发'  VBTYP, 1  VBTYPCODE
+        UNION all 
+        select '工程化' VBTYP,2  VBTYPCODE
+        )a  left JOIN (
+        select 
+        '研发' VBTYP,
+        1  VBTYPCODE,
+        PLAN_SUM,
+        ON_TIME_SUM,
+        ON_TIME_RATE  
+        from THM_KPI10_12 where  EDATU_YM=#{dateYearMonth}
+        UNION all
+        select 
+        '工程化' VBTYP,
+        2  VBTYPCODE,
+        PLAN_SUM,
+        ON_TIME_SUM,
+        ON_TIME_RATE  
+        from THM_KPI10_13 where  EDATU_YM=#{dateYearMonth}
+        )b on  a.VBTYP=b.VBTYP and a.VBTYPCODE=b.VBTYPCODE
+        )t
+        ORDER BY 3 DESC; -->
+        
+ SELECT
+     VBTYP,CONVERT(VBTYPCODE,CHAR)VBTYPCODE,PLAN_SUM,ON_TIME_SUM,ontimerate
+ from (
+     select 
+        VBTYP,VBTYPCODE,PLAN_SUM,ON_TIME_SUM,IFNULL(ON_TIME_RATE,0.00) ontimerate
+        from 
+        (
+        select a.VBTYP,a.VBTYPCODE,ifnull(b.PLAN_SUM,0.00)PLAN_SUM,ifnull(b.ON_TIME_SUM,0.00)ON_TIME_SUM,b.ON_TIME_RATE
+        from (
+        select '研发'  VBTYP, 1  VBTYPCODE
+        UNION all 
+        select '工程化' VBTYP,2  VBTYPCODE
+        )a  left JOIN (
+        select 
+        '研发' VBTYP,
+        1  VBTYPCODE,
+        PLAN_SUM,
+        ON_TIME_SUM,
+        ON_TIME_RATE  
+        from THM_KPI10_12 where  EDATU_YM=#{dateYearMonth}
+        UNION all
+        select 
+        '工程化' VBTYP,
+        2  VBTYPCODE,
+        PLAN_SUM,
+        ON_TIME_SUM,
+        ON_TIME_RATE  
+        from THM_KPI10_13 where  EDATU_YM=#{dateYearMonth}
+        )b on  a.VBTYP=b.VBTYP and a.VBTYPCODE=b.VBTYPCODE
+        )t
+ UNION ALL
+select 
+"合计" VBTYP,"" VBTYPCODE,sum(PLAN_SUM) PLAN_SUM ,sum(ON_TIME_SUM) ON_TIME_SUM, sum(ontimerate) ontimerate
+from (
+ select 
+        VBTYP,VBTYPCODE,PLAN_SUM,ON_TIME_SUM,IFNULL(ON_TIME_RATE,0.00) ontimerate
+        from 
+        (
+        select a.VBTYP,a.VBTYPCODE,ifnull(b.PLAN_SUM,0.00)PLAN_SUM,ifnull(b.ON_TIME_SUM,0.00)ON_TIME_SUM,b.ON_TIME_RATE
+        from (
+        select '研发'  VBTYP, 1  VBTYPCODE
+        UNION all 
+        select '工程化' VBTYP,2  VBTYPCODE
+        )a  left JOIN (
+        select 
+        '研发' VBTYP,
+        1  VBTYPCODE,
+        PLAN_SUM,
+        ON_TIME_SUM,
+        ON_TIME_RATE  
+        from THM_KPI10_12 where  EDATU_YM=#{dateYearMonth}
+        UNION all
+        select 
+        '工程化' VBTYP,
+        2  VBTYPCODE,
+        PLAN_SUM,
+        ON_TIME_SUM,
+        ON_TIME_RATE  
+        from THM_KPI10_13 where  EDATU_YM=#{dateYearMonth}
+        )b on  a.VBTYP=b.VBTYP and a.VBTYPCODE=b.VBTYPCODE
+        )t
+   )t
+)a ORDER BY ontimerate desc ,VBTYP ASC
+
+    </select>
+ 
+    <!-- 正点率第二层下钻  ONTIMEDELINUM dateYearMonth  -->
+    <select id="secondLayer" parameterType="map"  resultType="map">
+        <!-- 研发 -->	
+        <if test="vbtypcode!='' and vbtypcode==1" >
+      <!--       SELECT
+            MATNR,
+            ARKTX,
+            ON_TIME_RATE ontimerate
+            FROM
+            THM_KPI10_10
+            WHERE
+            EDATU_YM = #{dateYearMonth}	
+            ORDER by ontimerate DESC; -->
+				    
+		  SELECT
+            MATNR,
+            ARKTX,
+            VBELN,	
+            replace (ltrim(replace(POSNR, '0', ' ')
+		       ),
+		      ' ',
+		      '0'
+	        ) POSNR,
+            PLAN_SUM,	
+            ON_TIME_SUM,	
+            ON_TIME_RATE ontimerate
+            FROM
+            THM_KPI10_10
+            WHERE EDATU_YM = #{dateYearMonth}	
+             ORDER by ARKTX DESC;
+		  
+        </if>			
+        <!-- 工程化 -->
+        <if test="vbtypcode!='' and vbtypcode==2" >
+          SELECT
+            MATNR,
+            ARKTX,
+            VBELN,	
+            replace (ltrim(replace(POSNR, '0', ' ')
+		     ),
+		    ' ',
+		    '0'
+	        ) POSNR,		
+            PLAN_SUM,	
+            ON_TIME_SUM,	
+            ON_TIME_RATE ontimerate
+            FROM
+            THM_KPI10_11
+            WHERE
+            EDATU_YM = #{dateYearMonth}	
+             ORDER by ARKTX DESC;
+        </if>
+    </select>
+
+    <!-- 正点率第三层下钻 -->
+    <select id="thirdLayer" parameterType="map"  resultType="map">
+               
+        <!-- 研发第三层下转 -->
+        <if test="vbtypcode!='' and vbtypcode==1" >
+            SELECT
+            VBELN,
+            PLAN_SUM planNum,
+            ON_TIME_RATE ontimerate
+            FROM
+            THM_KPI10_08
+            WHERE EDATU_YM = #{dateYearMonth}
+            AND MATNR = #{MATNR}
+            ORDER BY
+            ontimerate DESC
+						
+        </if>
+				  
+        <!-- 工程化第三层下转 --> 
+        <if test="vbtypcode!='' and vbtypcode==2" >
+					
+            SELECT
+            VBELN,
+            PLAN_SUM planNum,
+            ON_TIME_RATE ontimerate
+            FROM
+            THM_KPI10_09
+            WHERE
+            EDATU_YM = #{dateYearMonth}
+            AND MATNR = #{MATNR}
+            ORDER BY
+            ontimerate DESC
+        </if>   
+    </select>
+</mapper>
+
+

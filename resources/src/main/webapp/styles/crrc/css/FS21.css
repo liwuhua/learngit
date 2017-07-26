@@ -1,0 +1,37 @@
+/* form 琛ㄥ崟鏍峰紡 */
+#endTime,#endTimeTwo{
+	margin-right:15px;
+}
+/* 琛ㄦ牸鏍峰紡 */
+.notSearch+div p,.notSearch+div p{
+	padding:0 18px;
+}
+.notSearch+div .table-data{
+	font-size:12px;
+	text-align:right;
+	margin-top:-30px;
+	height: 8px;
+}
+.twenty-one{margin-top:10px;}
+.notSearch+div table tr{
+	border:1px solid #ddd;
+	border-bottom:none;
+}
+.notSearch+div table tr th,.notSearch+div table tr th{
+	border-left:1px solid #ddd;
+}
+.t_r_title{
+	margin-top:-15px\9;
+}
+.hideColBox .t_r_title{
+	margin-top:0px\9;
+}
+.notSearch+div .t_r table{width:2470px;}
+.notSearch+div .t_r_title{width:2490px;}/*瀹藉害姣� t_r table 澶�20px 锛堣嚦灏戝ぇ20锛屽皬浜嗘粴鍔ㄦ潯婊戝埌鍙充晶鏄剧ず鏈夐棶棰橈級*/
+
+#t_r_content2 .wmeng,#t_r_content .before_complete_amount_total,#t_r_content .current_complete_amount,#t_r_content .ontime_complete_amount,#t_r_content .wmeng{
+	text-align:right;
+}
+#t_r_content{
+	overflow:auto;
+}

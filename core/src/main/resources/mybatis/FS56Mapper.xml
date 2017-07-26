@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper  namespace="com.yjdj.view.core.mapper.IReportMapperFS56">
+    <!--通过电机型号，查询需要展示的表头 -->
+    <select id="getColumn" resultType="com.yjdj.view.core.entity.mybeans.THM_FS56_MAP">
+        select * from THM_FS56_MAP where MODEL = #{MOTORMODEL} and FLAG in ("0","1");
+    </select>
+    <!--通过电机型号和给定的列名查找数据-->
+    <select id="getData" resultType="com.yjdj.view.core.entity.mybeans.THM_FS56">
+        select ${SELECTNAME} from THM_FS56 where code3 = #{MOTORMODEL}
+        <include refid="time_fragement" />
+        <include refid="limit_fragement" />
+    </select>
+    <sql id="time_fragement">
+        <if test="starttime != null and starttime != ''">
+            <![CDATA[ and DATE_FORMAT(code1,'%Y%m%d') >= DATE_FORMAT(#{starttime},'%Y%m%d') ]]>
+        </if>
+        <if test="endtime != null and endtime != ''">
+            <![CDATA[ and DATE_FORMAT(code1,'%Y%m%d') <= DATE_FORMAT(#{endtime},'%Y%m%d') ]]>
+        </if>
+    </sql>
+    <sql id="limit_fragement">
+        <if test="flag == 1">
+            <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+        </if>
+    </sql>
+    <!--通过列描述返回CODES-->
+    <select id="getColumn_Codes" resultType="java.util.Map">
+        select distinct CODES from THM_FS56_MAP where TXT = #{TXT}
+    </select>
+    <!--导入数据-->
+    <insert id="importData" >
+        insert into THM_FS56 (${IMPORTCOLUMNS}) values (${IMPORTDATA})
+    </insert>
+    <!--获取flag-->
+    <select id="getMapFlag" resultType="java.util.Map">
+        select distinct FLAG from THM_FS56_MAP where MODEL = #{MOTORMODEL} and TXT = #{TXT}
+    </select>
+    <!--根据列描述获取flag-->
+    <select id="getFlagByTXT" resultType="java.util.Map">
+        select distinct FLAG from THM_FS56_MAP where TXT = #{TXT}
+    </select>
+    <!--修改flag-->
+    <update id="setMapFlag">
+        update THM_FS56_MAP set FLAG = #{FLAG} where MODEL = #{MOTORMODEL} and TXT = #{TXT}
+    </update>
+    <!--判断新增列的类型-->
+    <select id="getTag" resultType="java.util.Map">
+        select count(1) as TAG from THM_FS56_MAP where TXT = #{TXT}
+        <if test="hasModel == true">
+            and MODEL = #{MOTORMODEL}
+        </if>
+    </select>
+    <!--在map中用描述为条件取数据-->
+    <select id="getEmptyColumn" resultType="com.yjdj.view.core.entity.mybeans.THM_FS56_MAP">
+        select * from THM_FS56_MAP where TXT = ""
+    </select>
+    <!--在map中添加新CODE列-->
+    <update id="addNewCode">
+        update THM_FS56_MAP set TXT = #{TXT}, MODEL = #{MOTORMODEL}, FLAG = "1"  where CODES = #{EMPTYCODE}
+    </update>
+    <!--在map中添加重复的CODE列-->
+    <insert id="addUsedCode">
+        insert into THM_FS56_MAP (CODES, TXT, MODEL, FLAG) values (#{USEDCODE}, #{TXT}, #{MOTORMODEL}, #{FLAG})
+    </insert>
+    <!--获取所有固定列，用来判断新导入模板是否含有所有固定列-->
+    <select id="getFixedColumn" resultType="java.util.Map">
+        select distinct TXT from THM_FS56_MAP where FLAG = 0
+    </select>
+    <!--用户查询条件：电机型号-->
+    <select id="getMotorModel" resultType="java.util.Map">
+        select distinct MODEL from THM_FS56_MAP where 1=1
+        <if test="MOTORMODEL != null and MOTORMODEL != ''">
+        and MODEL like "%${MOTORMODEL}%"
+        </if>
+    </select>
+</mapper>

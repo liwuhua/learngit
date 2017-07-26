@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS59">
+    <select id="getDataFs" parameterType="map" resultType="map">
+        CALL FS59 ( #{compCodeValue},#{dateYearMonthStart},#{dateYearMonthEnd} )
+    </select>
+
+    <select id="getDataFs59" parameterType="map" resultType="java.util.HashMap" statementType="CALLABLE">
+        {CALL FS59 ( #{compCodeValue ,jdbcType=VARCHAR, mode=IN},
+        #{dateYearMonthStart,jdbcType=VARCHAR, mode=IN},
+        #{dateYearMonthEnd,jdbcType=VARCHAR, mode=IN})
+        }
+    </select>
+</mapper>
+

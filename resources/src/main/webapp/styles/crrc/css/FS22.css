@@ -1,0 +1,68 @@
+/* form 表单样式 */
+#endTime{
+	margin-right:15px;
+}
+
+/* 表格样式 */
+.notSearch+div p:first-child{
+	width:100%;
+	text-align:center;
+	padding:0 18px;
+}
+.notSearch+div .table-data{
+	padding:0 15px;
+}
+.notSearch+div .table-data input{
+	width:60px;
+	height:24px;
+	background:#c70019;
+	color:#ffffff;
+	margin-right:20px;
+	line-height:18px;
+}
+.notSearch+div table tr{
+	border:1px solid #ddd;
+	border-bottom:none;
+}
+.notSearch+div table tr th{
+	border-left:1px solid #ddd;
+}
+#t_r_b table tr td,#t_r_b2 table tr td{
+    border:none;
+}
+/*.t_r_title{
+	margin-top:-15px\9;
+}*/
+/* 二级明细表 */
+.ch-kp-twentyTwo2{
+	display:none;
+}
+/* .hideColBox .t_r_title{
+	margin-top:0px\9;
+} */
+/* .notSearch+div .t_r table{width:1850px;} 
+.notSearch+div .t_r_title{width:1870px;}宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题） 
+
+#t_r_content2 .wmeng,#t_r_content .before_complete_amount_total,#t_r_content .current_complete_amount,#t_r_content .ontime_complete_amount,#t_r_content .wmeng{
+	text-align:right;
+} */
+#t_r_b .t_r_title{ width: 3130px; }
+#t_r_t .t_r_title{ width: 3130px; }
+#t_r_content table{ width: 3110px;}
+
+#t_r_b2 .t_r_title{ width: 7490px; }
+#t_r_t2 .t_r_title{ width: 7490px; }
+#t_r_content2 table{ width: 7470px;}
+#t_r_b,#t_r_b2{
+    height:26px;
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000,endColorstr=#7F000000);
+    margin-top:-25px;
+}
+#tableTr1,#tableTr2{
+    height:26px;
+    background-color:rgba(0,0,0,0.5);
+}
+#t_r_b2 table tr td,#t_r_b table tr td{
+    color: #fff;
+    font-weight: 900;
+}

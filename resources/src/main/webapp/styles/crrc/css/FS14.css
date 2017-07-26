@@ -1,0 +1,48 @@
+/* form 琛ㄥ崟鏍峰紡 */
+.jzcxsj{margin-right:15px;}
+
+/* 琛ㄦ牸鏍峰紡 */
+.notSearch+div p:first-child{
+	text-align:center;
+	padding:0 18px;
+    margin-right: 24.7%\9;
+}
+.notSearch+div .table-data{
+	padding:0 15px;
+    margin-right: 24.7%\9;
+}
+.notSearch+div .table-data input{
+	width:60px;
+	height:24px;
+	background:#c70019;
+	color:#ffffff;
+	margin-right:20px;
+	line-height:18px;
+}
+.notSearch+div table tr{
+	border:1px solid #ddd;
+	border-bottom:none;
+}
+.notSearch+div table tr th{
+	border-left:1px solid #ddd;
+}
+
+
+/* 浜岀骇鏄庣粏琛� */
+.ch-kp-fourteen2{
+	display:none;
+    padding: 0 16px;
+    overflow: auto;
+}
+
+.ch-kp-fourteen1 table{ width: 3140px;}
+.ch-kp-fourteen1 .t_r_title{ width: 3160px; }
+
+.ch-kp-fourteen2 table{ width: 3320px;}
+.ch-kp-fourteen2 .t_r_title{ width: 3340px; }
+
+/* #t_r_t2 .t_r_title{ width: 9670px; }
+#t_r_content2 table{ width: 9650px;} */
+.ch-kp-fourteen1{
+    padding: 0 16px;
+}

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS39">
+    <!--产成品-->
+    <select id="getGroes" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT GROES from THM_FS39 where 1=1 ]]>
+        <if test="groes != null and groes != ''">
+            <![CDATA[ AND GROES LIKE "%${groes}%" ]]>
+        </if>
+    </select>
+
+    <!--工序名称-->
+    <select id="getLtxa1" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT LTXA1 from THM_FS39 where 1=1 ]]>
+        <if test="ltxa1 != null and ltxa1 != ''">
+            <![CDATA[ AND LTXA1 LIKE "%${ltxa1}%" ]]>
+        </if>
+    </select>
+
+    <!--销售订单号-->
+    <select id="getKdauf" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT KDAUF from THM_FS39 where 1=1 ]]>
+        <if test="kdauf != null and kdauf != ''">
+            <![CDATA[ AND KDAUF LIKE "%${kdauf}%" ]]>
+        </if>
+    </select>
+
+    <!--销售订单行号-->
+    <select id="getKdpos" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT KDPOS from THM_FS39 where 1=1 ]]>
+        <if test="kdpos != null and kdpos != ''">
+            <![CDATA[ AND KDPOS LIKE "%${kdpos}%" ]]>
+        </if>
+    </select>
+
+    <!--工作中心-->
+    <select id="getArbpl" resultType="java.util.LinkedHashMap">
+        <![CDATA[ select DISTINCT ARBPL,KTEXT from THM_FS39 where 1=1 ]]>
+        <if test="arbpl != null and arbpl != ''">
+            <![CDATA[ AND ARBPL LIKE "%${arbpl}%" ]]>
+        </if>
+        <if test="ktext != null and ktext != ''">
+            <![CDATA[ AND KTEXT LIKE "%${ktext}%" ]]>
+        </if>
+        <![CDATA[ AND ARBPL != '' ]]>
+        <!--<if test="start != null and limit != null">-->
+            <!--<![CDATA[ limit #{start},#{limit}]]>-->
+        <!--</if>-->
+    </select>
+
+    <!--需求单位-->
+    <select id="getXqdw" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT XQDW from THM_FS39 where 1=1 ]]>
+        <if test="xqdw != null and xqdw != ''">
+            <![CDATA[ AND XQDW LIKE "%${xqdw}%" ]]>
+        </if>
+    </select>
+
+    <!--生产订单类型-->
+    <select id="getAuart" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT auart from THM_FS39 where 1=1 ]]>
+        <if test="auart != null and auart != ''">
+            <![CDATA[ AND auart LIKE "%${auart}%" ]]>
+        </if>
+    </select>
+
+    <!--获取KDFS-->
+    <select id="getKdfs" resultType="java.lang.String">
+        <![CDATA[ select distinct KDFS from THM_FS39 ]]>
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+            <!-- 物料多值与多区间 -->
+            <if test="matnrValue != null and matnrValue.size != 0">
+                <![CDATA[ and MATNR in]]>
+                <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <if test="matnrInterval != null and matnrInterval.size != 0">
+                <foreach collection="matnrInterval" index="index" item="item">
+                    <!--#{item}-->
+                    <foreach collection="item" index="start"  item="end" separator="union">
+                        OR MATNR BETWEEN #{start} AND #{end}
+                    </foreach>
+                </foreach>
+            </if>
+            <![CDATA[ and 1=1)]]>
+            <!-- 产成品 -->
+            <if test="groesValue != null and groesValue.size != 0">
+                <![CDATA[ and GROES in]]>
+                <foreach collection="groesValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工序名称 -->
+            <if test="ltxa1Value != null and ltxa1Value.size != 0">
+                <![CDATA[ and trim(LTXA1) in]]>
+                <foreach collection="ltxa1Value" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工厂 -->
+            <if test="dwerkValue != null and dwerkValue.size != 0">
+                <![CDATA[ and DWERK in]]>
+                <foreach collection="dwerkValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工作中心 -->
+            <if test="arbplValue != null and arbplValue.size != 0">
+                <![CDATA[ and ARBPL in]]>
+                <foreach collection="arbplValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 需求单位 -->
+            <if test="xqdwValue != null and xqdwValue.size != 0">
+                <![CDATA[ and trim(XQDW) in]]>
+                <foreach collection="xqdwValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 生产订单类型 -->
+            <if test="auartValue != null and auartValue.size != 0">
+                <![CDATA[ and AUART in]]>
+                <foreach collection="auartValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+        </trim>
+    </select>
+
+    <select id="getDateFS39" resultType="java.util.HashMap">
+        <![CDATA[ select distinct GROES,LTXA1,MATNR,ARKTX,CONCAT(KDAUF,'/',KDPOS) AS KDFS,
+                  MENGA,DWERK,ARBPL,KTEXT,XQDW,XARBPL,XKTEXT,(LJJHSL-LJCCSL) AS LJWWCSL,LJJHSL,LJCCSL,
+                  DGS from THM_FS39 ]]>
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+            <!-- 物料多值与多区间 -->
+            <if test="matnrValue != null and matnrValue.size != 0">
+                <![CDATA[ and MATNR in]]>
+                <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <if test="matnrInterval != null and matnrInterval.size != 0">
+                <foreach collection="matnrInterval" index="index" item="item">
+                    <!--#{item}-->
+                    <foreach collection="item" index="start"  item="end" separator="union">
+                        OR MATNR BETWEEN #{start} AND #{end}
+                    </foreach>
+                </foreach>
+            </if>
+            <![CDATA[ and 1=1)]]>
+            <!-- 产成品 -->
+            <if test="groesValue != null and groesValue.size != 0">
+                <![CDATA[ and GROES in]]>
+                <foreach collection="groesValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工序名称 -->
+            <if test="ltxa1Value != null and ltxa1Value.size != 0">
+                <![CDATA[ and trim(LTXA1) in]]>
+                <foreach collection="ltxa1Value" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 销售订单 -->
+            <if test="kdaufValue != null and kdaufValue.size != 0">
+                <![CDATA[ and KDAUF in]]>
+                <foreach collection="kdaufValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 行项目 -->
+            <if test="kdposValue != null and kdposValue.size != 0">
+                <![CDATA[ and KDPOS in]]>
+                <foreach collection="kdposValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工厂 -->
+            <if test="dwerkValue != null and dwerkValue.size != 0">
+                <![CDATA[ and DWERK in]]>
+                <foreach collection="dwerkValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工作中心 -->
+            <if test="arbplValue != null and arbplValue.size != 0">
+                <![CDATA[ and ARBPL in]]>
+                <foreach collection="arbplValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 需求单位 -->
+            <if test="xqdwValue != null and xqdwValue.size != 0">
+                <![CDATA[ and trim(XQDW) in]]>
+                <foreach collection="xqdwValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 生产订单类型 -->
+            <if test="auartValue != null and auartValue.size != 0">
+                <![CDATA[ and AUART in]]>
+                <foreach collection="auartValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!--<if test="startTime != null and startTime != ''">-->
+                <!--<![CDATA[ and DATE_FORMAT(MAXG,'%Y%m%d') >= DATE_FORMAT(#{startTime},'%Y%m%d') ]]>-->
+            <!--</if>-->
+            <!--<if test="endTime != null and endTime != ''">-->
+                <!--<![CDATA[ and DATE_FORMAT(MING,'%Y%m%d') <= DATE_FORMAT(#{endTime},'%Y%m%d') ]]>-->
+            <!--</if>-->
+        </trim>
+    </select>
+
+    <select id="getDateFS3902" resultType="java.util.HashMap">
+        <![CDATA[ select distinct GROES,LTXA1,MATNR,ARKTX,CONCAT(KDAUF,'/',KDPOS) AS KDFS,
+                  MENGA,DWERK,ARBPL,KTEXT,XQDW,XARBPL,XKTEXT,(LJJHSL-LJCCSL) AS LJWWCSL,LJJHSL,LJCCSL,
+                  DGS from THM_FS39 ]]>
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+            <!-- 物料多值与多区间 -->
+            <if test="matnrValue != null and matnrValue.size != 0">
+                <![CDATA[ and MATNR in]]>
+                <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <if test="matnrInterval != null and matnrInterval.size != 0">
+                <foreach collection="matnrInterval" index="index" item="item">
+                    <!--#{item}-->
+                    <foreach collection="item" index="start"  item="end" separator="union">
+                        OR MATNR BETWEEN #{start} AND #{end}
+                    </foreach>
+                </foreach>
+            </if>
+            <![CDATA[ and 1=1)]]>
+
+            <if test="kdfsValue != null and kdfsValue.size != 0">
+                <![CDATA[ and KDFS in]]>
+                <foreach collection="kdfsValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工序名称 -->
+            <if test="ltxa1Value != null and ltxa1Value.size != 0">
+                <![CDATA[ and trim(LTXA1) in]]>
+                <foreach collection="ltxa1Value" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 销售订单 -->
+            <if test="kdaufValue != null and kdaufValue.size != 0">
+                <![CDATA[ and KDAUF in]]>
+                <foreach collection="kdaufValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 行项目 -->
+            <if test="kdposValue != null and kdposValue.size != 0">
+                <![CDATA[ and KDPOS in]]>
+                <foreach collection="kdposValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工厂 -->
+            <if test="dwerkValue != null and dwerkValue.size != 0">
+                <![CDATA[ and DWERK in]]>
+                <foreach collection="dwerkValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 工作中心 -->
+            <if test="arbplValue != null and arbplValue.size != 0">
+                <![CDATA[ and ARBPL in]]>
+                <foreach collection="arbplValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 需求单位 -->
+            <if test="xqdwValue != null and xqdwValue.size != 0">
+                <![CDATA[ and trim(XQDW) in]]>
+                <foreach collection="xqdwValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <!-- 生产订单类型 -->
+            <if test="auartValue != null and auartValue.size != 0">
+                <![CDATA[ and AUART in]]>
+                <foreach collection="auartValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+        </trim>
+    </select>
+
+</mapper>
+

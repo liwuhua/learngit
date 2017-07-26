@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.MuserRoleMapper">
+
+    <select id="getRoles" resultType="com.yjdj.view.core.entity.MuserRole">
+        <![CDATA[ select c.id,c.name,c.description from security_user a
+                    join security_user_role b on a.id=b.user_id
+                    join security_role c on b.role_id=c.id  where 1=1 ]]>
+
+        <if test="userId != null and userId != ''">
+            <![CDATA[ AND a.id = "${userId}" ]]>
+        </if>
+    </select>
+
+</mapper>
+

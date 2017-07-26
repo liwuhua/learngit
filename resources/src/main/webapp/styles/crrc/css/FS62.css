@@ -1,0 +1,28 @@
+.notSearch+div .table-name,.notSearch+div .table-data{
+    margin:0;
+}
+.notSearch+div .table-data{
+    overflow:hidden;
+    padding: 0 0 0 16px;
+    margin-bottom: 10px;
+    margin-top: -20px;
+}
+.ch-kp-sixtyTwo table{ width: 840px;width: 840px\9;}
+.ch-kp-sixtyTwo .t_r_title{ width: 860px }
+
+
+.table-name{
+    width: 873px;
+    width: 873px\9;
+}
+#table-data {
+    width: 873px;
+    width: 873px\9;
+    height:25PX;
+    line-height: 25px;
+}
+#ch-kp-sixtyTwo{
+    width: 873px;
+    width: 873px\9;
+    padding: 0 0 0 16px;
+}

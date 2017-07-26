@@ -1,0 +1,28 @@
+.notSearch+div .table-data{
+	font-size:12px;
+	margin-top: -30px;
+	padding:0 18px;
+    float: right;
+}
+.notSearch+div .table-data .export{
+	margin-left:20px;
+}
+.notSearch+div .table-data .hideCol{
+	margin-left:20px;
+}
+.setTime{
+	margin-right:15px;
+}
+.t_r_title{
+	margin-top:-15px\9;
+}
+.hideColBox .t_r_title{
+	margin-top:0px\9;
+}
+/* 表格样式 */
+/*.ch-kp-fiftySix table{width:8000px;}
+.ch-kp-fiftySix .t_r_title{width:8000px;}*/
+
+.t_r_title{
+    margin-top:0;
+}

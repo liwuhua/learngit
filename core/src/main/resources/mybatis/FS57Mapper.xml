@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS57">
+
+    <sql id="where_fragement">
+        where 1=1
+
+        <if test="vkorgValue != null and vkorgValue != '' and vkorgValue.size!=0">
+            and vkorg in
+            <foreach collection="vkorgValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+
+        <if test="werksValue != null and werksValue != '' and werksValue.size!=0">
+            and iwerk in
+            <foreach collection="werksValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+
+        <if test="kunnrValue != null and kunnrValue != '' and kunnrValue.size!=0">
+            and parnr in
+            <foreach collection="kunnrValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+
+        <if test="dateYearMonth != null and dateYearMonth != ''">
+            and date = #{dateYearMonth}
+        </if>
+
+
+    </sql>
+    <!--判断分页-->
+    <sql id="limit_fragement">
+        <if test="flag == 0">
+            <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+        </if>
+    </sql>
+
+    <select id="selectData" resultType="com.yjdj.view.core.entity.mybeans.THM_FS57">
+        select * from THM_FS57
+        <include refid="where_fragement" />
+        <include refid="limit_fragement" />
+    </select>
+
+<!--查找所有客户-->
+    <select id="getAllTcustomer" resultType="com.yjdj.view.core.entity.mybeans.MdmTcustomer">
+        <![CDATA[ SELECT fs.PARNR as customer,zsj.TXTMD as txtmd from (SELECT DISTINCT PARNR from ${tableName}) fs JOIN MDM_TCUSTOMER zsj on zsj.customer = fs.PARNR
+                  where 1=1 ]]>
+        <if test="customer != null and customer != ''">
+            <![CDATA[ AND fs.PARNR LIKE "%${customer}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY PARNR ]]>
+    </select>
+
+</mapper>

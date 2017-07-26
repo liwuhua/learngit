@@ -1,0 +1,6 @@
+#t_r_content{ overflow:auto; } 
+.table-3,.table-twelve{ overflow:hidden; }
+.table-data{ margin-top:-30px; overflow:hidden;padding: 0 16px;}
+.table-twelve table{width:1350px;}
+.table-twelve .t_r_title{width:1370px;}
+.table-twelve,.table-data,.table-name {  width:1400px;}

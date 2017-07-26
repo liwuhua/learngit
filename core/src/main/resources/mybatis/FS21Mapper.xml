@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS21">
+                   
+
+    <select id="getDataFs21" resultType="java.util.HashMap">
+        <![CDATA[ SELECT * FROM THM_FS21_02 ]]>
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+        <if test="matnrValue != null and matnrValue.size != 0">
+            <![CDATA[ and MATNR in]]>
+            <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="matnrInterval != null and matnrInterval.size != 0">
+            <foreach collection="matnrInterval" index="index" item="item">
+                <!--#{item}-->
+                <foreach collection="item" index="start"  item="end" separator="union">
+                    OR MATNR BETWEEN #{start} AND #{end}
+                </foreach>
+            </foreach>
+        </if>
+        <![CDATA[ and 1=1)]]>
+
+        <if test="plwrkVaule != null and plwrkVaule.size != 0">
+            <![CDATA[ and PLWRK in]]>
+            <foreach collection="plwrkVaule" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+
+        <if test="ekgrpValue != null and ekgrpValue.size != 0">
+            <![CDATA[ and EKGRP in]]>
+            <foreach collection="ekgrpValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+
+            <if test="mrpctlValue != null and mrpctlValue.size != 0">
+                <![CDATA[ and MRP_CONTRL in]]>
+                <foreach collection="mrpctlValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+
+
+
+            <!--<if test="zcjryValue != null and zcjryValue.size != 0">-->
+            <!--<![CDATA[ and ZCJRY in]]>-->
+            <!--<foreach collection="zcjryValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>-->
+        <!--</if>-->
+
+        <!--<if test="zggryValue != null and zggryValue.size != 0">-->
+            <!--<![CDATA[ and ZGGRY in]]>-->
+            <!--<foreach collection="zggryValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>-->
+        <!--</if>-->
+
+        <!--<if test="cjDateStart != null and cjDateStart != '' and  cjDateEnd != null and cjDateEnd != ''">-->
+            <!--<![CDATA[ AND ZCJRQ >=#{cjDateStart} AND ZCJRQ <= #{cjDateEnd} ]]>-->
+        <!--</if>-->
+
+        <!--<if test="ggDateStart != null and ggDateStart != '' and  ggDateEnd != null and ggDateEnd != ''">-->
+            <!--<![CDATA[ AND ZGGRQ >=#{ggDateStart} AND ZGGRQ <= #{ggDateEnd} ]]>-->
+        <!--</if>-->
+        </trim>
+        <![CDATA[ ORDER BY berw1 ASC ]]>
+        <if test="startitem != null and pageitem != null">
+            <![CDATA[ limit #{startitem},#{pageitem} ]]>
+        </if>
+    </select>
+
+</mapper>
+

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS04">
+
+
+    <resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_MSEG_04">
+        <result column="WERKS" property="werks" jdbcType="VARCHAR" />
+        <result column="MATNR" property="matnr" jdbcType="VARCHAR" />
+        <result column="EBELN" property="ebeln" jdbcType="VARCHAR" />
+        <result column="EBELP" property="ebelp" jdbcType="VARCHAR" />
+        <result column="LIFNR" property="lifnr" jdbcType="VARCHAR" />
+        <result column="EKGRP" property="ekgrp" jdbcType="VARCHAR" />
+        <result column="LFDAT" property="lfdat" jdbcType="VARCHAR" />
+        <result column="BUDAT" property="budat" jdbcType="VARCHAR" />
+        <result column="TIMEDIFF" property="timediff" jdbcType="VARCHAR" />
+        <result column="TIMEDIFFEINDT" property="timediffeindt" jdbcType="VARCHAR" />
+        <result column="MNTNRTXTMD" property="matnrtxtmd" jdbcType="VARCHAR" />
+        <result column="LIFNRTXTMD" property="lifnrtxtmd" jdbcType="VARCHAR" />
+        <result column="MENGE" property="menge" jdbcType="VARCHAR" />
+        <result column="BANFN" property="banfn" jdbcType="VARCHAR" />
+        <result column="EINDT" property="eindt" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="selectColumns"> 
+	    <![CDATA[ select WERKS,MATNR,EBELN,EBELP,LIFNR,EKGRP,LFDAT,BUDAT,TIMEDIFF,TIMEDIFFEINDT, MNTNRTXTMD,LIFNRTXTMD,MENGE,BANFN,EINDT 
+	     from THM_MSEG_04_05 thm_mseg_04_05_]]>
+    </sql>
+
+    <sql id="where_fragement">
+        where 1=1
+        <if test="matnrValue != null and matnrValue != '' and matnrValue.size != 0">
+				<![CDATA[and (thm_mseg_04_05_.matnr in]]>
+            <foreach collection="matnrValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="(matnrValue != null and matnrValue != '' and matnrValue.size != 0) 
+			and (matnrInterval != null and matnrInterval != '' and matnrInterval.size !=0)">
+            <foreach collection="matnrInterval" index="index" item="item">
+                <!--#{item}-->
+                <foreach collection="item" index="start"  item="end" separator="union">
+                    or thm_mseg_04_05_.matnr between #{start} AND #{end}
+                </foreach>
+            </foreach>
+            	<![CDATA[)]]>
+        </if>
+        <if test="(matnrValue == null or matnrValue == '' or matnrValue.size == 0) 
+			and (matnrInterval != null and matnrInterval != '' and matnrInterval.size !=0)">
+            <foreach collection="matnrInterval" index="index" item="item">
+                <!--#{item}-->
+                <foreach collection="item" index="start"  item="end" separator="union">
+                    and thm_mseg_04_05_.matnr between #{start} AND #{end}
+                </foreach>
+            </foreach>
+        </if>
+        <if test="(matnrValue != null and matnrValue != '' and matnrValue.size != 0) 
+			and (matnrInterval == null or matnrInterval == '' or matnrInterval.size == 0)">
+				<![CDATA[)]]>
+        </if>
+			
+        <if test="plantValue != null and plantValue != '' and plantValue.size != 0">
+				<![CDATA[ and thm_mseg_04_05_.werks in]]>
+            <foreach collection="plantValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="ebelnValue != null and ebelnValue != '' and ebelnValue.size != 0">
+				<![CDATA[ and thm_mseg_04_05_.ebeln in]]>
+            <foreach collection="ebelnValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="vendorValue != null and vendorValue != '' and vendorValue.size != 0">
+				<![CDATA[ and thm_mseg_04_05_.lifnr in]]>
+            <foreach collection="vendorValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="purGroupValue != null and purGroupValue != '' and purGroupValue.size != 0">
+				<![CDATA[ and thm_mseg_04_05_.ekgrp in]]>
+            <foreach collection="purGroupValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="timediffValue != null and timediffValue != '' and timediffValue.size != 0">
+				<![CDATA[ and thm_mseg_04_05_.timediff in]]>
+            <foreach collection="timediffValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="startTime != null and startTime != ''">
+				<![CDATA[ and DATE_FORMAT(thm_mseg_04_05_.budat,'%Y%m%d') >= DATE_FORMAT(#{startTime},'%Y%m%d') ]]>
+        </if>
+        <if test="endTime != null and endTime != ''">
+				<![CDATA[ and DATE_FORMAT(thm_mseg_04_05_.budat,'%Y%m%d') <= DATE_FORMAT(#{endTime},'%Y%m%d') ]]>
+        </if>
+    </sql> 
+    <sql id="orderby_fragement">
+		<![CDATA[ ORDER BY CAST(thm_mseg_04_05_.timediff AS SIGNED) DESC,CAST(thm_mseg_04_05_.timediffeindt AS SIGNED) DESC ]]>
+    </sql>
+    <sql id="limit_fragement">
+        <if test="flag == 0">
+			<![CDATA[ limit #{startitem},#{pageitem}; ]]>
+        </if>
+    </sql>
+    <select id="selectData" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_MSEG_04">
+        <include refid="selectColumns" />
+        <include refid="where_fragement" /> 
+        <include refid="orderby_fragement" /> 
+        <include refid="limit_fragement" />
+    </select>
+</mapper>
+

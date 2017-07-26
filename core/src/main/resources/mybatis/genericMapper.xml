@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.GenericMapper">
+    <!--获取供应商类型-->
+    <select id="getListTxasuppty" resultType="com.yjdj.view.core.entity.mybeans.MdmTxasuppty">
+        <![CDATA[ SELECT XASUPPTY,TXTMD from MDM_TXASUPPTY where 1=1 ]]>
+        <if test="xasuppty != null and xasuppty != ''">
+            <![CDATA[ AND XASUPPTY LIKE "%${xasuppty}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY XASUPPTY ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+
+    <!--获取评估类-->
+    <select id="getListValclass" resultType="com.yjdj.view.core.entity.mybeans.MdmValClass">
+        <![CDATA[ select DISTINCT VAL_CLASS,TXTMD from MDM_TVAL_CLASS where 1=1 ]]>
+        <if test="val_class != null and val_class != ''">
+            <![CDATA[ AND VAL_CLASS LIKE "%${val_class}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY VAL_CLASS ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+
+    <!--获取物料组-->
+    <select id="getListMatkl" resultType="com.yjdj.view.core.entity.mybeans.MdmMatlGroup">
+        <![CDATA[ select DISTINCT MATL_GROUP,TXTMD from MDM_TMATL_GROUP where 1=1 ]]>
+        <if test="matl_group != null and matl_group != ''">
+            <![CDATA[ AND MATL_GROUP LIKE "%${matl_group}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY MATL_GROUP ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+
+    <!--获取库存地点-->
+    <select id="getListLgort" resultType="com.yjdj.view.core.entity.mybeans.MdmTstorLoc">
+        <![CDATA[ select STOR_LOC,TXTMD from MDM_TSTOR_LOC where 1=1 ]]>
+        <if test="stor_loc != null and stor_loc != ''">
+            <![CDATA[ AND STOR_LOC LIKE "%${stor_loc}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY STOR_LOC ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+
+    <!-- 获取合同号 -->
+    <select id="getVbeln" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT VBELN from ${tableName}
+            where 1=1 ]]>
+        <if test="vbeln != null and vbeln != ''">
+            <![CDATA[ and VBELN like "%${vbeln}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY VBELN ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+
+    <select id="getListPerson" resultType="com.yjdj.view.core.entity.mybeans.MdmTperson">
+        <![CDATA[ select PERSON,TXTMD from MDM_TPERSON
+                  where 1=1 ]]>
+        <if test="person != null and person != ''">
+            <![CDATA[ AND PERSON LIKE "%${person}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY PERSON ]]>
+    </select>
+
+    <select id="getListMrpctl" resultType="com.yjdj.view.core.entity.mybeans.MdmTmrpcontrl">
+        <![CDATA[ select DISTINCT MRP_CONTRL,TXTMD from MDM_TMRP_CONTRL
+                  where 1=1 ]]>
+        <if test="mrpctl != null and mrpctl != ''">
+            <![CDATA[ AND MRP_CONTRL LIKE "%${mrpctl}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY MRP_CONTRL ]]>
+    </select>
+
+    <select id="getListSalesDoc" resultType="com.yjdj.view.core.entity.mybeans.MdmTdocType">
+        <![CDATA[ select doc_type,txtsh from MDM_TDOC_TYPE
+                  where 1=1 ]]>
+        <if test="doc_type != null and doc_type != ''">
+            <![CDATA[ AND DOC_TYPE LIKE "%${doc_type}%" ]]>
+        </if>
+        <if test="txtsh != null and txtsh != ''">
+            <![CDATA[ AND txtsh LIKE "%${txtsh}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY DOC_TYPE ]]>
+    </select>
+
+    <select id="getListPurDoc" resultType="com.yjdj.view.core.entity.mybeans.MdmTdocType">
+        <![CDATA[ select doc_type,txtsh from MDM_TDOCTYPE
+                  where 1=1 ]]>
+        <if test="doc_type != null and doc_type != ''">
+            <![CDATA[ AND doc_type LIKE "%${doc_type}%" ]]>
+        </if>
+        <if test="txtsh != null and txtsh != ''">
+            <![CDATA[ AND txtsh LIKE "%${txtsh}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY doc_type ]]>
+    </select>
+
+    <select id="getAllAuart" resultType="java.lang.String">
+        <![CDATA[ SELECT DISTINCT auart from ${tableName} ]]>
+        <![CDATA[ ORDER BY AUART ]]>
+    </select>
+
+    <select id="getAllTcustomer" resultType="com.yjdj.view.core.entity.mybeans.MdmTcustomer">
+        <![CDATA[ SELECT fs.KUNNR as customer,zsj.TXTMD as txtmd from (SELECT DISTINCT KUNNR from ${tableName}) fs JOIN MDM_TCUSTOMER zsj on zsj.customer = fs.KUNNR
+                  where 1=1 ]]>
+        <if test="customer != null and customer != ''">
+            <![CDATA[ AND fs.KUNNR LIKE "%${customer}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY KUNNR ]]>
+    </select>
+
+    <select id="getAllTcompCode" resultType="com.yjdj.view.core.entity.mybeans.MdmTcompCode">
+        <![CDATA[ SELECT fs.BUKRS as comp_code,zsj.TXTMD as txtmd from (SELECT DISTINCT BUKRS from ${tableName}) fs JOIN MDM_TCOMP_CODE zsj on zsj.COMP_CODE = fs.BUKRS
+                  where 1=1 ]]>
+        <if test="comp_code != null and comp_code != ''">
+            <![CDATA[ AND fs.BUKRS LIKE "%${comp_code}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY BUKRS ]]>
+    </select>
+    
+    <!-- 24,,26,28使用 -->
+    <select id="getAllTcompCode24" resultType="com.yjdj.view.core.entity.mybeans.MdmTcompCode">
+        <![CDATA[ SELECT fs.RBUKRS as comp_code,zsj.TXTMD as txtmd from (SELECT DISTINCT RBUKRS from ${tableName}) fs JOIN MDM_TCOMP_CODE zsj on zsj.COMP_CODE = fs.RBUKRS
+                  where 1=1 ]]>
+        <if test="comp_code != null and comp_code != ''">
+            <![CDATA[ AND fs.RBUKRS LIKE "%${comp_code}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY RBUKRS ]]>
+    </select>
+
+
+    <select id="getAllTpurGroup" resultType="com.yjdj.view.core.entity.mybeans.MdmTpurGroup">
+        <![CDATA[SELECT DISTINCT zsj.PUR_GROUP as pur_group,zsj.TXTSH as txtsh from (SELECT DISTINCT EKGRP from ${tableName}
+           ) fs JOIN MDM_TPUR_GROUP zsj on zsj.TXTSH = fs.EKGRP
+                  where 1=1 ]]>
+        <if test="pur_group != null and pur_group != ''">
+            <![CDATA[ AND zsj.PUR_GROUP LIKE "%${pur_group}%" ]]>
+        </if>
+        <if test="txtsh != null and txtsh != ''">
+            <![CDATA[ AND zsj.TXTSH LIKE "%${txtsh}%" ]]>
+        </if>
+         <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+    <select id="getTpurGroupList" resultType="com.yjdj.view.core.entity.mybeans.MdmTpurGroup">
+        <![CDATA[ SELECT DISTINCT fs.EKGRP as pur_group,zsj.TXTSH as txtsh from (SELECT DISTINCT EKGRP from ${tableName}) fs JOIN MDM_TPUR_GROUP zsj on zsj.PUR_GROUP = fs.EKGRP
+                  where 1=1 ]]>
+        <if test="pur_group != null and pur_group != ''">
+            <![CDATA[ AND fs.EKGRP LIKE "%${pur_group}%" ]]>
+        </if>
+        <if test="txtsh != null and txtsh != ''">
+            <![CDATA[ AND zsj.TXTSH LIKE "%${txtsh}%" ]]>
+        </if>
+        <if test="pur_groups != null and pur_groups != '' and pur_groups.size != 0">
+				<![CDATA[ and zsj.PUR_GROUP in]]>
+            <foreach collection="pur_groups" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <![CDATA[ ORDER BY EKGRP ]]>
+    </select>
+
+    <select id="getAllTplant" resultType="com.yjdj.view.core.entity.mybeans.MdmTplant">
+        <![CDATA[ SELECT DISTINCT fs.WERKS as plant,zsj.TXTMD as txtmd,TXTSH as txtsh from (SELECT DISTINCT WERKS from ${tableName}) fs JOIN MDM_TPLANT zsj on zsj.PLANT = fs.WERKS
+                   where 1=1 ]]>
+        <if test="plant != null and plant != ''">
+            <![CDATA[ AND fs.WERKS LIKE "%${plant}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY WERKS ]]>
+    </select>
+    
+
+
+    <select id="getAllTvendor" resultType="com.yjdj.view.core.entity.mybeans.MdmTvendor">
+        <![CDATA[ SELECT DISTINCT fs.LIFNR as vendor,zsj.TXTMD as txtmd from (SELECT DISTINCT LIFNR from ${tableName}) fs JOIN MDM_TVENDOR zsj on zsj.VENDOR = fs.LIFNR
+                  where 1=1 ]]>
+        <if test="vendor != null and vendor != ''">
+            <![CDATA[ AND fs.LIFNR LIKE "%${vendor}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY LIFNR ]]>
+    </select>
+   
+   
+   <!-- 参数txtmd 是工作空间的描述     zhwcx是工作空间的代码   zhwcx id  txtmd是描述-->
+    <select id="getAllZhwcx" resultType="com.yjdj.view.core.entity.mybeans.MdmWorkcenter">
+
+        <![CDATA[ SELECT DISTINCT zsj.workcenter AS workcenter,zsj.TXTMD as txtmd from (SELECT DISTINCT ZHWCX from
+        ${tableName}) fs JOIN MDM_TWORKCENTER zsj ON zsj.TXTMD = fs.ZHWCX
+                  where 1=1 ]]>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND fs.ZHWCX LIKE "%${txtmd}%" ]]>
+        </if>  
+        <if test="zhwcx != null and zhwcx != ''"> 
+            <![CDATA[ AND zsj.workcenter LIKE "%${zhwcx}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY ZHWCX ]]>
+    </select>
+    
+    
+    <!-- 获取配送方式   -->
+    <select id="getAllZpsfs" resultType="com.yjdj.view.core.entity.mybeans.MdmZpsfs">
+        <![CDATA[ SELECT DISTINCT fs.ZPSFS AS zpsfscode,zsj.TXTMD as txtmd from (SELECT DISTINCT ZPSFS from ${tableName}) fs JOIN MDM_ZPSFS zsj ON zsj.ZPSFSCODE = fs.ZPSFS
+                  where 1=1 ]]>
+        <if test="zpsfs != null and zpsfs != ''">
+            <![CDATA[ AND fs.ZPSFS LIKE "%${zpsfs}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY ZPSFS ]]>
+    </select>
+    
+    
+     <!-- 获取组件采购类型   -->
+    <select id="getAllCompPurtype" resultType="com.yjdj.view.core.entity.mybeans.MdmComPurtype">
+        <![CDATA[ SELECT DISTINCT fs.comppurtype AS comppurtypecode,zsj.TXTMD as txtmd from (SELECT DISTINCT comppurtype from ${tableName}) fs JOIN MDM_COMPURTYPE zsj ON zsj.comppurtypecode = fs.comppurtype
+                  where 1=1 ]]>
+        <if test="comppurtype != null and comppurtype != ''">
+            <![CDATA[ AND fs.comppurtype LIKE "%${comppurtype}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY comppurtype ]]>
+    </select>
+    
+
+    
+    <select id="getAllTmaterial" resultType="com.yjdj.view.core.entity.mybeans.MdmTmaterial">
+        <![CDATA[ SELECT fs.MATNR as material,zsj.TXTMD as txtmd FROM (SELECT DISTINCT MATNR from ${tableName}) fs JOIN MDM_TMATERIAL zsj on zsj.MATERIAL = fs.MATNR
+                  where 1=1 ]]>
+        <if test="material != null and material != ''">
+            <![CDATA[ AND fs.MATNR LIKE "%${material}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY MATNR ]]>
+    </select>
+    
+    
+   <select id="getTmaterialBylimit" resultType="com.yjdj.view.core.entity.mybeans.MdmTmaterial">
+        <![CDATA[ SELECT fs.MATNR as material,zsj.TXTMD as txtmd FROM (SELECT DISTINCT MATNR from ${tableName}) fs JOIN MDM_TMATERIAL zsj on zsj.MATERIAL = fs.MATNR
+                  where 1=1 ]]>
+        <if test="material != null and material != ''">
+            <![CDATA[ AND fs.MATNR LIKE "%${material}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+         <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+    
+    
+    <!-- 获取组件物料编码  -->
+     <select id="getCopomatnum" resultType="com.yjdj.view.core.entity.mybeans.MdmTmaterial">
+        <![CDATA[ SELECT fs.COPOMATNUM as material,zsj.TXTMD as txtmd FROM (SELECT DISTINCT COPOMATNUM from ${tableName}) fs JOIN MDM_TMATERIAL zsj on zsj.MATERIAL = fs.COPOMATNUM
+                  where 1=1 ]]>
+        <if test="material != null and material != ''">
+            <![CDATA[ AND fs.COPOMATNUM LIKE "%${material}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+          <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+    
+    
+    
+    
+
+    <select id="getAllTsalesOff" resultType="com.yjdj.view.core.entity.mybeans.MdmTsalesOff">
+        <![CDATA[ SELECT DISTINCT fs.VKBUR as sales_off,zsj.TXTSH as txtsh from (SELECT DISTINCT VKBUR from ${tableName}) fs JOIN MDM_TSALES_OFF zsj on zsj.sales_off = fs.VKBUR
+                  where 1=1 ]]>
+        <if test="sales_off != null and sales_off != ''">
+            <![CDATA[ AND fs.VKBUR LIKE "%${sales_off}%" ]]>
+        </if>
+        <if test="txtsh != null and txtsh != ''">
+            <![CDATA[ AND zsj.TXTSH LIKE "%${txtsh}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY VKBUR ]]>
+    </select>
+
+    <select id="getAllTsalesOrg" resultType="com.yjdj.view.core.entity.mybeans.MdmTsalesOrg">
+        <![CDATA[ SELECT DISTINCT fs.VKORG as salesOrg,zsj.TXTLG as txtlg from (SELECT DISTINCT VKORG from ${tableName}) fs JOIN MDM_TSALESORG zsj on zsj.salesOrg = fs.VKORG
+                  where 1=1 ]]>
+        <if test="salesOrg != null and salesOrg != ''">
+            <![CDATA[ AND fs.VKORG LIKE "%${salesOrg}%" ]]>
+        </if>
+        <if test="txtlg != null and txtlg != ''">
+            <![CDATA[ AND zsj.TXTLG LIKE "%${txtlg}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY VKORG ]]>
+    </select>
+
+    <!-- 获取所有生产工厂 -->
+    <select id="getAllProducePlant" resultType="com.yjdj.view.core.entity.mybeans.MdmTplant">
+        <![CDATA[ SELECT DISTINCT fs.DWERK as plant,zsj.TXTMD as txtmd,zsj.TXTSH as txtsh from (SELECT DISTINCT DWERK from ${tableName}) fs JOIN MDM_TPLANT zsj on zsj.PLANT = fs.DWERK
+                   where 1=1 ]]>
+        <if test="plant != null and plant != ''">
+            <![CDATA[ AND fs.WERKS LIKE "%${plant}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+
+        order by DWERK;
+
+    </select>
+
+    <!-- 获取所有生产订单类型 -->
+    <select id="getAllOrderType" resultType="com.yjdj.view.core.entity.mybeans.TordType">
+        <![CDATA[ SELECT DISTINCT fs.DAUAT AS ordTypeCode, zsj.TXTMD AS txtmd  FROM (SELECT DISTINCT DAUAT from ${tableName}) fs JOIN MDM_TORD_TYP zsj ON zsj.ORD_TYP = fs.DAUAT  where 1=1 ]]>
+        <if test="plant != null and plant != ''">
+            <![CDATA[ AND fs.DAUAT LIKE "%${plant}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+
+        order by DAUAT;
+
+    </select>
+
+
+    <select id="findPermissionsByUserIdAndModuleId" resultType="java.util.Map">
+        <![CDATA[
+            SELECT
+                    distinct sp.short_name,sp.description
+            FROM
+                    security_user_role ur,
+                    security_role_permission rp,
+                    security_permission sp
+            WHERE
+                ur.role_id = rp.role_id
+            AND sp.module_id = #{moduleId}
+            AND sp.id = rp.permission_id
+            AND ur.user_id = #{userId}
+            ORDER BY sp.description,sp.short_name
+         ]]>
+    </select>
+    
+    <select id="findPermissionsByUserId" resultType="java.util.Map">
+        <![CDATA[
+            SELECT DISTINCT
+                        sp.short_name,
+                        sp.description,
+                        m.sn,
+                        m.url,
+                        m.func_tag
+                FROM
+                        security_user_role ur,
+                        security_role_permission rp,
+                        security_permission sp,
+                        security_module m
+                WHERE
+                    ur.role_id = rp.role_id
+                    AND sp.module_id = m.id
+                    AND sp.id = rp.permission_id
+                    AND ur.user_id = #{userId}
+                    and (m.url like '/crrc/%' or m.url like '/management/code/list%')
+                    ORDER BY
+                        m.sn,
+                        sp.description,
+                        sp.short_name
+         ]]>
+    </select>
+</mapper>
+

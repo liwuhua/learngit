@@ -1,0 +1,6 @@
+.table-03{
+	width:100%;
+}
+/* 表格样式 */
+.table-03 table{width:1650px;} 
+.table-03 .t_r_title{width:1670px;}/*宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题）*/ 

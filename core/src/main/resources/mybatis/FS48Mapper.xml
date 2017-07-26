@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS48">
+
+
+
+<select id="getStations"  resultType="map">
+    SELECT 
+      stationid,name,lon,lat
+    FROM 
+    t_sys_code a,THM_FS48_01 b
+    where a.code4=b.stationid and a.codeTypeId = '00005'
+
+</select>
+
+
+<select id="getDuansuos"  resultType="java.util.LinkedHashMap">
+  
+		<!--   SELECT DISTINCT
+			(b.locomotivedepot) locomotivedepot
+		FROM
+			THM_FS48_01 a
+		INNER JOIN THM_FS48_02 b ON a.stationid = b.statypeid
+		WHERE
+			a.stationid = #{stationid}
+		ORDER BY
+			locomotivedepot -->
+			
+							select t2.name locomotivedepot
+									 from t_sys_code t2 
+									 where t2.extend = (SELECT
+												t1.id
+												FROM
+												t_sys_code AS t1
+												WHERE
+												t1.code4 = #{stationid} AND
+												t1.codeTypeId = '00005' AND
+												t1.extend IS NULL)
+		   
+
+</select>
+
+
+    <!-- 产品配属 -->
+    <select id="selecProductAttach"  resultType="map">
+
+			select 
+				 psds,cx,COUNT(cx)count
+					from (
+					select
+					     t.*
+					from 
+					(select 
+					  c.psds,c.cx 
+					 from 
+			THM_FS48_02 a
+			INNER JOIN THM_FS48_01   b on  a.statypeid=b.stationid and b.stationid=#{stationid}
+			INNER JOIN (select * from THM_FS47_MAIN  where DATE_FORMAT(xxtbrq,'%Y%m') between #{startMonth}  and  #{endMonth})c
+    	                       on  a.locomotivedepot=c.psds
+					GROUP BY c.psds,c.xh)t,THM_FS47_ALLOCATION th
+					where t.cx=th.cx
+					)t
+					GROUP BY psds,cx 
+					
+
+    				  <if test="startitem != null and startitem!='' and pageitem !=null and pageitem!='' "> 
+							limit ${startitem},${pageitem}
+			          </if>
+    </select>
+
+
+
+<!-- 备品配件 -->
+<select id="selecSparepart"  resultType="map">
+
+        select 
+			  <!-- IFNULL(aname,"")aname,IFNULL(amodel,"")amodel,IFNULL(num,"")count,ifnull(a.locomotivedepot,"")locomotivedepot -->
+		      aname,amodel,	GROUP_CONCAT(ifnull(CONVERT(num,CHAR), "")) counts, GROUP_CONCAT(locomotivedepot) locodepos
+		from 
+			(
+			 SELECT DISTINCT
+						(b.locomotivedepot) locomotivedepot
+					FROM
+						THM_FS48_01 a
+					INNER JOIN THM_FS48_02 b ON a.stationid = b.statypeid
+					WHERE
+						a.stationid =#{stationid}
+					ORDER BY
+						locomotivedepot
+			)a
+			LEFT JOIN 
+			(
+			SELECT 
+			 ANAME,AMODEL,sum(pyes)num,FWD
+			FROM `THM_FS48_01` a
+			INNER JOIN THM_FS48_02 b on  a.stationid=b.statypeid and a.stationid=#{stationid}
+			INNER JOIN (select * from THM_FS54  where YEARMONTH between #{startMonth}  and  #{endMonth})c on b.locomotivedepot=c.FWD
+			GROUP BY ANAME,amodel,fwd
+			)b on a.locomotivedepot=b.FWD
+			where aname is not null and amodel is not null and locomotivedepot is not null
+			<!-- GROUP BY aname,amodel,locomotivedepot -->
+			GROUP BY aname,amodel 
+			ORDER BY aname,amodel,locomotivedepot
+			 
+			   <!-- 分页 --> 
+			   <if test="startitem != null and startitem!='' and pageitem !=null and pageitem!='' "> 
+							limit ${startitem},${pageitem}
+			   </if>
+			  
+</select>
+
+
+	  <!-- 产品配属  (新) -->
+    <select id="newSelecProductAttach"  resultType="map">
+    <!--修改一  -->
+						<!-- select t5.cx ,count(djbh) count,t6.psds
+								from THM_FS47_ALLOCATION t5 
+								INNER JOIN (select t3.cx,t3.psds,MAX(t3.importtime) importtime
+														from THM_FS47_MAIN t3
+														INNER JOIN (select t2.name
+																				FROM
+																				t_sys_code AS t2 
+																				where t2.extend = (SELECT DISTINCT
+																						t1.id
+																						FROM
+																						t_sys_code AS t1
+																						WHERE
+																						t1.codeTypeId = '00005' AND
+																						t1.code4 = #{stationid} AND
+																	t1.extend IS NULL)) t4
+														 on t3.psds = t4.name) t6
+					      			on t6.cx = t5.cx and t6.importtime = t5.importtime
+					      			GROUP BY t6.psds -->
+    <!-- 修改二 -->
+    	select t3.place_subjection psds,t3.train_num cx,count(t3.motor_serial_num) count from THM_FS47_ALLOCATION_new t3 where t3.place_subjection in (
+				select t2.NAME
+					 from t_sys_code t2
+						where t2.extend = (SELECT
+							t1.id
+							FROM
+							t_sys_code AS t1
+							WHERE
+							t1.codeTypeId = '00005' AND
+							t1.code4 = #{stationid})
+
+			)
+    	    <if test="startitem != null and startitem!='' and pageitem !=null and pageitem!='' "> 
+							limit ${startitem},${pageitem}
+			  </if>
+    </select>
+	
+<!-- 备品配件 (新)-->
+<select id="newSelecSparepart"  resultType="map">
+
+						
+<!-- select 
+		      aname,amodel,	GROUP_CONCAT(ifnull(CONVERT(num,CHAR), "")) counts, GROUP_CONCAT(locomotivedepot) locodepos
+		from 
+			(
+				select t2.name locomotivedepot
+										 from t_sys_code t2 
+										 where t2.extend = (SELECT
+													t1.id
+													FROM
+													t_sys_code AS t1
+													WHERE
+													t1.code4 = #{stationid} AND
+													t1.codeTypeId = '00005' AND
+													t1.extend IS NULL)
+			)a
+			LEFT JOIN 
+			(
+			SELECT 
+			 ANAME,AMODEL,pyes num,FWD
+			FROM `THM_FS54` b
+				
+			INNER JOIN (select t2.name locomotivedepot
+										 from t_sys_code t2 
+										 where t2.extend = (SELECT
+													t1.id
+													FROM
+													t_sys_code AS t1
+													WHERE
+													t1.code4 = #{stationid} AND
+													t1.codeTypeId = '00005' AND
+													t1.extend IS NULL))c	 
+			on b.FWD=c.locomotivedepot
+			GROUP BY ANAME,amodel,fwd
+			)b on a.locomotivedepot=b.FWD
+			where aname is not null and amodel is not null and locomotivedepot is not null			
+			GROUP BY aname,amodel 
+			ORDER BY aname,amodel,locomotivedepot	 -->	
+			
+			select 
+		      pname,pmodel,	GROUP_CONCAT(ifnull(CONVERT(num,CHAR), "")) counts, GROUP_CONCAT(locomotivedepot) locodepos
+		from 
+			(
+				select t2.name locomotivedepot
+										 from t_sys_code t2 
+										 where t2.extend = (SELECT
+													t1.id
+													FROM
+													t_sys_code AS t1
+													WHERE
+													t1.code4 = #{stationid} AND
+													t1.codeTypeId = '00005' AND
+													t1.extend IS NULL)
+			)a
+			LEFT JOIN 
+			(
+			SELECT 
+			 PNAME,PMODEL,pyes num,FWD
+			FROM `THM_FS54` b	
+			INNER JOIN (select t2.name locomotivedepot
+										 from t_sys_code t2 
+										 where t2.extend = (SELECT
+													t1.id
+													FROM
+													t_sys_code AS t1
+													WHERE
+													t1.code4 = #{stationid} AND
+													t1.codeTypeId = '00005' AND
+													t1.extend IS NULL))c	 
+			on b.FWD=c.locomotivedepot
+			GROUP BY pname,pmodel,fwd
+			)b on a.locomotivedepot=b.FWD
+			where pname is not null and pmodel is not null and locomotivedepot is not null			
+			GROUP BY pname,pmodel 
+			ORDER BY pname,pmodel,locomotivedepot
+				 
+			   <!-- 分页 --> 
+			   <if test="startitem != null and startitem!='' and pageitem !=null and pageitem!='' "> 
+							limit ${startitem},${pageitem}
+			   </if>
+			  
+</select>
+
+
+</mapper>
+

@@ -1,0 +1,921 @@
+html,body,#wrapper{
+	width:100%;
+	height:100%;
+}
+.fl,.fl1{ float:left;}
+.fr{ float:right;}
+.marg-t { margin-top:10px; }
+.clear:after{
+  display:block; 
+  content:"clear"; 
+  height:0; 
+  clear:both;
+  visibility:hidden;
+}
+#wrapper a,#wrapper button,#wrapper input{
+    outline: none;
+    border: none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    box-shadow: none;
+}
+#wrapper a{
+    text-decoration: none;
+    outline: none;
+}
+#wrapper a:hover {
+    text-decoration: none;
+    outline: none;
+}
+#wrapper a:active {
+    text-decoration: none;
+    outline: none;
+}
+#wrapper a:focus {
+    text-decoration: none;
+    outline: none;
+}
+body input {
+	height:26px;
+	line-height:26px;
+	vertical-align:middle;
+	padding-left:5px;
+}
+.fixed-left {
+	overflow:hidden;
+}
+.clear{zoom:1;}
+input[type='radio'],input[type='checkbox']{
+	border:none;
+}
+/* 日期输入框  */
+#startTime,#endTime,#startTime1,#endTime1,#startTime2,#endTime2,#startTimeTwo,#endTimeTwo,#startTimeThree,#endTimeThree,.checkDate,#startYearMonth,#endYearMonth{
+	width:90px;
+	cursor:pointer;
+}
+/* 遮罩层  */
+.Mask,#Mask,#Mask2{
+	width:100%;
+	height:100%;
+	line-height:100%;
+	position:fixed;
+	top:0;
+	left:0;
+	background-color:rgba(0,0,0,0.2);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#33000000,endColorstr=#33000000);
+	z-index:1;
+    display:none;
+}
+#Mask2{
+	z-index:32;
+}
+.Mask img,#Mask2 img{
+	margin-left:45%;
+}
+.Mask b,#Mask2 b{
+	color:#000;
+	padding-top:20%;
+	display:inline-block;
+}
+/* 查询按钮样式  */
+.btnAll,#resetBtn,#submit,#downMb,#upMb{
+	font-size: 14px;
+	color:#fff;
+	height: 24px;
+    line-height: 24px;
+	text-align: center;
+	display: inline-block;
+	border:none;
+	padding:0px;
+	cursor: pointer;
+}
+.btnAll {
+	margin-right:15px;
+	width:24px;
+	vertical-align:middle;
+	background:#c70019 url(../images/search1.png) no-repeat center;
+	background-size:80%;
+	-ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+}
+/* ie8下所有可点击按钮变鼠标小手 */
+.btnAll div img,.cancel img,.cancel1 img,.cancel2 img,.btnOneSecond img,.add img,.searchs img,.del img,.searchOne img,.spanNext img,.spanPre img {
+	cursor:pointer!important;
+}
+@-moz-document url-prefix(){
+	*{
+		box-sizing:border-box;
+	}
+}
+#resetBtn {
+	background: #c70019;
+}
+#submit{
+	background: #d99252;
+}
+#resetBtn,#submit,#downMb,#upMb {
+	margin-left:10px;
+	width: 40px;
+	font-size:12px;
+}
+/*form表单 */
+.container form {
+	background: #dedede;
+	padding:4px 10px;
+	overflow:hidden;
+	margin-bottom:0px;
+}
+.container form p{
+	margin-bottom:0px;
+	padding-right:50px;
+	line-height:35px;
+}
+.container form p span{
+	display:inline-block;
+}
+.container form input[type="text"]{
+	width:134px;
+	height:26px;
+	line-height:26px;
+	border:1px solid #c9c9c9;
+	padding:0 0 0 5px;
+	vertical-align: middle;
+}
+.container form b{
+	margin-right:10px;
+}
+/* 收起展开按钮  */
+.retract {
+	width:60px;
+	height:24px;
+	text-align:center;
+	line-height:24px;
+	background-color:#f6f6f6;
+	border:1px solid #e3e9f3;
+	float:right;
+	color:#5a5a5a;
+	position:absolute;
+	top:0px;
+	right:15px;
+	cursor: pointer;
+	z-index: 1;
+}
+/* 表格  */
+ .notSearch+div{
+ 	margin-top:10px;
+	display:none;
+}
+.table-name{
+	font-size:16px;
+	font-weight:700;
+	text-align:center;
+}
+/*多值查询框*/
+.multiSearch,.intervalTwo{
+	height: auto;
+	background: #fff;
+    padding: 15px 22px;
+    position: absolute;
+    left: 400px;
+    top: 90px;
+    z-index:10;
+    border-radius: 4px;
+}
+.multiSearch div,.intervalTwo div{
+	height:400px;
+}
+.multiSearch div.cancel1,.tabMask p.cancel,.intervalTwo div.cancel2 {
+	float: right;
+    cursor: pointer;
+    width: 12px;
+    height: 12px;
+    background:url(../images/del.png) no-repeat;
+    background-size:100% 100%;
+    -ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+}
+.multiSearch div:nth-child(2),.intervalTwo div:nth-child(2){
+	font-size:14px;
+}
+.multiSearch div p:first-child,.multiSearch div p:last-child,.intervalTwo div p:first-child,.intervalTwo div p:last-child{
+	font-size:14px;
+}
+.multiSearch div table,.intervalTwo div table{
+	width:100%;
+	text-align:left;
+	font-size:12px;
+	border:1px solid #aaa;
+}
+.multiSearch div table td,.multiSearch div table th,.intervalTwo div table th,.intervalTwo div table td{
+	padding:2px 6px;
+}
+th{
+	background-color:#ededed;
+}
+.multiSearch div p:first-child,.intervalTwo div p:first-child{
+	margin:0px;
+	overflow:hidden;
+	margin-bottom: 10px;
+}
+.multiSearch input,.intervalTwo input,.tabMask input{
+	outline:none;
+	padding-left:5px;
+}
+.multiSearch button,.intervalTwo button,.tabMask button{
+	outline:none;
+}
+.multiSearch p input,.intervalTwo p input{
+	width:100px;
+    margin-left: 10px;
+}
+.multiSearch input,.intervalTwo input,tabMask imput{
+	border:1px solid #aaa;
+	height:24px;
+}
+.multiSearch p span input:nth-child(1),.intervalTwo p span input:nth-child(1){
+	margin-right: 15px;
+}
+.intervalTwo p{
+	margin-bottom:10px;
+}
+.multiSearch .sure1,.multiSearch .sure,.multiSearch .sure2,.multiSearch .cancel,.multiSearch .cancel1,.multiSearch .cancel2,.tabMask .cancel,.tabMask .sure,.intervalTwo .cancel2,.intervalTwo .sure2{
+	outline:none;
+	border:none;
+	padding:0px;
+    width: 60px;
+    height: 24px;
+	text-align:center;
+    line-height: 24px;
+	color:#fff;
+}
+.multiSearch .sure1,.multiSearch .sure,.multiSearch .sure2,.tabMask .sure,.intervalTwo .sure2{
+	background-color:#00678f;
+	margin-left:20px;
+}
+.multiSearch .cancel,.multiSearch .cancel1,.multiSearch .cancel2,.tabMask .cancel{
+	cursor: pointer;
+}
+button.cancel,button.cancel1,button.cancel2{
+	background-color: #aaa;
+}
+.multiSearch .spanPre1,.multiSearch .spanNext1,.intervalTwo .spanPre1,.intervalTwo .spanNext1{
+	width:78px;
+	height:26px;
+	border:none;
+	background-color:#fff;
+	border:1px solid #dddddd;
+	padding:0px;
+	cursor: pointer;
+}
+.multiSearch table+p{
+	margin-top:10px;
+}
+.multiSearch .spanPre,.multiSearch .spanNext,.intervalTwo .spanPre,.intervalTwo .spanNext{
+	width:14px;
+	height:14px;
+	border:none;
+	background-color:#fff;
+	padding:0px;
+	cursor: pointer;
+	outline:none;
+}
+.multiSearch .spanPre,.intervalTwo .spanPre{
+	background:url(../images/spanpre.png) no-repeat;
+	-ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+}
+.multiSearch .spanNext,.intervalTwo .spanNext{
+	background:url(../images/spannext.png) no-repeat 100% 0%;
+	-ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+	margin-right:5px;
+}
+
+@-moz-document url-prefix(){
+	.multiSearch .spanPre,.multiSearch .spanNext,.intervalTwo .spanPre,.intervalTwo .spanNext{
+		vertical-align: 5px;
+	}
+}
+.multiSearch .searchOne,.intervalTwo .searchOne,.btnOneSecond,.intervalBox .searchs{
+	width:26px;
+	height: 26px;
+	border:none;
+	vertical-align: bottom;
+	padding:0;
+	background:url(../images/searchs.png) 100% 100% no-repeat;
+	background-size:100%;
+	-ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+}
+.multiSearch .searchOne,.intervalTwo .searchOne{
+	background: url(../images/search.png) 50% 50% no-repeat;
+	
+	background-size: 90%;
+	-ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+}
+
+.intervalBox .add{
+    position: relative;
+    top: 13px;
+    top:22px\9;
+    /* background:url(../images/add.png) no-repeat;
+    -ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	 */
+}
+.intervalBox .del{
+	background:url(../images/deldel.png) no-repeat;
+	-ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+	margin-left: 40px;
+}
+.intervalBox {
+	display:none;
+	margin-left: 50px
+}
+.intervalBox .add,.intervalBox .del{
+	width:20px;
+	height: 20px;
+	border:none;
+	text-align:center;
+	padding:0;
+	background-color:#fff;
+	background-size:100%;
+	vertical-align: middle;
+}
+.multiSearch p input{
+	margin-left:10px;
+}
+.multiSearch1 {
+	width: 500px;
+	height: auto;
+	background: #999;
+    padding: 25px;
+    position: absolute;
+    left: 400px;
+    top: 130px;
+    display:none;
+}
+
+/* 左侧菜单样式 */
+#sidebar-menu ul li:first-child ul li:first-child a{
+	color:#fff;
+}
+
+/* 表格对齐样式 */
+.notSearch+div div table th{
+	border:1px solid #ddd;
+	font-size:12px;
+	/* text-indent: 5px; */
+    padding: 2px 5px;
+}
+.ch-kp-twenty  table th,.ch-kp-twenty  table td,.ch-kp-twentyThree  table th,.ch-kp-twentyThree  table td{
+	border:1px solid #ddd;
+	font-size:12px;
+	/* text-indent: 5px; */
+}
+.notSearch+div table td{
+	/* text-indent: 5px; */
+	font-size:12px;
+	height:30px;
+	word-break: break-all;
+	border: 1px solid #ddd;
+	color: #262626;
+	padding: 2px 5px;
+}
+.notSearch+div table tbody tr:nth-child(2n-1),.ch-kp-twenty  table tbody tr:nth-child(2n-1),.ch-kp-twentyThree  table tbody tr:nth-child(2n-1){
+	background-color:#ededed;
+}
+.t_r_content{
+	width:100%; 
+	background:#fff;
+	overflow:auto;
+}
+.t_r{
+	width:100%; 
+	height:auto; 
+	float:left;
+	padding: 0 16px;
+}          
+.t_r_t{
+	width:100%;
+	overflow:hidden;
+}
+.t_r_b{
+    width:100%;
+    overflow:hidden;
+}
+.bordertop{ 
+	border-top:0px;
+} 
+
+/* 多值和区间查询框 */
+.tabMask{
+	width:500px;
+	background: #fff;
+	position: absolute;
+	left: 305px;
+	top: 80px;
+	padding:10px 20px;
+	z-index:10;
+	font-size: 14px;
+	border-radius:4px;
+}
+.tabMask ul{
+	height: 31px;
+	padding: 0;
+	border-bottom: 1px solid #999;
+	margin-bottom:0;
+}
+.tabMask .codingOne{
+    margin-left: 10px;
+    border:1px solid #ddd;
+}
+.tabMask li{
+	list-style: none;
+	line-height: 30px;
+	height: 30px;
+	float: left;
+	width: 30%;
+	text-align:center;
+}
+.tabMask .bg{
+	border-bottom: 1px solid #c70019;
+	color:#c70019;
+}
+.multiBox{
+	margin-left: 120px;
+	margin-top:20px;
+}
+.tabMask tr{
+	height: 30px; 
+}
+.intervalBox div{
+    text-align: right;
+    margin-top:10px;
+    margin-top:0px\9;
+}
+.intervalBox p .searchs{
+ 	 margin-right: 10px;
+ }  
+  .intervalBox p .searchs{
+  font-size:14px;
+  }
+.sureInterval{
+	text-align: center;
+	padding-top: 80px;
+}
+.intervalBox input{
+	width: 80px;
+	padding: 0;
+    border: 1px solid #ddd;
+}
+.intervalBox p:nth-child(2){
+	margin-top: -10px;
+    margin-bottom: 10px;
+}
+/* 区间结果查询框 */
+.intervalTwo table,.intervalTwo table th {
+	text-align: left;
+	font-size:12px;
+}
+
+
+.hideColBox,.hideColBox2{
+	width:294px;
+	background:#fff;
+	position:absolute;
+	left:500px;
+	top:180px;
+	padding:12px 20px;
+	display:none;
+	z-index:11;
+}
+.hideColBox2{
+	z-index:33;
+}
+.hideColBox th,.hideColBox2 th{
+	background-color:ededed;
+}
+.hideColBox tbody tr:nth-child(2n),.hideColBox2 tbody tr:nth-child(2n){
+	background-color:#ededed;
+}
+.hideColBox .pClose,.hideColBox2 .pClose2{
+	height:20px;
+	line-height:20px;
+	font-size:18px;
+}
+.hideColBox .pClose span,.hideColBox2 .pClose2 span{
+	cursor: pointer;
+	float:right;
+	width:12px;
+	height:12px;
+	background:url(../images/del.png) no-repeat;
+	background-size: 100% 100%;
+	-ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+	
+}
+.hideTable,.hideTable2{
+	font-size:12px;
+	margin-bottom:12px;
+}
+.hideTable tr th,.hideTable tr td,.hideTable2 tr th,.hideTable2 tr td{
+	height:30px;
+}
+.btns,.btns2{
+	width:270px;
+	height:27px;
+	font-size:12px;
+	text-align:center;
+	color:#fff;
+}
+.btns .canBtns,.btns2 .canBtns2{
+	display:inline-block;
+	width: 60px;
+    height: 24px;
+	line-height:24px;
+	border:none;
+	text-align:center;
+	margin-right:20px;
+	background:#aaa;
+}
+.btns .sureBtns,.btns2 .sureBtns2{
+	display:inline-block;
+	width: 60px;
+    height: 24px;
+	line-height:24px;
+	border:none;
+	text-align:center;
+	background:#00678f;
+}
+.import,.export,.hideCol{
+	cursor: pointer;
+    margin-left: 20px
+}
+.hideCol,.hideCol2{
+	width:16px;
+	height:14px;
+	cursor: pointer;
+}
+
+
+/* 序号居中 */
+.notSearch+div div table .xh{
+	text-align:center;
+	text-indent:0px;
+	
+}
+.xh2{
+	text-align:center;
+	text-indent:0;
+}
+/* 隐藏列的表格样式 */
+.hideColBox,.hideColBox2{
+	height:310px;
+}
+.hideTable .t_r_content,.hideTable2 .t_r_content{
+	width:100%;
+	height:180px;
+	background:#fff;
+	overflow:auto;
+}
+.hideTable table td,.hideTable2 table td{
+	text-indent: 5px;
+	font-size:12px;
+	height:30px;
+	word-break: break-all;
+	border: 1px solid #ddd;
+	color: #262626;
+}
+.hideTable table,.hideTable2 table{width:100%;}
+.hideTable .t_r_title,.hideTable2 .t_r_title{width:100%;}
+.hideTable,.hideTable2{padding:0;}
+/* 导入框样式 */
+.importBox,.importBox1{
+	width:600px; 
+	height:380px; 
+	background:#fff; 
+	position:absolute; 
+	left:400px; 
+	top:150px; 
+	display:none; 
+	z-index:20; 
+} 
+.importBox .closeX,.importBox1 .closeX1{
+    cursor: pointer;
+    width: 12px;
+    height: 12px;
+    background:url(../images/del.png) no-repeat;
+    background-size:100% 100%;
+    -ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	margin-top: 14px;
+}
+
+.importBox .ppp,.importBox1 .ppp1{
+	height: 40px;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+    line-height: 40px;
+    padding: 0 10px;
+    background-color: #f5f9ff;
+    margin:0px;
+}
+.importBox .chooseFile,.importBox1 .chooseFile1{
+	margin-bottom:10px;
+	border-bottom: 1px solid #ddd;
+    padding: 13px 10px;
+}
+.importBox div div:first-child span:first-child,.importBox1 div div:first-child span:first-child{
+	width: 90px;
+    font-size: 14px;
+    height: 32px;
+    line-height: 30px; 
+	border: 1px solid #ddd;  
+	text-align:center;
+	border-radius:6px;
+}
+#fileupload,#fileupload1{
+	width: 90px;
+    height: 32px;
+    position: relative;
+    left: -80px;
+    top: 0;
+    display:inline-block;
+    opacity: 0; 
+	filter:alpha(opacity=0); 
+}
+.fileupload-file,.fileupload-file1{
+	position: relative;
+    left: -100px;
+    vertical-align: bottom;
+    font-size:14px;
+    top: -5px
+}
+
+.downloadTable,.downloadTable1{
+	height:230px; 
+	overflow:auto; 
+	font-size:12px;
+	margin:0 10px;
+} 
+/* 进度条样式 */
+@-webkit-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@-moz-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@-ms-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@-o-keyframes progress-bar-stripes {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 40px 0;
+  }
+}
+
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.progress, .progress1{
+  margin:0 10px;
+  height: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  background-color: #f7f7f7;
+  background-image: -moz-linear-gradient(top, #f5f5f5, #f9f9f9);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#f9f9f9));
+  background-image: -webkit-linear-gradient(top, #f5f5f5, #f9f9f9);
+  background-image: -o-linear-gradient(top, #f5f5f5, #f9f9f9);
+  background-image: linear-gradient(to bottom, #f5f5f5, #f9f9f9);
+  background-repeat: repeat-x;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#fff9f9f9', GradientType=0);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+     -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    -ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+}
+
+.progress .bar,.progress1 .bar1 {
+  float: left;
+  width: 0;
+  height: 100%;
+  font-size: 12px;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #c70019;
+  background-image: -moz-linear-gradient(top, #149bdf, #0480be);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#149bdf), to(#0480be));
+  background-image: -webkit-linear-gradient(top, #149bdf, #0480be);
+  background-image: -o-linear-gradient(top, #149bdf, #0480be);
+  background-image: linear-gradient(to bottom, #c70019, #c70019);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff149bdf', endColorstr='#ff0480be', GradientType=0);
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+     -moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-transition: width 0.6s ease;
+     -moz-transition: width 0.6s ease;
+       -o-transition: width 0.6s ease;
+          transition: width 0.6s ease;
+}
+
+.progress .bar + .bar,.progress1 .bar1 + .bar {
+  -webkit-box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+     -moz-box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+          box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.progress-striped .bar{
+  background-color: #149bdf;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  -webkit-background-size: 40px 40px;
+     -moz-background-size: 40px 40px;
+       -o-background-size: 40px 40px;
+          background-size: 40px 40px;
+}
+
+.progress.active .bar,.progress1.active .bar {
+  -webkit-animation: progress-bar-stripes 2s linear infinite;
+     -moz-animation: progress-bar-stripes 2s linear infinite;
+      -ms-animation: progress-bar-stripes 2s linear infinite;
+       -o-animation: progress-bar-stripes 2s linear infinite;
+          animation: progress-bar-stripes 2s linear infinite;
+}
+
+.progress-danger .bar,
+.progress .bar-danger {
+  background-color: #dd514c;
+  background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#c43c35));
+  background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
+  background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
+  background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
+}
+
+.progress-danger.progress-striped .bar,
+.progress-striped .bar-danger {
+  background-color: #ee5f5b;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.progress-success .bar,
+.progress .bar-success {
+  background-color: #5eb95e;
+  background-image: -moz-linear-gradient(top, #62c462, #57a957);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#57a957));
+  background-image: -webkit-linear-gradient(top, #62c462, #57a957);
+  background-image: -o-linear-gradient(top, #62c462, #57a957);
+  background-image: linear-gradient(to bottom, #62c462, #57a957);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff57a957', GradientType=0);
+}
+
+.progress-success.progress-striped .bar,
+.progress-striped .bar-success {
+  background-color: #62c462;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.progress-info .bar,
+.progress .bar-info {
+  background-color: #70019;
+  background-image: -moz-linear-gradient(top, #5bc0de, #339bb9);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#339bb9));
+  background-image: -webkit-linear-gradient(top, #5bc0de, #339bb9);
+  background-image: -o-linear-gradient(top, #5bc0de, #339bb9);
+  background-image: linear-gradient(to bottom, #5bc0de, #339bb9);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff339bb9', GradientType=0);
+}
+
+.progress-info.progress-striped .bar,
+.progress-striped .bar-info {
+  background-color: #5bc0de;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.progress-warning .bar,
+.progress .bar-warning {
+  background-color: #faa732;
+  background-image: -moz-linear-gradient(top, #fbb450, #f89406);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(#f89406));
+  background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
+  background-image: -o-linear-gradient(top, #fbb450, #f89406);
+  background-image: linear-gradient(to bottom, #fbb450, #f89406);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0);
+}
+
+.progress-warning.progress-striped .bar,
+.progress-striped .bar-warning {
+  background-color: #fbb450;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+/* 返回顶部 */
+.toTop,.toTop1{
+	 cursor:pointer;
+	 width:25px;
+	 height:25px;
+	 position:relative;
+	 top:-28px;
+	 left:97.5%;
+	 visibility: hidden;
+	 background:url(../images/toTop.png) no-repeat;
+	 background-size:100% 100%;
+    -ms-background-size: cover;
+	-ms-behavior: url(/resources/styles/common/css/backgroundsize.min.htc);
+	behavior: url(/resources/styles/common/css/backgroundsize.min.htc);	
+}
+/* 页面合计样式 */
+.hj{
+	height:26px;
+	background:rgba(0,0,0,0.5);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000,endColorstr=#7F000000);
+    position:absolute;
+	bottom:0px;
+	width:95%;
+	color:#fff;
+	margin: 0 15px;
+    overflow: hidden;
+    line-height:26px;
+}
+.hj p{
+	padding-left:20px;
+	float: left;
+}
+.hj .lr{
+	float:right;
+	font-size:14px;
+	color:#fff;
+	cursor: pointer;
+}

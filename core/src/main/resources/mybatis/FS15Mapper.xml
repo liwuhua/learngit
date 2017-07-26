@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<!-- create on 2016/11/04  @author yangzhijie -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS15">
+
+    <resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_IMP_FS15">
+        <result column="ITEMNAME" property="itemname" jdbcType="VARCHAR" />
+        <result column="IETMNO" property="itemno" jdbcType="VARCHAR" />
+        <result column="FINALMONEY" property="finalmoney" jdbcType="DOUBLE" />
+        <result column="STARTMONEY" property="startmoney" jdbcType="DOUBLE" />
+    </resultMap>
+	
+    <!-- 	查询各项资产负债信息 -->
+    <sql id="selectColumns"> 
+	    <![CDATA[ SELECT THM_IMP_FS15_FIELD.ITEMNAME,THM_IMP_FS15_FIELD.ITEMNO,
+		THM_IMP_FS15.FINALMONEY,THM_IMP_FS15.STARTMONEY,THM_IMP_FS15.YEARMONTH,THM_IMP_FS15.BUKRS
+		FROM THM_IMP_FS15,THM_IMP_FS15_FIELD ]]>
+    </sql>
+    <sql id="where_comp_fragment">
+        where 1=1
+        <if test="compCodeValue != null and compCodeValue != '' and compCodeValue.size != 0">
+			<![CDATA[ and tcomp_code_.COMP_CODE in]]>
+            <foreach collection="compCodeValue" item="item"
+                                         index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+    </sql>
+    <sql id="where_fragement">
+        where 1=1  and THM_IMP_FS15.ITEMNO=THM_IMP_FS15_FIELD.ITEMNO 
+        <if test="dateYearMonth != null and dateYearMonth != ''">
+				<![CDATA[ and THM_IMP_FS15.yearmonth = #{dateYearMonth} and THM_IMP_FS15_FIELD.YEARS = SUBSTR(#{dateYearMonth},1,4)]]>
+        </if>
+        <if test="compCodeValue != null and compCodeValue != '' and compCodeValue.size != 0">
+			<![CDATA[ and THM_IMP_FS15.bukrs in ]]>
+            <foreach collection="compCodeValue" item="item"
+                                         index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+    </sql>
+    <sql id="orderby_fragement">
+		<![CDATA[ ORDER BY CONVERT(THM_IMP_FS15_FIELD.ITEMNO,UNSIGNED) ]]>
+    </sql>
+    <select id="selectData" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_IMP_FS15">
+        <include refid="selectColumns" />
+        <include refid="where_fragement" /> 
+        <include refid="orderby_fragement" /> 
+    </select>
+    
+    <select id="selectDataFS15" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_IMP_FS15">
+        <![CDATA[ SELECT ITEMNAME,ITEMNO,FINALMONEY,STARTMONEY,YEARMONTH,BUKRS FROM THM_FS15 WHERE YEARMONTH=#{dateYearMonth} AND BUKRS =#{compCodeValue} ORDER BY ITEMNO]]>
+    </select>
+    
+    
+    <!-- 	根据公司编号查询公司名称 -->
+    <select id="selectCompany" resultType="java.util.Map">
+		<![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE tcomp_code_]]>
+        <include refid="where_comp_fragment" /> 
+    </select>
+	
+    <insert id="saveOrUpdateData" >
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_IMP_FS15 where YEARMONTH = #{yearMonth} and BUKRS = #{bukrs}
+        </selectKey>
+        <if test="count > 0">
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator=";" >
+                    UPDATE THM_IMP_FS15 
+                    <set>
+                        STARTMONEY = #{item.startAccountOne},FINALMONEY = #{item.endAccountOne}
+                    </set>
+                    WHERE ITEMNO = #{item.lineNumOne} and YEARMONTH = #{item.yearMonth} and BUKRS = #{item.companyCode}
+                </foreach> 
+            </if>
+        </if>
+        <if test="count==0">
+            insert into THM_IMP_FS15(ITEMNO,FINALMONEY,STARTMONEY,YEARMONTH,BUKRS) values
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator="," >  
+                    (#{item.lineNumOne},#{item.endAccountOne}, #{item.startAccountOne}, #{item.yearMonth}, #{item.companyCode})
+                </foreach>
+            </if>
+        </if>
+    </insert>
+    <insert id="saveOrUpdateDataFS15" >
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_FS15 where YEARMONTH = #{yearMonth} and BUKRS = #{bukrs}
+        </selectKey>
+        <if test="count > 0">
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator=";" >
+                    UPDATE THM_FS15 
+                    <set>
+                        STARTMONEY = #{item.startAccountOne},FINALMONEY = #{item.endAccountOne}
+                    </set>
+                    WHERE ITEMNO = #{item.lineNumOne} and YEARMONTH = #{item.yearMonth} and BUKRS = #{item.companyCode}
+                </foreach> 
+            </if>
+        </if>
+        <if test="count==0">
+            insert into THM_FS15(ITEMNAME,ITEMNO,FINALMONEY,STARTMONEY,YEARMONTH,BUKRS) values
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator="," >  
+                    (#{item.projectOne},#{item.lineNumOne},#{item.endAccountOne}, #{item.startAccountOne}, #{item.yearMonth}, #{item.companyCode})
+                </foreach>
+            </if>
+        </if>
+    </insert>
+    <!-- 取最新模板日期 -->
+    <select id="selectMaxYear" resultType="java.util.Map">
+		<![CDATA[ SELECT MAX(YEARS) AS YEARS from THM_IMP_FS15_FIELD ]]>
+    </select>
+    
+    <select id="selectCompanyCode" resultType="java.util.Map">
+		<![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE WHERE TXTMD = #{txtmd}]]>
+    </select>
+    	<!-- 查询数据字典 -->
+    <select id="selectField" resultType="com.yjdj.view.core.entity.mybeans.THM_IMP_FS15">
+		<![CDATA[ select ITEMNAME,ITEMNO,YEARS from THM_IMP_FS15_FIELD WHERE YEARS  =  #{years}]]>
+    </select>
+</mapper>
+

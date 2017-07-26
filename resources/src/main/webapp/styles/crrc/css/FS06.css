@@ -1,0 +1,63 @@
+/* 表格样式 */
+.ch-kp-six .t_r table{width:1880px;}
+.ch-kp-six .t_r_title{width:1900px;}/*宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题）*/
+#t_r table{width:1420px;}
+#t_r_title2{width:1440px;}/*宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题）*/
+.hideColBox .t_r table{
+    width: 239px;
+}
+.hideColBox .t_r_title{
+    width: 260px;
+}
+#t_r_t .t_r_title{
+	margin-top:-15px\9;
+}
+.table-detail {
+    position: absolute;
+    top: 50px;
+    left: 20%;
+    display: none;
+    background-color: #fff;
+    height: 570px;
+    width:880px;
+    z-index: 27;
+    padding:20px;
+}
+.detail-del img{
+	margin-right:10px;
+	margin-bottom:6px;
+	width:12px;
+	height:12px;
+	cursor: pointer;
+}
+.table-detail #t_r_content2{
+    height:462px;
+}
+.table-detail table{
+    border:1px solid #ddd;
+    font-size:12px;
+}
+.table-detail table th,.table-detail #t_r_content2 tr:nth-child(2n-1){
+    background-color: #EDEDED;
+}
+.table-detail .t_r_title tr th,.table-detail .t_r_content tr td{
+	border:1px solid #ddd;
+	height:30px;
+}
+.detail-del{
+	float:right;
+	font-size:20px;
+}
+.sum_unit,.ddcount,.fhcount,.kpcount,.lgmng,.kwmeng,.fklmg{
+	text-align:right;
+}
+.zmeng{
+	text-align:right;
+}
+.table-detail table td{
+	word-break: break-all;
+	height:30px;
+}
+.hideTable2 tableP{
+	width:254px;
+}

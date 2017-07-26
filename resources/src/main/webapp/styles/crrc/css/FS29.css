@@ -1,0 +1,16 @@
+.notSearch+div .table-data{
+	font-size: 12px;
+    margin-top: -30px;
+    padding: 0 18px;
+    overflow: hidden;
+}
+.hideCol{
+    margin-left:20px;
+}
+/* 表格样式 */
+.ch-kp-twentynine table{width:2420px;}
+.ch-kp-twentynine .t_r_title{width:2440px;}/*宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题）*/
+/*
+.notSearch+div{
+    margin-right:2%\9;
+}*/

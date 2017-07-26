@@ -1,0 +1,24 @@
+.ch-kp-sixteen{
+    padding: 0px 15px;
+}
+.table-name{width:100%;}
+.table-data{
+	width:100%;
+    overflow:hidden;
+    margin-top:-30px;
+}
+.ch-kp-sixteen .t_r{
+    float:left;
+    padding:0px;
+}
+.ch-kp-sixteen #t_r_content{
+    overflow:auto;
+}
+.ch-kp-sixteen table{
+    width:1400px;
+}
+.ch-kp-sixteen table tr th{
+    background-color:#ededed;
+}
+/*.div-table{ width:1320px; }*/
+.ch-kp-sixteen .t_r_title{width:1400px;}

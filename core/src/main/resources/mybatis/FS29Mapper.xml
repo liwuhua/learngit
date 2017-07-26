@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS29">
+
+    <select id="getLackorder" parameterType="map"  resultType="map">
+       
+        <!--  SELECT
+                    distinct 
+                    DELIDATE,  报告日期
+                    WERKS, 生产工厂
+                    ZHWCX, 工作中心
+                    CASE WHEN VBELN != ''    THEN 	LINENUM
+                         when LINENUM != ''  THEN   VBELN
+                         when VBELN != ''  and LINENUM != '' then CONCAT(CONCAT(VBELN, '/'), LINENUM)
+                    ELSE 	''
+                    END VBLINE, 销售订单/行号
+                    RT_SIZE2  产品型号,
+                     AUFNR, 生产订单号
+                     MATNR,  生产订单物料号
+                     MATNRTXTMD, 生产订单物料描述   
+                     GSTRP, 基本开始日期
+                     COPOMATNUM, 组件物料号
+                     ARKTX, 组件物料描述
+                     if(MNG01='',0,MNG01)MNG01, 需求量
+                     if(ANALINVEN='',0,ANALINVEN)ANALINVEN, 模拟库存量
+                     MEINS,  计量单位
+                     DUCUMNUM, 单据号/行号
+                     if(ORDERNUM='',0,ORDERNUM)ORDERNUM, 订单数量
+                     PLANDELIDATE,  计划交货日期
+                     ACTUDELIDATE,  实际交货日期
+                     if(DELIVNUM='',0,DELIVNUM)DELIVNUM, 交货数量
+                     EKGRP, - -采购组
+                     DISPO, MRP控制者
+                     CAUSEANALY, 原因分析
+                     ECPECARRIVDATE, 预计到货日期
+                     ISREQUIPLAN  是否满足生产计划要求
+                    FROM
+                            THM_MDTBX_02
+                    WHERE 1 = 1
+        limit 100 -->
+        SELECT
+            distinct
+            DELIDATE,
+            WERKS,
+            ZHWCX,
+            CASE WHEN VBELN = ''    THEN 	LINENUM
+            when LINENUM = ''  THEN   VBELN
+            when VBELN != ''  and LINENUM != '' then CONCAT(CONCAT(VBELN, '/'), LINENUM)
+            ELSE 	''
+            END VBLINE,
+            RT_SIZE2,
+            AUFNR, 
+            MATNR, 
+            ifnull(MATNRTXTMD,"")MATNRTXTMD, 
+            GSTRP,
+            COPOMATNUM,
+            ARKTX,
+            if(MNG01='',0,MNG01)MNG01,
+            if(ANALINVEN='',0,ANALINVEN)ANALINVEN,
+            MEINS,
+            DUCUMNUM,
+            if(ORDERNUM='',0,ORDERNUM)ORDERNUM,
+            PLANDELIDATE,
+            ACTUDELIDATE,
+            if(DELIVNUM='',0,DELIVNUM)DELIVNUM,
+            EKGRP,
+            DISPO
+        FROM
+            THM_MDTBX_02_${tableNameSuffix}
+        WHERE 1 = 1
+
+        <!-- 添加组件物料号 -->  
+        <if test="matlgroupValue != null  and matlgroupValue.size!=0"> 
+            and COPOMATNUM  in
+            <foreach collection="matlgroupValue" item="item"
+                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+
+			  
+        <!--  查询条件中的生产订单  -->
+        <if test="aufnrValue != null  and aufnrValue.size!=0"> 
+            and AUFNR  in
+            <foreach collection="aufnrValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			  
+        <!-- 新增生产订单类型 -->
+        <if test="dauatValue != null  and dauatValue.size!=0"> 
+            AND DAUAT  IN
+            <foreach collection="dauatValue" item="item"
+                                                         index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			  
+        <!-- 查询条件中的工厂 -->
+        <if test="werksValue != null  and werksValue.size!=0"> 
+            and WERKS  in
+            <foreach collection="werksValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+        <!-- 查询条件中的销售订单 -->
+        <if test="vbelnValue != null  and vbelnValue.size!=0"> 
+            and VBELN  in
+            <foreach collection="vbelnValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			  
+			   
+        <!-- 查询条件中的产品型号 -->
+        <if test="modelValue != null  and modelValue.size!=0"> 
+            and RT_SIZE2  in
+            <foreach collection="modelValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			  
+        <!-- 查询条件中的销售订单行项目   matnrValue 用这个接收参数 -->
+        <if test="linenumValue != null  and linenumValue.size!=0"> 
+            and LINENUM  in 
+            <foreach collection="linenumValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			  
+        <!-- 	查询条件中的生产订单物料编码  matnrInterval 用这个接受参数-->
+        <if test="matnrValue != null  and matnrValue.size!=0"> 
+            AND MATNR  IN
+            <foreach collection="matnrValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			  
+        <!-- 	查询条件中的工作中心   plantValue 用这个接受参数-->
+        <if test="zhwcxValue != null  and zhwcxValue.size!=0"> 
+            AND WORKCENTER  IN
+            <foreach collection="zhwcxValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			
+        <!-- startTime endTime 时间接受参数     -->
+        <if test="mingstrp != null  and mingstrp !='' and  maxgstrp != null  and maxgstrp !='' "> 
+			  <![CDATA[  and   GSTRP >= #{mingstrp}   and GSTRP <=#{maxgstrp}  ]]> 
+        </if>
+			
+        <!-- 报告日期=  -->
+        <if test="delidatetime != null  and delidatetime!=''">
+            and  DELIDATE  = #{delidatetime} 
+        </if>
+			
+        <!-- 假如是不排他的   默认是不排他     isExclu  purGroupValue 采购组    -->
+        <if test="isExclu1==true">
+            <if test="purGroupValue != null  and purGroupValue.size!=0"> 
+                and EKGRPCODE not in
+                <foreach collection="purGroupValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+			  
+        <if test="isExclu1==false">
+            <if test="purGroupValue != null  and purGroupValue.size!=0"> 
+                and EKGRPCODE  in
+                <foreach collection="purGroupValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+			
+        <!-- 假如是排他的   默认是不排他   LIFNR排他  供应商编码-->
+        <if test=" isExclu2==true "> 
+            <if test="lifnrValue != null  and lifnrValue.size!=0"> 
+                and LIFNR  not in
+                <foreach collection="lifnrValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+			
+			
+        <!-- 假如是排他的   默认是不排他   LIFNR排他  供应商编码-->
+        <if test=" isExclu2==false "> 
+            <if test="lifnrValue != null  and lifnrValue.size!=0"> 
+                and LIFNR   in
+                <foreach collection="lifnrValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+				
+        <!-- ZPSFS  配送方式 -->
+        <if test=" isExclu3==true "> 
+            <if test="zpsfsValue != null  and zpsfsValue.size!=0"> 
+                and ZPSFS  not in
+                <foreach collection="zpsfsValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+				
+        <!-- 假如是不排他的   默认是不排他      ZPSFS 排他  配送方式  -->
+        <if test=" isExclu3==false "> 
+            <if test="zpsfsValue != null  and zpsfsValue.size!=0"> 
+                and ZPSFS   in
+                <foreach collection="zpsfsValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+										
+						
+        <!-- 模拟库存量  //模拟库存量的标识   1代表大于等于0   2代表大于0  3代表两种都包括 analinbs-->
+        <if test="analinbs != null  and analinbs !='' and analinbs==1" > 
+			      <![CDATA[   and ANALINVEN>=0 ]]> 
+        </if>
+			
+        <if test="analinbs != null  and analinbs !=''  and analinbs==2 " > 
+			      <![CDATA[   and ANALINVEN<0    ]]> 
+        </if>
+			
+        <if test="analinbs != null  and analinbs !='' and analinbs==3 " > 
+			      <![CDATA[   and (ANALINVEN >=0 or ANALINVEN<0)   ]]> 
+        </if>
+			
+			
+        <!-- COMPPURTYPE   组件采购类型  ebelnValue接受参数 -->
+        <if test="comppurtypeValue != null  and comppurtypeValue.size!=0"> 
+            AND COMPPURTYPE  IN
+            <foreach collection="comppurtypeValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+        ORDER BY DELIDATE, WERKS desc,ZHWCX desc,  MATNR ,AUFNR
+        <!-- 分页 --> 
+        <if test="startitem != null  and pageitem !=null  "> 
+            limit #{startitem},#{pageitem}
+        </if>
+			  
+    </select>
+</mapper>
+

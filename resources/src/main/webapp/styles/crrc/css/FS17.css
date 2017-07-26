@@ -1,0 +1,28 @@
+.ch-kp-seventeen{
+	display:none;
+	padding: 0px 15px;
+}
+.ch-kp-seventeen .table-name{width:100%;}
+.ch-kp-seventeen .table-data{
+    overflow:hidden;
+    margin-top:-30px;
+    margin-bottom: 10px;
+    width: 1416px;
+}
+.ch-kp-seventeen .t_r{
+    float:left;
+    padding:0px;
+    width:auto;
+}
+.t_r_t{ width:auto; }
+.ch-kp-seventeen #t_r_content{
+	overflow:auto;
+}
+.ch-kp-seventeen table{
+	width:100%;
+}
+.ch-kp-seventeen table tr th{
+	background-color:#ededed;
+}
+/*.div-table{ width:1320px; }*/
+.ch-kp-seventeen .t_r_title{width:1416px;}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperThmMseg04">
+
+    <select id="getEbeln" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT EBELN from THM_MSEG_04_05
+            where 1=1 ]]>
+        <if test="ebeln != null and ebeln != ''">
+            <![CDATA[ and EBELN like "%${ebeln}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY EBELN ]]>
+        <if test="start != null and limit != null">
+            <![CDATA[ limit #{start},#{limit}]]>
+        </if>
+    </select>
+
+</mapper>
+

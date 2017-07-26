@@ -1,0 +1,108 @@
+@charset "utf-8";
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td { padding:0; margin:0; font-size:12px; line-height:100%; font-family:Arial, sans-serif;}
+
+ul, ol { list-style:none;}
+img { border:0;}
+html,body{
+	height:100%;
+	
+}
+#login a,#login button,{
+    outline: none;
+    border: none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    box-shadow: none;
+}
+#login input{
+    outline: none;
+    padding: 0px 0px 0px 5px;
+}
+#login a{
+    text-decoration: none;
+    outline: none;
+}
+#login a:hover {
+    text-decoration: none;
+    outline: none;
+}
+#login a:active {
+    text-decoration: none;
+    outline: none;
+}
+#login a:focus {
+    text-decoration: none;
+    outline: none;
+}
+body { margin:0; text-align:center; background:#fff;}
+
+#login { display:block; width:100%; margin:0 auto; text-align:left;}
+.login_header { display:block; height:64px;position:relative;}
+.login_logo { float:left;width:120px;margin-left: 100px;margin-top: 12px;}
+.login_logo img{width:100%;}
+.login_header h1{float:left;color:#272727;font-size:20px;margin-top:31px;margin-left:20px;}
+.login_main{height:535px;background-size: 100%;}
+/* .login_left{float:left;height:370px;width:450px;}
+.login_left img{height:370px;width:450px;}*/
+.login_right{
+	float:right;
+	background:#fff;
+	/* margin-top:97px;
+	margin-right:141px; */
+	margin-right: 15%;
+    margin-top: 9%;
+	padding:22px 38px;
+	box-shadow:0px 0px 5px 5px rgba(0,0,0,0.2);
+}
+.login_right h2{font-size:16px;margin-bottom:26px;height:30px;}
+.login_right p { margin-bottom:12px;line-height:34px;}
+.login_right form .login-p1 input,.login_right form .login-p2 input{width:267px;height:36px;background:#efefef;border:1px solid #cecece;padding-left:5px;line-height:36px;}
+.login_right form .login-p3 input{width:267px;height:36px;line-height:36px;background:#efefef;float:left;border:1px solid #cecece;padding-left:5px;}
+.login_right form .login-p3 {height:36px;}
+.login_right form .login-p3 span{float:left;}
+.login_right form .login-p3 span img{border:1px solid #cecece;height:36px;float: left;}
+
+.login_right input {  border-style:solid; border-width:1px; border-color:#80a5c4;}
+
+.login_right .code { float:left; margin-right:5px;}
+.login_bar .sub { display:block; width:275px; height:36px; border:none; background:#d51e20; cursor:pointer;border-radius:3px;color:#fff;font-size:14px;}
+.login_footer{color:#585858}
+.login_footer p{text-align:center; line-height:50px;color:#999999;}
+/* .login_info { float:left; margin-left:10px; line-height:80px; font-size:18px; color:#0088cc; font-weight: bold;}
+.login_headerContent { float:right; display:block; width:280px; height:80px; padding:0 40px; background:url(../default/images/login_header_bg.png) no-repeat top right;}
+.navList { display:block; overflow:hidden; height:20px; padding-left:28px;}
+.navList ul { float:left; display:block; overflow:hidden;}
+.navList li { float:left; display:block; margin-left:-1px; padding:0 10px; background:url(../default/images/login_list.png) no-repeat 0 5px;}
+.navList a { display:block; white-space:nowrap; line-height:21px; color:#000; text-decoration:none;}
+.navList a:hover { text-decoration:underline;}
+
+#login_content { display:block; position:relative;}
+.login_title { display:block; padding:25px 0 0 38px;}
+.loginForm { display:block; width:240px; padding:40px 20px 0 20px; position:absolute; right:40px;}
+.loginForm p { margin:10px 0;}
+.loginForm label { float:left; width:70px; padding:0 0 0 10px; line-height:25px; color:#4c4c4c; font-size:14px;}
+.loginForm input { padding:3px 2px; border-style:solid; border-width:1px; border-color:#80a5c4;}
+.loginForm .login_input {}
+.loginForm .code { float:left; margin-right:5px;}
+.login_bar { padding-left:70px;}
+.login_bar .sub { display:block; width:75px; height:30px; border:none; background:url(../default/images/login_sub.png) no-repeat; cursor:pointer;}
+
+.login_banner { display:block; height:270px;}
+.login_main { display:block; height:200px; padding-right:40px; background:url(../default/images/login_content_bg.png) no-repeat top;}
+
+.helpList { float:right; width:200px;}
+.helpList li { display:block; padding-left:10px; background:url(../default/images/login_list.png) no-repeat 0 -40px;}
+.helpList a { line-height:21px; color:#333; text-decoration:none; }
+.helpList a:hover { text-decoration:underline;}
+
+.login_inner { display:block; width:560px; padding:30px 20px 0 20px;}
+.login_inner p { margin:10px 0; line-height:150%; font-size:14px; color:#666;}
+
+#login_footer { clear:both; display:block; margin-bottom:20px; padding:10px; border-top:solid 1px #e2e5e8; color:#666; text-align:center;} */

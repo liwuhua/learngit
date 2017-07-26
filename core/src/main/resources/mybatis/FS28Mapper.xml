@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<!-- create on 2016/11/04  @author lcl -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS28">
+   
+   <select id="init" parameterType="map">
+  		 CALL FS28 (#{start_date,jdbcType=VARCHAR, mode=IN}) 
+   </select>
+   
+   	<resultMap id="fs2401" type="com.yjdj.view.core.entity.mybeans.THM_FS24_01">
+		
+		<result column="racct" property="racct" jdbcType="VARCHAR" />
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="item_column" property="item_column" jdbcType="VARCHAR" />
+		<result column="bukrs" property="rbukrs" jdbcType="VARCHAR" />
+		<result column="inner_order" property="inner_order" jdbcType="VARCHAR" />
+		<result column="txtmd" property="txtmd" jdbcType="VARCHAR" />
+		<result column="balance" property="last_year_cost" jdbcType="DOUBLE" />
+		
+		<result column="wtjhv_y" property="year_plan" jdbcType="DOUBLE" />
+		<result column="wtjhv_p" property="period_plan" jdbcType="DOUBLE" />
+		<result column="balance_p" property="period_cost" jdbcType="DOUBLE" />
+		<result column="ratio" property="exe_rate" jdbcType="DOUBLE" />
+	</resultMap>
+	<resultMap id="fs2402" type="com.yjdj.view.core.entity.mybeans.THM_FS24_01">
+		
+		<result column="racct" property="racct" jdbcType="VARCHAR" />
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="item_column" property="item_column" jdbcType="VARCHAR" />
+		<result column="bukrs" property="bukrs" jdbcType="VARCHAR" />
+		<result column="inner_order" property="inner_order" jdbcType="VARCHAR" />
+		
+		<result column="txtmd" property="txtmd" jdbcType="VARCHAR" />
+		<result column="detail" property="detail" jdbcType="VARCHAR" />
+		
+		<result column="balance" property="last_year_cost" jdbcType="DOUBLE" />
+		
+		<result column="wtjhv_y" property="year_plan" jdbcType="DOUBLE" />
+		<result column="wtjhv_p" property="period_plan" jdbcType="DOUBLE" />
+		<result column="balance_p" property="period_cost" jdbcType="DOUBLE" />
+		<result column="ratio" property="exe_rate" jdbcType="DOUBLE" />
+	</resultMap>
+   <!-- 一级明细查询 -->
+<sql id="getFirstDetailSQL"> 
+<![CDATA[
+	select  dt.id,dt.item_column,dt.racct, 
+				GROUP_CONCAT(concat(dt.rbukrs,'#',IFNULL(dt.TXTMD,' '),'#',IFNULL(dt.inner_order,' '),'#',IFNULL(CAST(dt.balance as char),'0.00'),'#',
+				IFNULL(CAST(dt.wtjhv_y as char),'0.00'),'#',IFNULL(CAST(dt.wtjhv_p as char),'0.00'),'#',
+				IFNULL(CAST(dt.balance_p as char),'0.00'),'#',IFNULL(dt.ratio, '0.00')))  as detail,sum(dt.balance) as balance,sum(dt.wtjhv_y) as wtjhv_y,sum(dt.wtjhv_p) as wtjhv_p,sum(dt.balance_p) as balance_p,
+				 CASE
+		         WHEN sum(dt.wtjhv_y) is not null and
+		         sum(dt.wtjhv_y) != 0.00 and
+		         sum(dt.balance_p) is not null 
+		         THEN
+                 round(sum(dt.balance_p)/ sum(dt.wtjhv_y), 2) 
+                 ELSE
+                 null
+                 END as ratio 
+		         from 
+	(
+	  select cost.id,cost.item_column,cost.rbukrs,cost.racct,cost.inner_order,cost.balance_p,cost.balance,
+	  CASE WHEN cost.TXTMD is null or  trim(cost.TXTMD)='' THEN cost.item_column  
+      ELSE  cost.TXTMD END as TXTMD,
+	  c.wtjhv_y,round(d.wtjhv_p,2) as wtjhv_p,
+	 CASE    
+				WHEN  c.wtjhv_y  is not  null and c.wtjhv_y != 0.00  THEN
+				round(cost.balance_p/c.wtjhv_y,2)
+				ELSE
+				'0.00'
+				END as ratio
+	  from 
+	(select  distinct id,item_column,rbukrs,TXTMD,racct,inner_order,balance_p,balance  from   ( 
+	select a.id,a.item_column,a.racct,a.inner_order,a.rbukrs,a.TXTMD,IFNULL(a.balance_p,0) as balance_p,b.balance  from  
+	(select   f.id,f.item_column,f.racct,period_cost.rbukrs,period_cost.inner_order,period_cost.balance_p,
+	 period_cost.TXTMD  from 
+	  (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join 
+	   (select  t.id,t.racct,t.rbukrs,t.inner_order,sum(t.balance_p) as balance_p,t.TXTMD   from  
+         (select t.id,t.racct,t.rbukrs,t.inner_order,sum(t.balance) as balance_p,t.TXTMD from THM_FS28_TEMP t 
+         WHERE t.fiscper>='${start_date}' and t.fiscper<='${end_date}' 
+        ]]>
+	    <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+	  <![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+	    ]]>
+	    </if>
+	  <![CDATA[ 
+		  group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order   
+		union all  
+		  select t.id,t.racct,t.rbukrs,t.inner_order,0  as balance_p,t.TXTMD  from  THM_FS28_TEMP t 
+		  WHERE t.fiscper='${yplan}' 
+	  ]]>
+	  <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+	  <![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+	  ]]>
+	  </if>
+	 <![CDATA[ 
+		 and  t.wtjhv is not null 
+		 group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order  
+	 ) t  group  by t.racct,t.id,t.TXTMD,t.rbukrs,t.inner_order  order by t.id   	   
+ ) period_cost on f.id = period_cost.id 
+
+	)  a   
+	left join 
+	(select   f.id,f.item_column,f.racct,last_year.rbukrs,last_year.inner_order,last_year.balance ,last_year.TXTMD  from  
+	   (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join  
+	    ( select t.id,t.racct,t.rbukrs,t.TXTMD,t.inner_order,sum(t.balance) as balance from THM_FS28_TEMP t     
+			   WHERE  substring(t.fiscper,1,4) ='${last_year}' 
+			   ]]>
+	       <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+		   <![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+		   ]]>
+	          </if>
+	       <![CDATA[
+				   and  substring(t.fiscper,5,2)>='01' and substring(t.fiscper,5,2)<='12'
+	             group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order order by t.id )  
+	                last_year on f.id = last_year.id
+	)  b  on  
+	a.id = b.id and a.inner_order=b.inner_order and a.rbukrs=b.rbukrs  
+	union all 
+	select b.id,b.item_column,b.racct,b.inner_order,b.rbukrs,b.TXTMD,IFNULL(a.balance_p,0) as balance_p,b.balance  from  
+	(select   f.id,f.item_column,f.racct,period_cost.rbukrs,period_cost.inner_order,period_cost.balance_p,period_cost.TXTMD  from 
+	  (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join 
+	   ( select t.id,t.racct,t.rbukrs,t.inner_order,sum(t.balance) as balance_p,t.TXTMD from 
+	   THM_FS28_TEMP t
+	   WHERE  t.fiscper>='${start_date}' and t.fiscper<='${end_date}'  
+	   ]]>
+	  <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+		<![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+	]]>
+	  </if>
+	  <![CDATA[ 
+	   group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order order by t.id ) period_cost on f.id = period_cost.id 
+	)  a 
+	right join 
+	(select   f.id,f.item_column,f.racct,last_year.rbukrs,last_year.inner_order,last_year.balance ,last_year.TXTMD  from  
+	   (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join  
+	    ( select t.id,t.racct,t.rbukrs,t.TXTMD,t.inner_order,sum(t.balance) as balance from THM_FS28_TEMP t
+	          WHERE  substring(t.fiscper,1,4) ='${last_year}' 
+			   ]]>
+	       <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+		   <![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+		   ]]>
+	          </if>
+	       <![CDATA[ 
+				   and  substring(t.fiscper,5,2)>='01' and substring(t.fiscper,5,2)<='12'
+	             group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order order by t.id )  
+	                last_year on f.id = last_year.id
+	)  b  on  
+	a.id = b.id and  a.inner_order=b.inner_order and a.rbukrs=b.rbukrs  
+	)    yr  order by yr.id ,yr.rbukrs 
+	)  cost  left join 
+	
+	(select   f.id,f.item_column,f.racct,curr_year_plan.rbukrs,curr_year_plan.inner_order,curr_year_plan.wtjhv_y,curr_year_plan.TXTMD  from  
+	   (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join 
+	     ( select t.id,t.racct,t.rbukrs,t.inner_order,t.TXTMD, sum(t.wtjhv) as wtjhv_y from THM_FS28_TEMP t 
+		WHERE  substring(t.fiscper,1,4) ='${curr_year}' 
+			   ]]>
+	        <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+			<![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+			]]>
+	           </if>
+	        <![CDATA[  and  t.fiscper>='${start_date}' and t.fiscper<='${yearPlanEnd}' 
+	group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order order by t.id ) 
+	               curr_year_plan on f.id = curr_year_plan.id
+	)  c 
+	on cost.id = c.id and  cost.inner_order=c.inner_order and cost.rbukrs=c.rbukrs  
+	
+	
+   left join 
+]]>
+	<![CDATA[
+	(
+	select  jd.racct,jd.id,jd.BUKRS as rbukrs,jd.inner_order,jd.jd_year,
+	]]>
+	    <!-- 完整季度的查询 -->
+	    <if test="r==0">
+	    <![CDATA[
+		IFNULL(jd.jidu_wtjhv,0.00) as wtjhv_p 
+		]]>
+		</if> 
+		<if test="r==1 and adjEnd==01">
+		<![CDATA[
+		CASE WHEN  IFNULL(first_w.f_wtjhv,0.00) >0  
+		then (IFNULL(first_w.f_wtjhv,0.00)/3)*1+IFNULL(adj.adj_wtjhv,0.00)-first_w.f_wtjhv 
+		ELSE (IFNULL(jd.jidu_wtjhv,0.00))  
+		END AS wtjhv_p 
+		 ]]>
+		</if> 
+		<if test="r==1 and adjEnd==02">
+		<![CDATA[
+		CASE WHEN  IFNULL(first_w.f_wtjhv,0.00) >0  
+		then (IFNULL(first_w.f_wtjhv,0.00)/3)*2+IFNULL(adj.adj_wtjhv,0.00)-first_w.f_wtjhv 
+		ELSE (IFNULL(jd.jidu_wtjhv,0.00))  
+		END AS wtjhv_p 
+		]]>
+		</if> 
+		<if test="r==2">
+		<![CDATA[
+		CASE WHEN  IFNULL(first_w.f_wtjhv,0.00) >0  then (first_w.f_wtjhv/3)*${adj}+IFNULL(jd.jidu_wtjhv,0.00)+IFNULL(adj.adj_wtjhv,0.00)-first_w.f_wtjhv 
+        ELSE (IFNULL(jd.jidu_wtjhv,0.00)+IFNULL(adj.adj_wtjhv,0.00))  
+        END AS wtjhv_p 
+        ]]>
+		</if> 
+		<![CDATA[
+		   from  
+		(select  t.racct,t.id,t.BUKRS,t.inner_order,sum(t.WTJHV) as jidu_wtjhv,substring(t.bldat,1,4)  as jd_year  from THM_FS28_PLAN t    
+		where   substring(t.bldat,5,2) >='01' and substring(t.bldat,5,2) <='${jiduTime}'  
+		group by t.id,t.inner_order ,t.bukrs ,t.racct ,substring(t.bldat,1,4)   
+		)  jd
+		left join
+		 (
+		select  t.racct,t.id,t.m_date,t.BUKRS,t.inner_order, t.WTJHV  as f_wtjhv  from 
+		(
+		select  a.racct,a.id,min(a.bldat) as m_date,a.BUKRS,a.inner_order, a.WTJHV 
+		from  
+		(select t.racct,t.id,t.bldat,t.BUKRS,t.inner_order,sum(t.WTJHV)  
+		 as   WTJHV   from  THM_FS28_PLAN  t  
+		group by t.id,t.inner_order ,t.bukrs ,t.racct ,t.bldat
+		)   a   
+		group by a.racct,a.id,a.BUKRS,a.inner_order,substring(a.bldat,1,6)  
+		order  by a.id,m_date,a.BUKRS  
+		)  t  
+		where  substring(t.m_date,5,2) ='${adjStart}'  
+		) first_w  on jd.id=first_w.id and jd.racct=first_w.racct and  jd.bukrs=first_w.bukrs  and jd.inner_order=first_w.inner_order  and jd.jd_year=substring(first_w.m_date,1,4) 
+		left join 
+		(select  t.racct,t.id,t.BUKRS,t.inner_order,sum(t.WTJHV)  as adj_wtjhv,substring(t.bldat,1,4) as adj_year    from THM_FS28_PLAN t   
+		 where   substring(t.bldat,5,2) >='${adjStart}'   and   substring(t.bldat,5,2) <='${adjEnd}'
+		group by t.id,t.inner_order ,t.bukrs ,t.racct ,substring(t.bldat,1,4)  
+		)  adj   on jd.id=adj.id and jd.racct=adj.racct and  jd.bukrs=adj.bukrs  and jd.inner_order=adj.inner_order  and jd.jd_year=adj.adj_year   
+		where jd.jd_year='${curr_year}' 
+		]]>
+	        <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+			<![CDATA[ and find_in_set(jd.BUKRS,${compCodeValue})
+			]]>
+	           </if>
+	   <![CDATA[ 
+	) d  on  cost.id = d.id and  cost.inner_order=d.inner_order and cost.rbukrs=d.rbukrs
+	]]>
+	
+<![CDATA[
+	)   dt   
+	group by dt.id,dt.item_column,dt.racct   order by  dt.id,dt.rbukrs
+	]]>
+</sql>
+<select id="getFirstDetail" parameterType="map" resultMap="fs2401" resultType="com.yjdj.view.core.entity.mybeans.THM_FS24_01">
+	<include refid="getFirstDetailSQL" />
+</select>
+
+<!-- 二级明细查询 -->
+<sql id="getSecondDetailSQL">
+<![CDATA[
+	select  dt.id,dt.item_column,dt.racct, 
+				GROUP_CONCAT(concat(dt.rbukrs,'#',IFNULL(dt.TXTMD,' '),'#',IFNULL(dt.inner_order,' '),'#',IFNULL(CAST(dt.balance as char),'0.00'),'#',
+				IFNULL(CAST(dt.wtjhv_y as char),'0.00'),'#',IFNULL(CAST(dt.wtjhv_p as char),'0.00'),'#',
+				IFNULL(CAST(dt.balance_p as char),'0.00'),'#',IFNULL(dt.ratio, '0.00')))  as detail,sum(dt.balance) as balance,sum(dt.wtjhv_y) as wtjhv_y,sum(dt.wtjhv_p) as wtjhv_p,sum(dt.balance_p) as balance_p,
+				 CASE
+		         WHEN sum(dt.wtjhv_y) is not null and
+		         sum(dt.wtjhv_y) != 0.00 and
+		         sum(dt.balance_p) is not null 
+		         THEN
+                 round(sum(dt.balance_p)/ sum(dt.wtjhv_y), 2) 
+                 ELSE
+                 null
+                 END as ratio 
+		         from 
+	(
+	  select cost.id,cost.item_column,cost.rbukrs,cost.racct,cost.inner_order,cost.balance_p,cost.balance,
+	  CASE WHEN cost.TXTMD is null or  trim(cost.TXTMD)='' THEN cost.item_column  
+      ELSE  cost.TXTMD END as TXTMD,
+	  c.wtjhv_y,round(d.wtjhv_p,2) as wtjhv_p,
+	 CASE    
+				WHEN  c.wtjhv_y  is not  null and c.wtjhv_y != 0.00  THEN
+				round(cost.balance_p/c.wtjhv_y,2)
+				ELSE
+				'0.00'
+				END as ratio
+	  from 
+	(select  distinct id,item_column,rbukrs,TXTMD,racct,inner_order,balance_p,balance  from   ( 
+	select a.id,a.item_column,a.racct,a.inner_order,a.rbukrs,a.TXTMD,IFNULL(a.balance_p,0) as balance_p,b.balance  from  
+	(select   f.id,f.item_column,f.racct,period_cost.rbukrs,period_cost.inner_order,period_cost.balance_p,
+	 period_cost.TXTMD  from 
+	(select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join 
+	 ( 
+      select  t.id,t.racct,t.rbukrs,t.inner_order,sum(t.balance_p) as balance_p,t.TXTMD   from  
+        (select t.id,t.racct,t.rbukrs,t.inner_order,sum(t.balance) as balance_p,t.TXTMD from THM_FS28_TEMP t 
+        WHERE t.fiscper>='${start_date}' and t.fiscper<='${end_date}' 
+        ]]>
+	     <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+		<![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+	    ]]>
+	    </if>
+	    <![CDATA[ 
+		  group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order   
+		union all  
+		  select t.id,t.racct,t.rbukrs,t.inner_order,0  as balance_p,t.TXTMD  from  THM_FS28_TEMP t 
+		  WHERE t.fiscper='${yplan}' 
+		  ]]>
+			<if test="(compCodeValue != null and !compCodeValue.equals(''))">
+			  <![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+			  ]]>
+			  </if>
+		  <![CDATA[ 
+		  and  t.wtjhv is not null 
+		  group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order  
+		) t  group  by t.racct,t.id,t.TXTMD,t.rbukrs,t.inner_order  order by t.id   	   
+   ) period_cost on f.id = period_cost.id 
+
+ )  a   
+	left join 
+	(select   f.id,f.item_column,f.racct,last_year.rbukrs,last_year.inner_order,last_year.balance ,last_year.TXTMD  from  
+	   (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join  
+	    ( select t.id,t.racct,t.rbukrs,t.TXTMD,t.inner_order,sum(t.balance) as balance from THM_FS28_TEMP t     
+			   WHERE  substring(t.fiscper,1,4) ='${last_year}' 
+			   ]]>
+	       <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+		   <![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+		   ]]>
+	          </if>
+	       <![CDATA[
+				   and  substring(t.fiscper,5,2)>='01' and substring(t.fiscper,5,2)<='12'
+	             group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order order by t.id )  
+	                last_year on f.id = last_year.id
+	)  b  on  
+	a.id = b.id and a.inner_order=b.inner_order and a.rbukrs=b.rbukrs  
+	union all 
+	select b.id,b.item_column,b.racct,b.inner_order,b.rbukrs,b.TXTMD,IFNULL(a.balance_p,0) as balance_p,b.balance  from  
+	(select   f.id,f.item_column,f.racct,period_cost.rbukrs,period_cost.inner_order,period_cost.balance_p,period_cost.TXTMD  from 
+	  (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join 
+	   ( select t.id,t.racct,t.rbukrs,t.inner_order,sum(t.balance) as balance_p,t.TXTMD from 
+	   THM_FS28_TEMP t
+	   WHERE  t.fiscper>='${start_date}' and t.fiscper<='${end_date}'  
+	   ]]>
+	  <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+		<![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+	]]>
+	  </if>
+	  <![CDATA[ 
+	   group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order order by t.id ) period_cost on f.id = period_cost.id 
+	)  a 
+	right join 
+	(select   f.id,f.item_column,f.racct,last_year.rbukrs,last_year.inner_order,last_year.balance ,last_year.TXTMD  from  
+	   (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join  
+	    ( select t.id,t.racct,t.rbukrs,t.TXTMD,t.inner_order,sum(t.balance) as balance from THM_FS28_TEMP t
+	          WHERE  substring(t.fiscper,1,4) ='${last_year}' 
+			   ]]>
+	       <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+		   <![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+		   ]]>
+	          </if>
+	       <![CDATA[ 
+				   and  substring(t.fiscper,5,2)>='01' and substring(t.fiscper,5,2)<='12'
+	             group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order order by t.id )  
+	                last_year on f.id = last_year.id
+	)  b  on  
+	a.id = b.id and  a.inner_order=b.inner_order and a.rbukrs=b.rbukrs  
+	)    yr  order by yr.id ,yr.rbukrs 
+	)  cost  left join 
+	
+	(select   f.id,f.item_column,f.racct,curr_year_plan.rbukrs,curr_year_plan.inner_order,curr_year_plan.wtjhv_y,curr_year_plan.TXTMD  from  
+	   (select t.* from FS28_FIELD t where t.id not in(1,17,23,34,39,42,60,76,82,90))  f   left join 
+	     ( select t.id,t.racct,t.rbukrs,t.inner_order,t.TXTMD, sum(t.wtjhv) as wtjhv_y from THM_FS28_TEMP t 
+		WHERE  substring(t.fiscper,1,4) ='${curr_year}' 
+			   ]]>
+	        <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+			<![CDATA[ and find_in_set(t.RBUKRS,${compCodeValue})
+			]]>
+	           </if>
+	        <![CDATA[  and  t.fiscper>='${start_date}' and t.fiscper<='${yearPlanEnd}' 
+	group by t.racct,t.id,t.item_column,t.TXTMD,t.rbukrs,t.inner_order order by t.id ) 
+	               curr_year_plan on f.id = curr_year_plan.id
+	)  c 
+	on cost.id = c.id and  cost.inner_order=c.inner_order and cost.rbukrs=c.rbukrs  
+	left join 
+]]>
+	<![CDATA[
+	(
+	select  jd.racct,jd.id,jd.BUKRS as rbukrs,jd.inner_order,jd.jd_year,
+	]]>
+	    <!-- 完整季度的查询 -->
+	    <if test="r==0">
+	    <![CDATA[
+		IFNULL(jd.jidu_wtjhv,0.00) as wtjhv_p 
+		]]>
+		</if> 
+		<if test="r==1 and adjEnd==01">
+		<![CDATA[
+		CASE WHEN  IFNULL(first_w.f_wtjhv,0.00) >0  
+		then (IFNULL(first_w.f_wtjhv,0.00)/3)*1+IFNULL(adj.adj_wtjhv,0.00)-first_w.f_wtjhv 
+		ELSE (IFNULL(jd.jidu_wtjhv,0.00))  
+		END AS wtjhv_p
+		 ]]>
+		</if> 
+		<if test="r==1 and adjEnd==02">
+		<![CDATA[
+		CASE WHEN  IFNULL(first_w.f_wtjhv,0.00) >0  
+		then (IFNULL(first_w.f_wtjhv,0.00)/3)*2+IFNULL(adj.adj_wtjhv,0.00)-first_w.f_wtjhv 
+		ELSE (IFNULL(jd.jidu_wtjhv,0.00))  
+		END AS wtjhv_p 
+		]]>
+		</if> 
+		<if test="r==2">
+		<![CDATA[
+		CASE WHEN  IFNULL(first_w.f_wtjhv,0.00) >0  then (first_w.f_wtjhv/3)*${adj}+IFNULL(jd.jidu_wtjhv,0.00)+IFNULL(adj.adj_wtjhv,0.00)-first_w.f_wtjhv 
+        ELSE (IFNULL(jd.jidu_wtjhv,0.00)+IFNULL(adj.adj_wtjhv,0.00))  
+        END AS wtjhv_p 
+        ]]>
+		</if> 
+		<![CDATA[
+		   from  
+		(select  t.racct,t.id,t.BUKRS,t.inner_order,sum(t.WTJHV) as jidu_wtjhv,substring(t.bldat,1,4)  as jd_year  from THM_FS28_PLAN t    
+		where   substring(t.bldat,5,2) >='01' and substring(t.bldat,5,2) <='${jiduTime}'  
+		group by t.id,t.inner_order ,t.bukrs ,t.racct ,substring(t.bldat,1,4)   
+		)  jd
+		left join
+		 (
+		select  t.racct,t.id,t.m_date,t.BUKRS,t.inner_order, t.WTJHV  as f_wtjhv  from 
+		(
+		select  a.racct,a.id,min(a.bldat) as m_date,a.BUKRS,a.inner_order, a.WTJHV 
+		from  
+		(select t.racct,t.id,t.bldat,t.BUKRS,t.inner_order,sum(t.WTJHV)  
+		 as   WTJHV   from  THM_FS28_PLAN  t  
+		group by t.id,t.inner_order ,t.bukrs ,t.racct ,t.bldat
+		)   a   
+		group by a.racct,a.id,a.BUKRS,a.inner_order,substring(a.bldat,1,6)  
+		order  by a.id,m_date,a.BUKRS  
+		)  t  
+		where  substring(t.m_date,5,2) ='${adjStart}'  
+		) first_w  on jd.id=first_w.id and jd.racct=first_w.racct and  jd.bukrs=first_w.bukrs  and jd.inner_order=first_w.inner_order  and jd.jd_year=substring(first_w.m_date,1,4) 
+		left join 
+		(select  t.racct,t.id,t.BUKRS,t.inner_order,sum(t.WTJHV)  as adj_wtjhv,substring(t.bldat,1,4) as adj_year    from THM_FS28_PLAN t   
+		 where   substring(t.bldat,5,2) >='${adjStart}'   and   substring(t.bldat,5,2) <='${adjEnd}'
+		group by t.id,t.inner_order ,t.bukrs ,t.racct ,substring(t.bldat,1,4)  
+		)  adj   on jd.id=adj.id and jd.racct=adj.racct and  jd.bukrs=adj.bukrs  and jd.inner_order=adj.inner_order  and jd.jd_year=adj.adj_year   
+		where jd.jd_year='${curr_year}' 
+		]]>
+	        <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+			<![CDATA[ and find_in_set(jd.BUKRS,${compCodeValue})
+			]]>
+	           </if>
+	   <![CDATA[ 
+	) d  on  cost.id = d.id and  cost.inner_order=d.inner_order and cost.rbukrs=d.rbukrs
+	]]>
+	
+<![CDATA[
+	)   dt   
+	group by dt.id,dt.item_column,dt.racct   order by  dt.id,dt.rbukrs
+]]>
+</sql>
+<select id="getSecondDetail" parameterType="map" resultMap="fs2401" resultType="com.yjdj.view.core.entity.mybeans.THM_FS24_01">
+	<include refid="getSecondDetailSQL" />
+</select>
+
+<!--  -->
+
+<!-- 导入表一级明细查询 -->
+<sql id="getFirstDetailImpSQL">
+<![CDATA[
+ select f.id,f.racct,f.item_column,re.txtmd,re.balance,re.year_plan as wtjhv_y, 
+re.period_plan as wtjhv_p,re.period_balance as balance_p, 
+ case when substring(f.racct,1,1)='*' and   re.year_plan is not null and year_plan!=0.00 and period_balance is not null  then round(period_balance/year_plan,2) 
+ else null
+ end as ratio 
+ from (select * from  FS28_FIELD  t where t.id not  in(1,17,23,34,39,42,60,76,82,90))  f  
+  left join  
+  (select  t.id,t.txtmd,sum(t.balance) as balance,
+  sum(t.year_plan) as year_plan,
+  sum(t.period_plan)  as period_plan, sum(t.period_balance) as period_balance 
+  from THM_FS28_TEMP_IMP t  WHERE 1=1  ]]> 
+  <if test="(compCodeValue != null and !compCodeValue.equals('')) and compCodeValue !=''">
+	<![CDATA[ and find_in_set(t.item_column,${compCodeValue})
+	]]>
+  </if> 
+  <![CDATA[
+   and t.startdate='${startdate}' and t.enddate='${enddate}'  group by t.id)  re on f.id=re.id  
+   order by f.id 
+  
+  ]]>
+</sql>
+
+<select id="getFirstDetailImp" parameterType="map" resultMap="fs2401" resultType="com.yjdj.view.core.entity.mybeans.THM_FS24_01">
+	<include refid="getFirstDetailImpSQL"/>
+</select>
+
+
+
+<!-- 导入表二级明细查询 -->
+<sql id="getSecondDetailImpSQL">
+<![CDATA[ 
+select  t.id,t.racct,t.txtmd,t.balance,t.year_plan as wtjhv_y,t.item_column,t.item_column as bukrs, 
+t.period_plan as wtjhv_p,t.period_balance as balance_p,t.ratio  
+ from THM_FS28_TEMP_IMP t  WHERE 1=1 ]]>
+<if test="(compCodeValue != null and !compCodeValue.equals(''))">
+<![CDATA[ and find_in_set(t.item_column,${compCodeValue})
+]]>
+</if>
+<![CDATA[ and  t.startdate='${startdate}' and t.enddate='${enddate}' order by t.id,t.item_column]]>
+</sql>
+<select id="getSecondDetailImp" parameterType="map" resultMap="fs2401" resultType="com.yjdj.view.core.entity.mybeans.THM_FS24_01">
+	<include refid="getSecondDetailImpSQL"/>
+</select>
+
+<!-- 查询imp中是否有该公司代码和时间区间的数据 -->
+<select id="hiveOrImp" parameterType="map"   resultType="int" >
+	  <![CDATA[  select  count(*)   from THM_FS28_TEMP_IMP t  
+	  WHERE  t.startdate='${startdate}' and t.enddate='${enddate}']]>
+	  <if test="(compCodeValue != null and !compCodeValue.equals(''))">
+      <![CDATA[ and find_in_set(t.item_column,${compCodeValue})]]>
+      </if>
+</select>
+
+<!-- 获取所有的 字典表中的名称描述，用与导入时判断是否是带有公司代码的二级明细-->
+<sql id="getFieldNameSQL">
+<![CDATA[ select group_concat(t.item_column) as fieldName from FS28_FIELD t ]]>
+</sql>
+<select id="getFieldName" parameterType="map"  resultType="java.util.Map">
+	<include refid="getFieldNameSQL" />
+</select>
+
+
+<!-- 查询当前导入记录是否在导入表中已有记录，如果有，更新记录，如果没有，插入数据库 -->
+<select id="insertOrUpdate" parameterType="map"   resultType="int" >
+	  <![CDATA[  select  count(*)   from THM_FS28_TEMP_IMP t  
+	  WHERE t.id=${id} and t.item_column='${item_column}' 
+	  and t.racct='${racct}' and t.startdate='${startdate}' and t.enddate='${enddate}']]>
+</select>
+<!-- 插入数据 -->
+<insert id="saveOrUpdateData">
+ <if test="count > 0">
+	  <!--  会计科目更新本年计划，本期计划 -->
+	   <if test="updateFlag == 0">
+	     update THM_FS28_TEMP_IMP t  set t.year_plan=${year_plan},t.period_plan=${period_plan}    WHERE t.id=${id} and t.item_column='${item_column}' and t.racct='${racct}' and t.startdate='${startdate}' and t.enddate='${enddate}'
+	   </if>
+	   <if test="updateFlag == 1">
+	    update THM_FS28_TEMP_IMP t  set t.balance=${last_year_cost}  WHERE t.id=${id} and t.item_column='${item_column}' and t.racct='${racct}'  and t.startdate='${startdate}' and t.enddate='${enddate}' 
+	   </if>
+	</if> 
+	 <if test="count == 0"> 
+	<![CDATA[insert into THM_FS28_TEMP_IMP(item_column,id,racct,TXTMD,inner_order,balance,year_plan,period_plan,period_balance,
+	            ratio,RBUKRS,startdate,enddate) values
+	                    ('${item_column}',${id},
+	                    '${racct}', '${txtmd}','${racct}',${last_year_cost},
+	                    ${year_plan},${period_plan},
+	                    ${period_cost},${exe_rate},'','${startdate}','${enddate}')]]>
+	  </if>
+</insert>
+
+<select id="selectCompanyCode" resultType="java.util.Map">
+		<![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE WHERE TXTMD = #{txtmd}]]>
+</select>
+</mapper>
+

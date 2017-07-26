@@ -1,0 +1,39 @@
+/* form 表单样式 */
+#endTime{
+	margin-right:15px;
+}
+
+/* 表格样式 */
+
+/* 表格样式 */
+.ch-kp-seven table{width:4180px;}
+.ch-kp-seven .t_r_title{width:4200px;}/*宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题）*/
+
+.ch-kp-seven{
+    margin-bottom:10px;
+}
+
+.notSearch+div p:first-child{
+	width:100%;
+	text-align:center;
+	padding:0 18px;
+}
+.notSearch+div .table-data{
+	padding:0 15px;
+    margin-top: -30px;
+}
+.notSearch+div .table-data input{
+	width:60px;
+	height:24px;
+	background:#c70019;
+	color:#ffffff;
+	margin-right:20px;
+	line-height:18px;
+}
+.notSearch+div table tr{
+	border:1px solid #ddd;
+	border-bottom:none;
+}
+.notSearch+div table tr th{
+	border-left:1px solid #ddd;
+}

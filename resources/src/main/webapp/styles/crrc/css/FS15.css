@@ -1,0 +1,25 @@
+.ch-kp-fifteen{
+	display:none;
+	padding:0 15px;
+}
+.table-name{ width:940px; }
+.ch-kp-fifteen .table-data{
+	font-size:12px;
+	overflow:hidden;
+    width:940px;
+}
+.ch-kp-fifteen div.div-table{
+	width:940px;
+}/**/
+.ch-kp-fifteen .t_r{
+    float:left;
+    padding:0px;
+}
+.ch-kp-fifteen #t_r_content{
+	overflow:auto;
+}
+.ch-kp-fifteen table{width:100%;}
+.ch-kp-fifteen .t_r_title{width:940px;}
+.ch-kp-fifteen table tr th{
+	background-color:#ededed;
+}

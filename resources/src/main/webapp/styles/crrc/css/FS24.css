@@ -1,0 +1,56 @@
+/* form 表单样式 */
+#endTime{
+	margin-right:15px;
+}
+
+/* 表格样式 */
+.notSearch+div p:first-child{
+	text-align:center;
+	padding:0 18px;
+    margin-right: 24.7%\9;
+}
+.notSearch+div .table-data{
+	padding:0 15px;
+    margin-right: 24.7%\9;
+}
+.notSearch+div .table-data input{
+	width:60px;
+	height:24px;
+	background:#c70019;
+	color:#ffffff;
+	margin-right:20px;
+	line-height:18px;
+}
+.notSearch+div table tr{
+	border:1px solid #ddd;
+	border-bottom:none;
+}
+.notSearch+div table tr th{
+	border-left:1px solid #ddd;
+}
+
+
+/* 二级明细表 */
+.ch-kp-twentyFour2{
+	display:none;
+    padding: 0 0 0 16px;
+    overflow: auto;
+    margin-right: 24.7%\9;
+}
+
+.ch-kp-twentyFour1 table{ width: 997px;width: 1005px\9;}
+.ch-kp-twentyFour1 .t_r_title{ width: 1015px; }
+
+.ch-kp-twentyFour2 table{ width: 997px;width: 1005px\9;}
+.ch-kp-twentyFour2 .t_r_title{ width: 1015px; }
+
+/* #t_r_t2 .t_r_title{ width: 9670px; }
+#t_r_content2 table{ width: 9650px;} */
+.ch-kp-twentyFour1{
+    padding: 0 0 0 16px;
+    width:1030px;
+}
+.ch-kp-twentyFour2{
+	width: 1015px;
+}
+.table-data,.table-name{ width:1030px; }

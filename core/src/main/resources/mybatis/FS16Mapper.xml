@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<!-- create on 2016/11/09  @author yangzhijie -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS16">
+
+    <resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_IMP_FS16">
+        <result column="ITEMNAME" property="itemName" jdbcType="VARCHAR" />
+        <result column="IETMNO" property="itemNo" jdbcType="VARCHAR" />
+        <result column="MONTHMONEY" property="monthMoney" jdbcType="DOUBLE" />
+        <result column="THISYEARSUM" property="thisYearSum" jdbcType="DOUBLE" />
+        <result column="LASTYEARSUM" property="lastYearSum" jdbcType="DOUBLE" />
+    </resultMap>
+	
+    <sql id="selectColumns"> 
+	    <![CDATA[ SELECT THM_IMP_FS16_FIELD.ITEMNAME,THM_IMP_FS16_FIELD.ITEMNO,
+		THM_IMP_FS16.MONTHMONEY,THM_IMP_FS16.THISYEARSUM,THM_IMP_FS16.LASTYEARSUM,THM_IMP_FS16.YEARMONTH,THM_IMP_FS16.BUKRS
+		FROM THM_IMP_FS16,THM_IMP_FS16_FIELD ]]>
+    </sql>
+
+    <sql id="where_fragement">
+        where 1=1 and THM_IMP_FS16.ITEMNO=THM_IMP_FS16_FIELD.ITEMNO
+        <if test="dateYearMonth != null and dateYearMonth != ''">
+				<![CDATA[ and THM_IMP_FS16.yearmonth = #{dateYearMonth} and THM_IMP_FS16_FIELD.YEARS = SUBSTR(${dateYearMonth},1,4)]]>
+        </if>
+        <if test="compCodeValue != null and compCodeValue != '' and compCodeValue.size != 0">
+			<![CDATA[ and THM_IMP_FS16.bukrs in ]]>
+            <foreach collection="compCodeValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+    </sql>
+    <sql id="where_comp_fragment">
+        where 1=1
+        <if test="compCodeValue != null and compCodeValue != '' and compCodeValue.size != 0">
+			<![CDATA[ and tcomp_code_.COMP_CODE in]]>
+            <foreach collection="compCodeValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+    </sql>
+    <sql id="orderby_fragement">
+		<![CDATA[ ORDER BY CONVERT(THM_IMP_FS16_FIELD.ITEMNO,UNSIGNED) ]]>
+    </sql>
+    <select id="selectData" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_IMP_FS16">
+        <include refid="selectColumns" />
+        <include refid="where_fragement" /> 
+        <include refid="orderby_fragement" /> 
+    </select>
+    <!-- 根据公司编号查询公司名称 -->
+    <select id="selectCompany" resultType="java.util.Map">
+		<![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE tcomp_code_]]>
+        <include refid="where_comp_fragment" /> 
+    </select>
+	
+    <!-- 更新导入数据 -->
+    <insert id="saveOrUpdateData" >
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_IMP_FS16 where YEARMONTH = #{yearMonth} and BUKRS = #{bukrs}
+        </selectKey>
+        <if test="count > 0">
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator=";" >
+                    UPDATE THM_IMP_FS16 
+                    <set>
+                        MONTHMONEY = #{item.monthMoney},THISYEARSUM = #{item.thisYearSum},
+                        LASTYEARSUM = #{item.lastYearSum}
+                    </set>
+                    WHERE ITEMNO = #{item.itemNo} and YEARMONTH = #{item.yearMonth} and BUKRS = #{item.companyCode}
+                </foreach> 
+            </if>
+        </if>
+        <if test="count==0">
+            insert into THM_IMP_FS16(ITEMNO,MONTHMONEY,THISYEARSUM,LASTYEARSUM,YEARMONTH,BUKRS) values
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator="," >  
+                    (#{item.itemNo},#{item.monthMoney}, #{item.thisYearSum}, #{item.lastYearSum}, #{item.yearMonth},#{item.companyCode})
+                </foreach>
+            </if>
+        </if>
+    </insert>
+    
+    <insert id="saveOrUpdateDataFS16" >
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_FS16 where YEARMONTH = #{yearMonth} and BUKRS = #{bukrs}
+        </selectKey>
+        <if test="count > 0">
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator=";" >
+                    UPDATE THM_FS16 
+                    <set>
+                        MONTHMONEY = #{item.monthMoneyOne},THISYEARSUM = #{item.thisYearSumOne},
+                        LASTYEARSUM = #{item.lastYearSumOne}
+                    </set>
+                    WHERE ITEMNO = #{item.itemNoOne} and YEARMONTH = #{item.yearMonth} and BUKRS = #{item.companyCode}
+                </foreach> 
+            </if>
+        </if>
+        <if test="count==0">
+            insert into THM_FS16(ITEMNAME,ITEMNO,MONTHMONEY,THISYEARSUM,LASTYEARSUM,YEARMONTH,BUKRS) values
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator="," >  
+                    (#{item.itemNameOne}, #{item.itemNoOne}, #{item.monthMoneyOne}, #{item.thisYearSumOne}, #{item.lastYearSumOne}, #{item.yearMonth},#{item.companyCode})
+                </foreach>
+            </if>
+        </if>
+    </insert>
+    
+    <select id="selectCompanyCode" resultType="java.util.Map">
+		<![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE WHERE TXTMD = #{txtmd}]]>
+    </select>
+  
+    <!-- 取最新模板日期 -->
+    <select id="selectMaxYear" resultType="java.util.Map">
+		<![CDATA[ SELECT MAX(YEARS) AS YEARS from THM_IMP_FS16_FIELD ]]>
+    </select>
+    
+    <!-- 查询数据字典 -->
+    <select id="selectField" resultType="com.yjdj.view.core.entity.mybeans.THM_IMP_FS16">
+		<![CDATA[ select ITEMNAME,ITEMNO,YEARS from THM_IMP_FS16_FIELD WHERE YEARS  =  ${years}]]>
+    </select>
+    
+    
+    <select id="selectDataFS16" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_IMP_FS16">
+        <![CDATA[ SELECT ITEMNAME,ITEMNO,MONTHMONEY,THISYEARSUM,LASTYEARSUM,YEARMONTH,BUKRS FROM THM_FS16 WHERE YEARMONTH=#{dateYearMonth} AND BUKRS =#{compCodeValue} ORDER BY ITEMNO]]>
+    </select>
+    
+</mapper>
+

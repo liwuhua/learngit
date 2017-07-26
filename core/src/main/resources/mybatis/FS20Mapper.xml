@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS20">
+                   
+
+    <!-- * @param KDAUF  销售订单
+    * @param KDPOS  销售订单行项目  从当前记录数中计算最小制造周期   -->
+    <select id="getOrderMarket" parameterType="map" resultType="map">
+         CALL FS20 ( #{matnr},#{dwerk},#{kdauf},#{kdpos},#{rsnum} )
+    </select>
+
+    <sql id="condition">
+        <if test="kdauf != null and kdauf != ''">
+            <![CDATA[ and a.KDAUF = #{kdauf}]]>
+        </if>
+        <if test="kdpos != null and kdpos != ''">
+            <![CDATA[ and a.KDPOS = #{kdpos}]]>
+        </if>
+        <!--<if test="baugr != null and baugr != ''">-->
+            <!--<![CDATA[ and a.BAUGR = #{baugr}]]>-->
+        <!--</if>-->
+    </sql>
+
+    <select id="getDataByArfe" resultType="java.util.HashMap">
+        <![CDATA[ SELECT DISTINCT MAUFNR as AUFNR,SAUFNR,MATNR,TXTMD,PSMNG,WEMNG,FTRMI,GLTRP,LTRMI,STAT FROM THM_AFPO_04 a where MAUFNR = #{aufnr} ]]>
+        <include refid="condition" />
+    </select>
+
+    <select id="getDataByMa" resultType="java.util.HashMap">
+        <![CDATA[ SELECT DISTINCT AUFNR,MATNR,TXTMD,PSMNG,WEMNG,FTRMI,GLTRP,LTRMI,STAT  FROM THM_AR_04 a where AUFNR = #{aufnr} ]]>
+        <include refid="condition" />
+    </select>
+
+    <select id="getDataBySon" resultType="java.util.HashMap">
+        <![CDATA[ SELECT DISTINCT AUFNR,MATNR,TXTMD,PSMNG,WEMNG,FTRMI,GLTRP,LTRMI,STAT  FROM THM_FE_04 a where AUFNR = #{aufnr} ]]>
+        <include refid="condition" />
+    </select>
+
+
+    <select id="getChildList" resultType="java.lang.String">
+        <!--<![CDATA[ select DISTINCT a.SAUFNR from THM_AFPO_04 a join THM_AR_04 b on b.AUFNR = a.SAUFNR where a.MAUFNR = #{aufnr} ]]>-->
+        <![CDATA[ select DISTINCT a.SAUFNR from THM_AFPO_04 a where a.MAUFNR = #{aufnr} ]]>
+        <include refid="condition" />
+    </select>
+
+</mapper>
+

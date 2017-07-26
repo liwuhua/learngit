@@ -1,0 +1,92 @@
+FS25存储过程
+参数  IN p_aufnr varchar(200)
+
+procedure:
+
+BEGIN
+DECLARE v_sql VARCHAR (10240);
+
+IF p_aufnr is not null and length(trim(p_aufnr)) > 0 then
+
+#创建临时表THM_FS25
+DROP TABLE IF EXISTS THM_FS25;
+set @v_sql = concat('create TEMPORARY table THM_FS25 (Select AUFNR,ZHWCX,MATNR,TXTMD,BDTER,WERKS,DISPO,DTNUM,DTPOS,sum(BDMNG) as SUM_BDMNG,
+0.00 AS LJFLL,
+0.00 AS YLL,
+"1900/01/01" AS LAST_FLTIME,
+0.00 AS MNKCL,
+0 AS BLOG from THM_RESB_01 where find_in_set(AUFNR,"',p_aufnr,'") group by AUFNR,MATNR)');
+PREPARE stmt
+FROM
+	@v_sql;
+#执行SQL语句
+EXECUTE stmt;
+#释放掉预处理段
+DEALLOCATE PREPARE stmt;
+
+#创建临时表THM_FS25_CP
+DROP TABLE IF EXISTS THM_FS25_CP;
+set @v_sql = concat('create TEMPORARY table THM_FS25_CP (Select DTNUM, MAX(DTPOS) AS MAX_DTPOS from THM_RESB_01 where find_in_set(AUFNR,"',p_aufnr,'") group by DTNUM)');
+
+PREPARE stmt
+FROM
+	@v_sql;
+#执行SQL语句
+EXECUTE stmt;
+#释放掉预处理段
+DEALLOCATE PREPARE stmt;
+
+#跟新DTPOS,模拟库存量
+select IFNULL(sum(MNG01),0.00) INTO @sum_mng1 from THM_MDTBX_01 JOIN THM_FS25_CP ON THM_MDTBX_01.DTNUM = THM_FS25_CP.DTNUM and DTPOS <= THM_FS25_CP.MAX_DTPOS and PLUMI <> '-';
+select IFNULL(sum(MNG01),0.00) INTO @sum_mng2 from THM_MDTBX_01 join THM_FS25_CP ON THM_MDTBX_01.DTNUM = THM_FS25_CP.DTNUM and DTPOS <= THM_FS25_CP.MAX_DTPOS and PLUMI = '+';
+UPDATE THM_FS25,THM_FS25_CP set THM_FS25.DTPOS = THM_FS25_CP.MAX_DTPOS,
+THM_FS25.MNKCL = @sum_mng1-@sum_mng2
+WHERE THM_FS25.DTNUM = THM_FS25_CP.DTNUM;
+
+#更新最后发料时间和累计发料量
+select IFNULL(CPUDT_MKPF,'1900/01/01') INTO @LAST_FLTIME from THM_MSEG_11 JOIN THM_FS25 ON THM_MSEG_11.MATNR = THM_FS25.MATNR and THM_MSEG_11.AUFNR=THM_FS25.AUFNR and BWART  in ('261','Z07') order by CPUDT_MKPF desc LIMIT 1;
+select IFNULL(sum(MENGE),0.00) INTO @LJFLL from THM_MSEG_11 JOIN THM_FS25 ON THM_MSEG_11.MATNR = THM_FS25.MATNR and THM_MSEG_11.AUFNR=THM_FS25.AUFNR;
+UPDATE THM_FS25 SET LAST_FLTIME = @LAST_FLTIME,LJFLL = @LJFLL;
+
+#跟新预留量和显示标识
+UPDATE THM_FS25 SET YLL = (SUM_BDMNG - LJFLL),
+BLOG = CASE WHEN ((LJFLL < SUM_BDMNG and BDTER-LAST_FLTIME=0) or MNKCL < YLL or LAST_FLTIME>BDTER) THEN 1
+WHEN (BDTER-LAST_FLTIME<=3 and BDTER-LAST_FLTIME>=0 and LJFLL < SUM_BDMNG) THEN 2
+WHEN (BDTER-LAST_FLTIME>3 and LJFLL=SUM_BDMNG) THEN 3
+ELSE 0 END;
+
+/**
+#分页查询结果
+set v_sql = 'select * from THM_FS25';
+set @v_sql=concat(v_sql,' limit ', startitem,',',pageitem);
+PREPARE stmt
+FROM
+	@v_sql;
+#执行SQL语句
+EXECUTE stmt;
+#释放掉预处理段
+DEALLOCATE PREPARE stmt;
+*/
+#查询结果
+select a.*,b.TXTMD as WERKS_TXTMD from THM_FS25 a left join MDM_TPLANT b on a.werks = b.plant ORDER BY a.blog;
+
+#生产订单		AUFNR
+#工作中心		ZHWCX
+#物料编码		MATNR
+#物料描述		TXTMD
+#计划发料时间	BDTER
+#总需求量		SUM_BDMNG
+#累计发料量	LJFLL
+#预流量		YLL
+#最后发料时间	LAST_FLTIME
+#模拟库存量	MNKCL
+#工厂		WERKS
+#工厂描述		WERKS_TXTMD
+#MRP控制者	DISPO
+#显示标识		BLOG
+
+DROP TABLE IF EXISTS THM_FS25;
+DROP TABLE IF EXISTS THM_FS25_CP;
+
+END IF;
+END

@@ -1,0 +1,8 @@
+.ch-kp-five{
+	padding:0 15px;
+}
+.table-data{ margin-top:-30px;overflow:hidden; }
+.ch-kp-five .table-five { padding:0;}
+#t_r_content{ height:400px;}
+.table-five table{width:auto;}
+.table-five .t_r_title{width:auto;}/*宽度比 t_r table 大20px （至少大20，小了滚动条滑到右侧显示有问题）*/

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS23">
+
+    <select id="getOrderMarketByaufnr" parameterType="map" resultType="map">
+   
+  <![CDATA[ 
+     SELECT
+	AUFNR,
+	ARBPL,
+	KTEXT,
+	MATNR,
+	LTXA1,
+	IF (IEAVD = 00000000, '', IEAVD) IEAVD,
+	SSAVD,
+	SSEDD,
+	(SELECT min(SSAVD) FROM THM_AFVC_01 WHERE AUFNR = #{AUFNR} ) as MINSSAVD,
+	(SELECT max(SSEDD) FROM THM_AFVC_01 WHERE AUFNR = #{AUFNR}) as  MAXSSEDD,
+        IF (
+                DAYWORKTIME = 0,
+                CONCAT(
+                        CONCAT(
+                                CONVERT (
+                                        cast(PROCEHOUR AS DECIMAL(20, 1)),
+                                        CHAR
+                                ),
+                                "小时(0.0天)"
+                        )
+                ),
+                CONCAT(
+                        CONCAT(
+                                CONVERT (
+                                        cast(PROCEHOUR AS DECIMAL(20, 1)),
+                                        CHAR
+                                ),
+                                "小时("
+                        ),
+                        CONCAT(
+                                CONVERT (
+                                        cast(
+                                                PROCEHOUR / DAYWORKTIME AS DECIMAL (20, 1)
+                                        ),
+                                        CHAR
+                                ),
+                                "天)"
+                        )
+                )
+        ) AS PERIOD,
+        CASE
+        WHEN ((STAT LIKE '%CNF%' AND (IEAVD - SSEDD) > 0) 
+            OR (STAT NOT LIKE '%CNF%' AND datediff(DATE_FORMAT(curdate(), '%Y%m%d'),SSEDD) > 0)) THEN
+            1
+        WHEN (STAT NOT LIKE '%CNF%' AND datediff(SSEDD,DATE_FORMAT(curdate(), '%Y%m%d')) > 0
+            AND datediff(SSEDD,DATE_FORMAT(curdate(), '%Y%m%d')) <= 3) THEN
+            2
+        WHEN IEAVD <> '00000000' AND TRIM(IEAVD) <> '' AND (IEAVD - SSEDD <= 0) THEN
+            3
+        ELSE
+            0
+        END AS SHOWMARK
+    FROM
+        THM_AFVC_01
+    WHERE
+        AUFNR = #{AUFNR}
+    ORDER BY
+        VORNR;
+ ]]>  
+
+    </select>
+</mapper>
+

@@ -1,0 +1,26 @@
+#endTime{
+	margin-right:15px;
+}
+.row .table-data{
+	padding: 0 16px;
+	margin-top: -30px;
+}
+#t_r_content tr td{
+	height:25px;
+}
+#cl_freeze tr td{ height:24px; }
+/* .thirtyNineBox{
+    display: none;
+} */
+.notSearch+div .thirtyNineBox .thirtyNineTable th { padding:0px;word-break:break-all; }
+.thirtyNineTable th,.thirtyNineTable td{
+	border:1px solid #ddd;
+	word-break:break-all;
+}
+.thirtyNineTable .ch-kp-thirtyNine{width:30%;padding:0;float:left;}
+#t_r_t table th{text-align:center;}
+.thirtyNineTable .t_r_content tr{
+	height:25px;
+}
+.thirtyNineTable .t_r_content{width:100%; height:143px; overflow:auto;color:#fff;} 
+.thirtyNineTable{overflow:hidden;}

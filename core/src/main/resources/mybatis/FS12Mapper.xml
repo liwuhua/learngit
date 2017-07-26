@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS12">
+
+<!-- 通过日期 公司代码   得到具体期间费用 -->
+	<select id="getPeriodexpense" parameterType="map" resultType="com.yjdj.view.core.entity.mybeans.THM_FS12">
+	    CALL FS12 (  ${p_startfiscper} , ${p_endfiscper}, ${p_bukrs});
+	</select>
+  
+    <!-- 查询卡看看导入表中存在与否 不存在 那么直接输出  没有的话  那么需要调用存储过程进行输出 -->
+    <!-- hive表中or 导入表中取  65  行的数值  导入表中 取值 为空 那么取hive表中的  否则取导入表中的 -->
+   <!--  if(sum(if(b.curryearcount is null,IFNULL(thisDMBTR,0),IFNULL(curryearcount,0)))=0,"",sum(if(b.curryearcount is null,IFNULL(thisDMBTR,0),IFNULL(curryearcount,0)))) curryearcount,
+    if(sum(if(b.lastyearcount is null,IFNULL(lastDMBTR,0),IFNULL(lastyearcount,0)))=0,"",sum(if(b.lastyearcount is null,IFNULL(lastDMBTR,0),IFNULL(lastyearcount,0)))) lastyearcount -->
+    <select id="getCurrlastCount65" parameterType="map" resultType="map">
+	    select 
+	sum(if(b.curryearcount is null,IFNULL(thisDMBTR,0),IFNULL(curryearcount,0)))curryearcount ,
+    sum(if(b.lastyearcount is null,IFNULL(lastDMBTR,0),IFNULL(lastyearcount,0))) lastyearcount
+				from 
+				(
+				SELECT DISTINCT
+					a.thisDMBTR,
+					b.lastDMBTR,
+					a.BUKRS,
+					CONCAT(
+						SUBSTRing(a.FISCPER, 1,4),
+						SUBSTRing(a.FISCPER, 6,7)
+					) FISCPER
+				FROM
+					(
+						SELECT
+							sum(DMBTR) thisDMBTR,
+							FKBER,
+							BUKRS,
+							FISCPER,
+							HKONT
+						FROM
+							THM_FS12_01
+						WHERE
+						1=1
+					
+					<if test="bukrsValue != null  and bukrsValue.size!=0"> 
+				          and BUKRS  in
+				        <foreach collection="bukrsValue" item="item"
+					        index="index" open="(" separator="," close=")"> #{item} 
+				        </foreach>
+			         </if>
+						   	
+			 <if test="p_startfiscper != null and p_startfiscper!='' and p_endfiscper!=null and  p_endfiscper!='' " > 
+				       and FISCPER between ${p_startfiscper}  and  ${p_endfiscper}
+			 </if> 
+			
+			 and HKONT = "5000170000"
+			 and FKBER = "6602"
+						GROUP BY
+							FKBER,
+							BUKRS,
+							FISCPER,
+							HKONT
+					) a
+				LEFT JOIN (
+					SELECT
+						sum(DMBTR) lastDMBTR,
+						FKBER,
+						BUKRS,
+						FISCPER,
+						HKONT
+					FROM
+						THM_FS12_01
+					WHERE
+					1=1
+				<if test="bukrsValue != null  and bukrsValue.size!=0"> 
+				        and BUKRS  in
+				     <foreach collection="bukrsValue" item="item"
+				        index="index" open="(" separator="," close=")"> #{item} 
+				      </foreach>
+			     </if>
+			     <if test="p_startfiscper != null and p_startfiscper!='' and p_endfiscper!=null and  p_endfiscper!='' " > 
+				       and FISCPER between  (${p_startfiscper}-1000)  and  (${p_endfiscper}-1000) 
+			     </if> 
+					AND HKONT = "5000170000"
+					AND FKBER = "6602"
+					GROUP BY
+						FKBER,
+						BUKRS,
+						FISCPER,
+						HKONT
+				) b ON a.BUKRS = b.BUKRS
+				AND a.FISCPER - 1000 = b.FISCPER
+				AND a.FKBER = b.FKBER
+				AND a.HKONT = b.HKONT
+				 ) a 
+				LEFT JOIN  THM_IMP_FS12  b on a.BUKRS=b.comcode and  a.FISCPER=b.startyearmonth;
+    </select>
+    
+    <!-- 85行  本年费用和去年费用  5000760200   5301 -->
+    <select id="getCurrlastCount85" parameterType="map" resultType="map">
+	    select 
+			sum(if(b.curryearcount is null,IFNULL(thisDMBTR,0),IFNULL(curryearcount,0)))curryearcount ,
+            sum(if(b.lastyearcount is null,IFNULL(lastDMBTR,0),IFNULL(lastyearcount,0))) lastyearcount
+				from 
+				(
+				SELECT DISTINCT
+					a.thisDMBTR,
+					b.lastDMBTR,
+					a.BUKRS,
+					CONCAT(
+						SUBSTRing(a.FISCPER, 1,4),
+						SUBSTRing(a.FISCPER, 6,7)
+					) FISCPER
+				FROM
+					(
+						SELECT
+							sum(DMBTR) thisDMBTR,
+							FKBER,
+							BUKRS,
+							FISCPER,
+							HKONT
+						FROM
+							THM_FS12_01
+						WHERE
+						1=1
+					
+					<if test="bukrsValue != null  and bukrsValue.size!=0"> 
+				          and BUKRS  in
+				        <foreach collection="bukrsValue" item="item"
+					        index="index" open="(" separator="," close=")"> #{item} 
+				        </foreach>
+			         </if>
+						   	
+			 <if test="p_startfiscper != null and  p_endfiscper !=''" > 
+				       and FISCPER &gt;= ${p_startfiscper}   
+			</if> 
+			
+			<if test="p_startfiscper != null and  p_endfiscper != ''"> 
+				      AND FISCPER &lt;= ${p_endfiscper}  
+			</if>   
+			
+			 AND HKONT = "5000760200"
+			 AND FKBER = "5301"
+						GROUP BY
+							FKBER,
+							BUKRS,
+							FISCPER,
+							HKONT
+					) a
+				LEFT JOIN (
+					SELECT
+						sum(DMBTR) lastDMBTR,
+						FKBER,
+						BUKRS,
+						FISCPER,
+						HKONT
+					FROM
+						THM_FS12_01
+					WHERE
+					1=1
+				<if test="bukrsValue != null  and bukrsValue.size!=0"> 
+				        and BUKRS  in
+				     <foreach collection="bukrsValue" item="item"
+				        index="index" open="(" separator="," close=")"> #{item} 
+				      </foreach>
+			     </if>
+			     <if test="p_startfiscper != null and p_startfiscper!='' and p_endfiscper!=null and  p_endfiscper!='' " >
+				    and FISCPER between  (${p_startfiscper}-1000)  and  (${p_endfiscper}-1000) 
+			     </if> 
+				
+					AND HKONT = "5000760200"
+					AND FKBER = "5301"
+					GROUP BY
+						FKBER,
+						BUKRS,
+						FISCPER,
+						HKONT
+				) b ON a.BUKRS = b.BUKRS
+				AND a.FISCPER - 1000 = b.FISCPER
+				AND a.FKBER = b.FKBER
+				AND a.HKONT = b.HKONT
+				 ) a 
+				LEFT JOIN  THM_IMP_FS12  b on a.BUKRS=b.comcode and  a.FISCPER=b.startyearmonth;
+    </select>
+ 
+    <insert id="saveOrUpdateData">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE"> 
+            select count(*) from THM_IMP_FS12 where startyearmonth = #{startyearmonth} and endyearmonth = #{endyearmonth}  and comcode = #{comcode};
+        </selectKey>
+        <if test="count > 0">
+            <if test="list != null  and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator=";" >
+                    UPDATE THM_IMP_FS12 
+                    <set>
+                        curryearcount = #{item.curryearcount},lastyearcount = #{item.lastyearcount}
+                    </set>
+                    WHERE rownum = #{item.rownum} and startyearmonth = #{startyearmonth}  and endYearMonth =#{endyearmonth}   and comcode =#{comcode}
+                </foreach> 
+            </if>                 
+        </if>
+        <if test="count==0">
+            insert into THM_IMP_FS12(rownum,curryearcount,lastyearcount,startyearmonth,endyearmonth,comcode) values
+            <if test="list != null  and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator="," >  
+                    (#{item.rownum},#{item.curryearcount}, #{item.lastyearcount}, #{startyearmonth},#{endyearmonth}, #{comcode})
+                </foreach>
+            </if>
+        </if>
+    </insert>	
+
+   <select id="selectComCodeBytxtmd" resultType="map">
+		 select COMP_CODE,TXTMD from MDM_TCOMP_CODE WHERE TXTMD = #{txtmd};
+   </select>
+   
+   <select id="selectLine" resultType="map">
+		 select *  from THM_FS12_02_copy ;
+   </select>
+   
+    <select id="selectLineByObj" resultType="map" parameterType="java.util.Map">
+		 select *  from THM_FS12_02 where BUKRS =#{rownum} ; 
+   </select>
+   
+   <!--  VALUES (#{proname,jdbcType=VARCHAR}, #{rownum}, #{curryearcount}, #{lastyearcount}, #{lastyearcount}); -->
+   <insert id="insert" parameterType="com.yjdj.view.core.entity.mybeans.THM_FS12">
+     INSERT INTO `dbview`.`THM_FS12_02` (`DMBTR`, `BUKRS`, `FISCPER`, `FKBER`, `HKONT`) 
+     VALUES (#{proname}, #{rownum}, #{curryearcount}, #{lastyearcount}, #{lastyearcount});
+   </insert>
+   
+    <select id="exists" parameterType="String" resultType="boolean">
+		 select 1 from dual
+		 where exists
+		 ( select null from THM_FS12_02 where BUKRS =#{bukrs}    
+		 )
+   </select>
+   
+    <select id="existsboolean" parameterType="java.lang.Boolean" resultType="String">
+		 select 1 from dual
+		 <if test="boolean!=null and boolean==true">
+		  where 1=1
+		 </if>
+		 
+		  <if test="boolean!=null and boolean==false">
+		  where 1=2
+		 </if>
+		 
+   </select>
+   
+</mapper>
+

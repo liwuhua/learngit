@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS44">
+
+
+    <select id="getMatnrpullCompar" parameterType="map" resultType="map">
+        <!-- 报告日期	单值		必选
+        工厂	多值		可选
+        工作中心	多值		可选
+        组件采购类型	多值		可选
+        采购组	多值+排除按钮	排除值	可选
+        供应商编码	多值+排除按钮	排除值	可选
+        配送方式	多值+排除按钮	排除值ZTMM_PSMAP- ZPSFS	可选 -->
+
+        SELECT
+            DELIDATE,
+            WERKS,
+            ZHWCX AS KTEXT,
+            BEFORE_ORDERNUM,
+            AFTER_ORDERNUM
+        FROM
+            THM_FS44
+        WHERE
+        1 = 1
+        <!-- 报告日期= -->
+        <if test="delidate != null  and delidate!='' ">
+            and DELIDATE = #{delidate}
+        </if>
+		    
+        <!-- 接受参数时   使用销售订单的名称 (查询条件中的生产订单) -->
+        <if test="aufnrValue != null  and aufnrValue.size!=0"> 
+            and AUFNR  in
+            <foreach collection="aufnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+        <!-- 查询条件中的工厂 -->
+        <if test="werksValue != null  and werksValue.size!=0"> 
+            and WERKS  in
+            <foreach collection="werksValue" item="item" index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			  
+        <!-- 	查询条件中的工作中心   plantValue 用这个接受参数-->
+        <if test="zhwcxValue != null  and zhwcxValue.size!=0"> 
+            AND ZHWCX  IN
+            <foreach collection="zhwcxValue" item="item" index="index" open="(" separator="," close=")"> #{item} 
+            </foreach>
+        </if>
+			  
+        <!-- 假如是不排他的   默认是不排他     isExclu  purGroupValue 采购组    -->
+        <if test="isExclu1==true">
+            <if test="purGroupValue != null  and purGroupValue.size!=0"> 
+                and EKGRP  in
+                <foreach collection="purGroupValue" item="item" index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+			  
+        <if test="isExclu1==false">
+            <if test="purGroupValue != null  and purGroupValue.size!=0"> 
+                and EKGRP not in
+                <foreach collection="purGroupValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+			  
+        <!-- 假如是排他的   默认是不排他   LIFNR排他  供应商编码-->
+        <if test=" isExclu2==true "> 
+            <if test="lifnrValue != null  and lifnrValue.size!=0"> 
+                and LIFNR  in
+                <foreach collection="lifnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+			
+			
+        <!-- 假如是排他的   默认是不排他   LIFNR排他  供应商编码-->
+        <if test=" isExclu2==false "> 
+            <if test="lifnrValue != null  and lifnrValue.size!=0"> 
+                and LIFNR  not in
+                <foreach collection="lifnrValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+			
+        <!-- ZPSFS  配送方式 -->
+        <if test=" isExclu3==true "> 
+            <if test="zpsfsValue != null  and zpsfsValue.size!=0"> 
+                and ZPSFS   in
+                <foreach collection="zpsfsValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+				
+        <!-- 假如是不排他的   默认是不排他      ZPSFS 排他  配送方式  -->
+        <if test=" isExclu3==false "> 
+            <if test="zpsfsValue != null  and zpsfsValue.size!=0"> 
+                and ZPSFS not  in
+                <foreach collection="zpsfsValue" item="item"
+                                                                 index="index" open="(" separator="," close=")"> #{item} 
+                </foreach>
+            </if>
+        </if>
+			 
+        <!-- 分页 --> 
+        <if test="startitem != null  and pageitem !=null "> 
+            limit #{startitem},#{pageitem};
+        </if>
+    </select>
+
+</mapper>
+

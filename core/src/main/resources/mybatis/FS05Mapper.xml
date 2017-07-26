@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS05">
+
+ 	<resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_FS05">
+		<result column="item" property="item" jdbcType="VARCHAR" />
+		<result column="item_column" property="item_column" jdbcType="VARCHAR" />
+		<result column="rbukrs" property="rbukrs" jdbcType="VARCHAR" />
+		<result column="total" property="total" jdbcType="VARCHAR" />
+		<result column="label" property="label" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+
+<!-- 查询各项税的累积和 -->
+	<select id="getTaxData" resultMap="fs"  resultType="java.util.Map">
+ 		<![CDATA[ 
+ 		SELECT
+                    tp0.ITEM,
+                    tp0.ITEM_COLUMN,
+                    tp1.RBUKRS,
+                    tp1.TOTAL,
+                    tp0.LABEL
+            FROM
+                    (
+                            SELECT DISTINCT
+                                    t0.ITEM,
+                                    t0.ITEM_COLUMN,
+                                    t0.LABEL
+                            FROM
+                                    FS05_FIELD t0
+                    ) tp0
+            LEFT OUTER JOIN (
+                    SELECT
+                            ITEM_COLUMN,
+                            GROUP_CONCAT(TP.RBUKRS ORDER BY TP.RBUKRS) RBUKRS,
+                            GROUP_CONCAT(
+                                    TP.TOTAL
+                                    ORDER BY
+                                            TP.RBUKRS
+                            ) TOTAL
+                    FROM
+                            (
+                                    SELECT
+                                            ITEM.ITEM_COLUMN,
+                                            fs05.RBUKRS,
+                                            sum(fs05.DEBIT) TOTAL
+                                    FROM
+                                            FS05_FIELD ITEM
+                                    LEFT OUTER JOIN THM_FS05 fs05 ON ITEM.RACCT = fs05.RACCT
+                                    AND fs05.FISCPER BETWEEN ${startTime}
+                                    AND ${endTime}
+                                    WHERE
+                                            ITEM.LABEL = 'D'
+                                    AND fs05.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                            ITEM.ITEM_COLUMN,
+                                            fs05.RBUKRS
+                                    UNION ALL
+                                    SELECT
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS,
+                                            imp.TOTAL
+                                    FROM
+                                            FS05_IMPORT_TABLE imp
+                                    LEFT JOIN FS05_FIELD field ON field.ITEM_COLUMN = imp.ITEM_COLUMN
+                                    WHERE
+                                            imp.FISCPER BETWEEN ${startTime}
+                                    AND ${endTime}
+                                    AND field.LABEL = 'D'
+                                    AND imp.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS
+                                    UNION ALL
+                                    SELECT
+                                            ITEM.ITEM_COLUMN,
+                                            fs05.RBUKRS,
+                                            sum(CASE WHEN ITEM.RACCT = '5000640100' THEN fs05.DEBIT ELSE fs05.CREDIT END) TOTAL
+                                    FROM
+                                            FS05_FIELD ITEM
+                                    LEFT OUTER JOIN THM_FS05 fs05 ON ITEM.RACCT = fs05.RACCT
+                                    AND fs05.FISCPER BETWEEN ${startTime}
+                                    AND ${endTime}
+                                    WHERE
+                                            ITEM.LABEL = 'C'
+                                    AND fs05.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                        ITEM.ITEM_COLUMN,
+                                        fs05.RBUKRS
+                                    UNION ALL
+                                    SELECT
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS,
+                                            TOTAL
+                                    FROM
+                                            FS05_IMPORT_TABLE imp
+                                    LEFT JOIN FS05_FIELD field ON field.ITEM_COLUMN = imp.ITEM_COLUMN
+                                    WHERE
+                                            imp.FISCPER BETWEEN ${startTime}
+                                    AND ${endTime}
+                                    AND field.LABEL = 'C'
+                                    AND imp.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS
+                                    UNION ALL
+                                    SELECT
+                                            ITEM.ITEM_COLUMN,
+                                            fs05.RBUKRS,
+                                            IF(sum(fs05.BALANCE)=0,0.00,-sum(fs05.BALANCE)) AS  TOTAL
+                                    FROM
+                                            FS05_FIELD ITEM
+                                    LEFT OUTER JOIN THM_FS05 fs05 ON ITEM.RACCT = fs05.RACCT
+                                    AND fs05.FISCPER BETWEEN ${endTime}
+                                    AND ${endTime}
+                                    WHERE
+                                            ITEM.LABEL = 'B'
+                                        AND fs05.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                            ITEM.ITEM_COLUMN,
+                                            fs05.RBUKRS
+                                    UNION ALL
+                                    SELECT
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS,
+                                            imp.TOTAL
+                                    FROM
+                                            FS05_IMPORT_TABLE imp
+                                    LEFT JOIN FS05_FIELD field ON field.ITEM_COLUMN = imp.ITEM_COLUMN
+                                    WHERE
+                                            imp.FISCPER BETWEEN ${endTime}
+                                        AND ${endTime}
+                                        AND field.LABEL = 'B'
+                                        AND imp.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS
+                                    UNION ALL
+                                    SELECT
+                                            ITEM.ITEM_COLUMN,
+                                            fs0502.RBUKRS,
+                                            IF(sum(fs0502.YBALANCE)=0,0.00,-sum(fs0502.YBALANCE)) AS  TOTAL
+                                    FROM
+                                            FS05_FIELD ITEM
+                                    LEFT OUTER JOIN (
+                                            SELECT DISTINCT
+                                                    t0.RBUKRS,
+                                                    t0.RACCT,
+                                                    t0.YBALANCE,
+                                                    SUBSTR(t0.FISCPER, 1, 4) FYEAR
+                                            FROM
+                                                    THM_FS05 t0
+                                    ) fs0502 ON ITEM.RACCT = fs0502.RACCT
+                                    AND fs0502.FYEAR = SUBSTR(${endTime}, 1, 4)
+                                    WHERE
+                                            ITEM.LABEL = 'Y'
+                                    AND fs0502.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                            ITEM.ITEM_COLUMN,
+                                            fs0502.RBUKRS
+                                    UNION ALL
+                                    SELECT
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS,
+                                            imp.TOTAL
+                                    FROM
+                                            FS05_IMPORT_TABLE imp
+                                    LEFT JOIN FS05_FIELD field ON field.ITEM_COLUMN = imp.ITEM_COLUMN
+                                    WHERE
+                                            imp.FISCPER BETWEEN ${startTime}
+                                    AND ${endTime}
+                                    AND field.LABEL = 'Y'
+                                    AND imp.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS
+                                    UNION ALL
+                                    SELECT
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS,
+                                            imp.TOTAL
+                                    FROM
+                                            FS05_IMPORT_TABLE imp
+                                    LEFT JOIN FS05_FIELD field ON field.ITEM_COLUMN = imp.ITEM_COLUMN
+                                    WHERE
+                                            imp.FISCPER BETWEEN ${startTime}
+                                    AND ${endTime}
+                                    AND field.LABEL = 'I'
+                                    AND imp.RBUKRS IN (${compCodeValue})
+                                    GROUP BY
+                                            imp.ITEM_COLUMN,
+                                            imp.RBUKRS
+                            ) TP
+                    GROUP BY
+                            TP.ITEM_COLUMN
+            ) tp1 ON tp0.ITEM_COLUMN = tp1.ITEM_COLUMN
+            ORDER BY
+                    CONVERT (tp0.ITEM_COLUMN, UNSIGNED);
+ 		]]>
+		
+	</select>
+	<select id="getCompTxtmdByCode" resultType="java.util.Map">
+		<![CDATA[ select TXTMD from MDM_TCOMP_CODE where COMP_CODE='${compCode}'; ]]>
+	</select>
+	<select id="getCompTxtmdNFAndYDByCode" resultType="java.util.Map">
+		<![CDATA[ select TXTMD from MDM_TCOMP_CODE_OVERSEA where COMP_CODE='${compCode}'; ]]>
+	</select>
+	<select id="getCompTxtmdByTxtmd" resultType="java.util.Map">
+		<![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE where TXTMD='${compTxtmd}'; ]]>
+	</select>
+	<select id="getCompTxtmdNFAndYDByTxtmd" resultType="java.util.Map">
+		<![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE_OVERSEA where TXTMD='${compTxtmd}'; ]]>
+	</select>
+	
+	<!-- 	根据公司编号查询公司名称 -->
+    <select id="selectCompany" resultType="java.util.Map">
+		<![CDATA[ select COMP_CODE,TXTMD from MDM_TCOMP_CODE_OVERSEA; ]]>
+    </select>
+	<!-- 更新数据 -->
+    <insert id="saveOrUpdateData" >
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from FS05_IMPORT_TABLE where FISCPER = '${FISCPER}' 
+        </selectKey>
+        <if test="count > 0">
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator=";" >
+                    UPDATE FS05_IMPORT_TABLE 
+                    <set>
+                        TOTAL='${item.TOTAL}' 
+                    </set>
+                    WHERE RBUKRS='${item.RBUKRS}' AND FISCPER='${item.FISCPER}' AND ITEM_COLUMN=${item.lineNum}
+                </foreach> 
+            </if>
+        </if>
+        <if test="count == 0">
+            INSERT INTO FS05_IMPORT_TABLE(RBUKRS,ITEM_COLUMN,TOTAL,FISCPER,CREATE_TIME) values
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="item" index="index" separator="," >  
+                    ('${item.RBUKRS}',${item.lineNum}, '${item.TOTAL}', '${item.FISCPER}', '${item.CREATE_TIME}')
+                </foreach>
+            </if>
+        </if>
+    </insert>
+    
+</mapper>
+

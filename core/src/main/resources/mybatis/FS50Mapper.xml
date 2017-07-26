@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS50">
+
+    <sql id="where_fragement">
+        where 1=1
+<!--         信息编号XXBH -->
+        <if test="xxbhValue != null and xxbhValue != '' and xxbhValue.size!=0">
+            and xxbh in
+            <foreach collection="xxbhValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+          <!-- 配属局段PSJD -->
+        <if test="psjdValue != null and psjdValue != '' and psjdValue.size!=0">
+            and psjd in
+            <foreach collection="psjdValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+          <!-- 产品寿命阶段CPSMJD -->
+        <if test="cpsmjdValue != null and cpsmjdValue != '' and cpsmjdValue.size!=0">
+            and cpsmjd in
+            <foreach collection="cpsmjdValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <!--  检修地点JXDD  单值不是作为数组 应为string -->
+        <if test="jxddValue != null and jxddValue != '' and jxddValue.size!=0">
+            and jxdd like  "%${jxddValue[0]}%"
+           <!--  <foreach collection="jxddValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach> -->
+        </if>
+        <!-- 发现时间FXSJ -->
+        <if test="startTime != null and startTime != ''">
+            <![CDATA[ and fxsj>= #{startTime}]]>
+        </if>
+        <if test="endTime != null and endTime != ''">
+            <![CDATA[ and fxsj<= #{endTime} ]]>
+        </if>
+        
+        <!--月份 startYearMonth endYearMonth -->
+        <if test="startYearMonth!=null and startYearMonth!='' and endYearMonth!=null and endYearMonth!='' ">
+              and   month between #{startYearMonth} and #{endYearMonth}
+        </if>
+        
+         <!-- 产品型号CPXH -->
+        <if test="cpxhValue != null and cpxhValue != '' and cpxhValue.size!=0">
+            and cpxh in
+            <foreach collection="cpxhValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+         <!-- 产品编号CPBH -->
+        <if test="cpbhValue != null and cpbhValue != '' and cpbhValue.size!=0">
+            and cpbh in
+            <foreach collection="cpbhValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+           <!-- 机车编号JCBH -->
+        <if test="jcbhValue != null and jcbhValue != '' and jcbhValue.size!=0">
+            and jcbh in
+            <foreach collection="jcbhValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+         
+         <!-- 故障部位GZBW -->
+        <if test="gzbwValue != null and gzbwValue != '' and gzbwValue.size!=0">
+            and gzbw in
+            <foreach collection="gzbwValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+         <!-- 事故类别SGLB -->
+        <if test="sglbValue != null and sglbValue != '' and sglbValue.size!=0">
+            and sglb in
+            <foreach collection="sglbValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+       
+        <!-- 严重度YZD -->
+        <if test="yzdValue != null and yzdValue != '' and yzdValue.size!=0">
+            and yzd in
+            <foreach collection="yzdValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        
+         <!-- 供应商LIFNR -->
+        <if test="lifnrValue != null and lifnrValue != '' and lifnrValue.size!=0">
+            and lifnr in
+            <foreach collection="lifnrValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+    </sql>
+    
+    <!--质量损失类别编号LBBH-->
+    <sql id="where_fragement_lbbh">
+        <if test="lbbhValue != null and lbbhValue != '' and lbbhValue.size!=0">
+            and lbbh in
+            <foreach collection="lbbhValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+    </sql>
+<!--报告编号BGBH    -->
+    <sql id="where_fragement_bgbh">
+    <if test="bgbhValue != null and bgbhValue != '' and bgbhValue.size!=0">
+        and bgbh in
+        <foreach collection="bgbhValue" item="item"
+                 index="index" open="(" separator="," close=")"> #{item}
+        </foreach>
+    </if>
+    </sql>
+    <!--判断分页-->
+    <sql id="limit_fragement">
+        <if test="flag == 0">
+            <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+        </if>
+    </sql>
+    
+    
+    
+    
+    
+<!--通用查询-->
+    <select id="selectData_01" resultType="com.yjdj.view.core.entity.mybeans.THM_FS50">
+        select month,xxbh,psjd,cpsmjd,jxdd,fxsj,cpxh,cpbh,amount,xzccrq,zjjxccrq,jcbh,zlc,jxhlc,gzbw,gzms,cljg,clff,gzwcrq,sglb,yzd,zrcp,jnw,xzjx,lifnr,bz from THM_FS50
+        <include refid="where_fragement" />
+        <include refid="limit_fragement" />
+    </select>
+<!--国铁服务中心查询-->
+    <select id="selectData_02" resultType="com.yjdj.view.core.entity.mybeans.THM_FS50">																	
+       <!-- select xxbh,lbbh,lbdm,yydm,psjd,cpsmjd,jxdd,fxsj,cpxh,cpbh,amount,xzccrq,zjjxccrq,jcbh,zlc,jxhlc,gzbw,gzms,cljg,clff,gzwcrq,sglb,yzd,zrcp,yyfx,zgcs,bgbh,ss,clfy,ysfy,rgfy,qtfy,pc,jnw,xzjx,lifnr,bz from THM_FS50 -->
+			SELECT
+				month,xxbh, lbbh, categorytxt lbdm,reasoncodetxt yydm,
+				<!-- lbdm,  
+				yydm, -->
+				psjd,cpsmjd,jxdd,fxsj,cpxh,cpbh,amount,xzccrq,zjjxccrq,jcbh,zlc,jxhlc,gzbw,gzms,cljg,clff,
+				gzwcrq,sglb,yzd,zrcp,yyfx,zgcs,bgbh,ss,clfy,ysfy,rgfy,qtfy,pc,jnw,xzjx,lifnr,bz
+			FROM
+				THM_FS50 a
+			 inner join THM_KPI2227_05  c on a.lbdm=c.categorycode
+			 inner join THM_KPI2227_06  d on a.yydm=d.reasoncode
+        
+        <include refid="where_fragement" />
+        <include refid="where_fragement_lbbh" />
+        <include refid="where_fragement_bgbh" />
+        <include refid="limit_fragement" />
+    </select>
+<!--质保部查询-->
+    <select id="selectData_03" resultType="com.yjdj.view.core.entity.mybeans.THM_FS50">
+        select month,xxbh,lbbh<!-- lbdm,yydm, -->,categorytxt lbdm,reasoncodetxt yydm,psjd,cpsmjd,jxdd,fxsj,cpxh,cpbh,amount,xzccrq,zjjxccrq,jcbh,zlc,jxhlc,gzbw,gzms,cljg,clff,gzwcrq,sglb,yzd,zrcp,ss,clfy,ysfy,rgfy,qtfy,pc,jnw,xzjx,lifnr,bz from THM_FS50 a
+			 inner join THM_KPI2227_05  c on a.lbdm=c.categorycode
+			 inner join THM_KPI2227_06  d on a.yydm=d.reasoncode
+        <include refid="where_fragement" />
+        <include refid="where_fragement_lbbh" />
+        <include refid="limit_fragement" />
+    </select>
+<!--上传数据的查询-->
+    <select id="selectData_04" resultType="com.yjdj.view.core.entity.mybeans.THM_FS50">
+        <!-- select * from THM_FS50 -->
+        SELECT 
+			MONTH,XXBH,lbbh,categorytxt lbdm,reasoncodetxt yydm,PSJD,CPSMJD,JXDD,FXSJ,CPXH,CPBH,AMOUNT,XZCCRQ,ZJJXCCRQ,
+			JCBH,ZLC,JXHLC,GZBW,GZMS,CLJG,CLFF,GZWCRQ,SGLB,YZD,ZRCP,YYFX,ZGCS,BGBH,ZRDW,SS,
+			clfy,ysfy,rgfy,qtfy,PC,JNW,XZJX,LIFNR,BZ,CPFL,GZLX,SF,SPQK,FX,CGY
+	FROM  THM_FS50 a
+	inner join THM_KPI2227_05  c on a.lbdm=c.categorycode
+	inner join THM_KPI2227_06  d on a.yydm=d.reasoncode
+        <include refid="where_fragement" />
+        <include refid="where_fragement_lbbh" />
+        <include refid="where_fragement_bgbh" />
+        <include refid="limit_fragement" />
+    </select>
+
+    <!--上传数据-->
+    <insert id="insertData">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(1) from THM_FS50 where XXBH = '${DATA.xxbh}'
+        </selectKey>
+        
+        <if test="DATA.czbz == '新增' and count==0" >
+        <!-- insert into THM_FS50 values ('${DATA.date}','${DATA.month}','${DATA.xxbh}','${DATA.lbbh}','${DATA.lbdm}','${DATA.yydm}','${DATA.psjd}','${DATA.cpsmjd}',
+        '${DATA.jxdd}','${DATA.fxsj}','${DATA.cpxh}','${DATA.cpbh}','${DATA.amount}','${DATA.xzccrq}','${DATA.zjjxccrq}','${DATA.jcbh}',
+        '${DATA.zlc}','${DATA.jxhlc}','${DATA.gzbw}','${DATA.gzms}','${DATA.cljg}','${DATA.clff}','${DATA.gzwcrq}','${DATA.sglb}','${DATA.yzd}',
+        '${DATA.zrcp}','${DATA.yyfx}','${DATA.zgcs}','${DATA.bgbh}','${DATA.zrdw}','${DATA.ss}','${DATA.clfy}', '${DATA.ysfy}','${DATA.rgfy}','${DATA.qtfy}',
+        '${DATA.pc}','${DATA.jecy}','${DATA.jnw}','${DATA.xzjx}',
+        '${DATA.cpfl}','${DATA.gzlx}','${DATA.sf}','${DATA.spqk}','${DATA.fx}','${DATA.cgy}','${DATA.lifnr}','${DATA.cnw}','${DATA.xmlb}','${DATA.bz}') -->
+       
+        insert into THM_FS50 values ('${DATA.month}','${DATA.xxbh}','${DATA.lbbh}','${DATA.lbdm}','${DATA.yydm}','${DATA.psjd}','${DATA.cpsmjd}',
+        '${DATA.jxdd}','${DATA.fxsj}','${DATA.cpxh}','${DATA.cpbh}','${DATA.amount}','${DATA.xzccrq}','${DATA.zjjxccrq}','${DATA.jcbh}',
+        '${DATA.zlc}','${DATA.jxhlc}','${DATA.gzbw}','${DATA.gzms}','${DATA.cljg}','${DATA.clff}','${DATA.gzwcrq}','${DATA.sglb}','${DATA.yzd}',
+        '${DATA.zrcp}','${DATA.yyfx}','${DATA.zgcs}','${DATA.bgbh}','${DATA.zrdw}','${DATA.ss}','${DATA.clfy}', '${DATA.ysfy}','${DATA.rgfy}','${DATA.qtfy}',
+        '${DATA.pc}','${DATA.jnw}','${DATA.xzjx}','${DATA.lifnr}','${DATA.bz}','${DATA.cpfl}','${DATA.gzlx}','${DATA.sf}','${DATA.spqk}','${DATA.fx}','${DATA.cgy}')
+        
+        </if>
+        
+        <if test="DATA.czbz == '更新' or (DATA.czbz == '新增' and count>0)">
+            UPDATE THM_FS50
+            <set>
+                <!-- date='${DATA.date}',month='${DATA.month}',lbbh='${DATA.lbbh}',lbdm='${DATA.lbdm}',yydm='${DATA.yydm}',psjd='${DATA.psjd}',cpsmjd='${DATA.cpsmjd}',
+                jxdd='${DATA.jxdd}',fxsj='${DATA.fxsj}',cpxh='${DATA.cpxh}',cpbh='${DATA.cpbh}',amount='${DATA.amount}',xzccrq='${DATA.xzccrq}',zjjxccrq='${DATA.zjjxccrq}',jcbh='${DATA.jcbh}',
+                zlc='${DATA.zlc}',jxhlc='${DATA.jxhlc}',gzbw='${DATA.gzbw}',gzms='${DATA.gzms}',cljg='${DATA.cljg}',clff='${DATA.clff}',gzwcrq='${DATA.gzwcrq}',sglb='${DATA.sglb}',yzd='${DATA.yzd}',
+                zrcp='${DATA.zrcp}',yyfx='${DATA.yyfx}',zgcs='${DATA.zgcs}',bgbh='${DATA.bgbh}',zrdw='${DATA.zrdw}',
+                ss='${DATA.ss}',clfy='${DATA.clfy}',ysfy='${DATA.ysfy}',rgfy='${DATA.rgfy}',qtfy='${DATA.qtfy}',
+                pc='${DATA.pc}',jecy='${DATA.jecy}',jnw='${DATA.jnw}',xzjx='${DATA.xzjx}',
+                cpfl='${DATA.cpfl}',gzlx='${DATA.gzlx}',sf='${DATA.sf}',spqk='${DATA.spqk}',fx='${DATA.fx}',cgy='${DATA.cgy}',lifnr='${DATA.lifnr}',cnw='${DATA.cnw}',xmlb='${DATA.xmlb}',bz='${DATA.bz}' -->
+            	
+            	month='${DATA.month}',lbbh='${DATA.lbbh}',lbdm='${DATA.lbdm}',yydm='${DATA.yydm}',psjd='${DATA.psjd}',cpsmjd='${DATA.cpsmjd}',
+                jxdd='${DATA.jxdd}',fxsj='${DATA.fxsj}',cpxh='${DATA.cpxh}',cpbh='${DATA.cpbh}',amount='${DATA.amount}',xzccrq='${DATA.xzccrq}',
+                zjjxccrq='${DATA.zjjxccrq}',jcbh='${DATA.jcbh}',zlc='${DATA.zlc}',jxhlc='${DATA.jxhlc}',gzbw='${DATA.gzbw}',gzms='${DATA.gzms}',
+                cljg='${DATA.cljg}',clff='${DATA.clff}',gzwcrq='${DATA.gzwcrq}',sglb='${DATA.sglb}',yzd='${DATA.yzd}',zrcp='${DATA.zrcp}',
+                yyfx='${DATA.yyfx}',zgcs='${DATA.zgcs}',bgbh='${DATA.bgbh}',zrdw='${DATA.zrdw}',ss='${DATA.ss}',clfy='${DATA.clfy}',ysfy='${DATA.ysfy}',
+                rgfy='${DATA.rgfy}',qtfy='${DATA.qtfy}',pc='${DATA.pc}',jnw='${DATA.jnw}',xzjx='${DATA.xzjx}',lifnr='${DATA.lifnr}',bz='${DATA.bz}',
+                cpfl='${DATA.cpfl}',gzlx='${DATA.gzlx}',sf='${DATA.sf}',spqk='${DATA.spqk}',fx='${DATA.fx}',cgy='${DATA.cgy}'
+           
+            </set>
+            where xxbh='${DATA.xxbh}'
+        </if>
+        <if test="DATA.czbz == '删除'">
+                DELETE from THM_FS50 where xxbh='${DATA.xxbh}' 
+        </if> 
+    </insert>
+    
+    <!-- 模糊查询所有事故类别 -->
+   <select id="getAccitype" parameterType="java.lang.String" resultType="java.lang.String">
+                  
+                  SELECT
+					b. NAME
+				FROM  `t_sys_code_type` a
+				INNER JOIN t_sys_code b ON a.id = b.codeTypeId
+				WHERE a.id = 00007
+				<if test="name != null and name != ''">
+                  <![CDATA[and b.name like "%${name}%" ]]>
+                </if>
+                 ORDER BY b.name
+   </select>
+   
+   
+   <!-- 模糊查询所有故障名称 -->
+   <select id="getDefalocation" parameterType="java.lang.String" resultType="java.lang.String">
+                  
+                  SELECT
+					b. NAME
+				FROM  `t_sys_code_type` a
+				INNER JOIN t_sys_code b ON a.id = b.codeTypeId
+				WHERE a.id = 00008
+				<if test="name != null and name != ''">
+                  <![CDATA[and b.name like "%${name}%" ]]>
+                </if>
+                 ORDER BY b.name
+   </select>
+   
+   <!-- 配属局段 -->
+   <select id="getAttaburea" parameterType="java.lang.String" resultType="java.lang.String">
+                  
+                  SELECT
+					b. NAME
+				FROM  `t_sys_code_type` a
+				INNER JOIN t_sys_code b ON a.id = b.codeTypeId
+				WHERE a.id = 00009
+				<if test="name != null and name != ''">
+                  <![CDATA[and b.name like "%${name}%" ]]>
+                </if>
+                 ORDER BY b.name
+   </select>
+   
+   <!-- 产品寿命阶段 -->
+   <select id="getProductLife" parameterType="java.lang.String" resultType="java.lang.String">
+                  
+                  SELECT
+					b. NAME
+				FROM  `t_sys_code_type` a
+				INNER JOIN t_sys_code b ON a.id = b.codeTypeId
+				WHERE a.id = 00010
+				<if test="name != null and name != ''">
+                  <![CDATA[and b.name like "%${name}%" ]]>
+                </if>
+                 ORDER BY b.name
+   </select>
+   
+   
+   <!-- 产品型号 -->
+   <select id="getProductModel" parameterType="java.lang.String" resultType="java.lang.String">
+                  
+                  SELECT
+					b. NAME
+				FROM  `t_sys_code_type` a
+				INNER JOIN t_sys_code b ON a.id = b.codeTypeId
+				WHERE a.id = 00011
+				<if test="name != null and name != ''">
+                  <![CDATA[and b.name like "%${name}%" ]]>
+                </if>
+                 ORDER BY b.name
+   </select>
+   
+    <!-- 严重度-->
+   <select id="getSeverity" parameterType="java.lang.String" resultType="java.lang.String">
+                  
+                SELECT
+					b. NAME
+				FROM  `t_sys_code_type` a
+				INNER JOIN t_sys_code b ON a.id = b.codeTypeId
+				WHERE a.id = 00012
+				<if test="name != null and name != ''">
+                  <![CDATA[and b.name like "%${name}%" ]]>
+                </if>
+                 ORDER BY b.name
+   </select>
+   
+   <!-- 信息编号-->
+   <select id="getInfocode" parameterType="java.lang.String" resultType="java.lang.String">
+                 
+                 SELECT  DISTINCT xxbh FROM  THM_FS50
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[and  xxbh like "%${name}%" ]]>
+                </if>
+                   and xxbh!="" 
+                   ORDER BY  xxbh
+                   limit #{start}, #{limit}
+                    
+   </select>
+   
+   <!-- 产品编号 -->
+  <select id="getProducCode" parameterType="java.lang.String" resultType="java.lang.String">
+                  
+                 SELECT  DISTINCT CPBH FROM  THM_FS50
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[and CPBH like "%${name}%" ]]>
+                </if>
+                  and CPBH!="" and CPBH!="/" 
+                  ORDER BY  CPBH
+                 limit #{start}, #{limit}
+   </select>
+   
+    <!-- 机车编号 -->
+    <select id="getMotorCode" parameterType="java.lang.String" resultType="java.lang.String">
+                 
+                 SELECT  DISTINCT JCBH FROM  THM_FS50
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[and JCBH like "%${name}%" ]]>
+                </if>
+                 and JCBH!="" and JCBH!="/"
+                  ORDER BY  JCBH
+                 limit #{start}, #{limit}
+   </select>
+   
+   <!-- 报告编号 -->
+    <select id="getReportCode" parameterType="java.lang.String" resultType="java.lang.String">
+                 
+                 SELECT  DISTINCT BGBH FROM  THM_FS50
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[ and BGBH like "%${name}%"  ]]>
+                </if>
+                  and BGBH!="" and BGBH!="/"
+                  ORDER BY  BGBH
+                 limit #{start}, #{limit}
+   </select>
+   
+    <!-- 质量损失类别编号 -->
+    <select id="getLossTypeCode" parameterType="java.lang.String" resultType="java.lang.String">
+		      
+		       SELECT  DISTINCT LBBH FROM  THM_FS50
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[and LBBH like "%${name}%"  ]]>
+                </if>
+                  and LBBH!="" and LBBH!="/"
+                  ORDER BY  LBBH
+                 limit #{start}, #{limit}
+   </select>
+   
+     
+    <!-- 供应商 -->
+    <select id="getTvendor" parameterType="java.lang.String" resultType="java.lang.String">
+                 
+                 SELECT  DISTINCT LIFNR FROM  THM_FS50
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[and LIFNR like "%${name}%"  ]]>
+                </if>
+                  and LIFNR !=""
+                  ORDER BY  LIFNR
+                 limit #{start}, #{limit}
+   </select>
+   
+   
+   
+   
+</mapper>

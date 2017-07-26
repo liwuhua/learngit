@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<!-- create on 2017/03/31  @author yangzhijie -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS54">
+
+    <resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_FS54">
+        <result column="YEARMONTH" property="yearmonth" jdbcType="VARCHAR" />
+        <result column="PCLASS" property="pclass" jdbcType="VARCHAR" />
+        <result column="PNAME" property="pname" jdbcType="VARCHAR" />
+        <result column="PMODEL" property="pmodel" jdbcType="VARCHAR" />
+        <result column="ANAME" property="aname" jdbcType="VARCHAR" />
+        <result column="AMODEL" property="amodel" jdbcType="VARCHAR" />
+        <result column="MATNR" property="matnr" jdbcType="VARCHAR" />
+        <result column="TRAINTYPE" property="traintype" jdbcType="VARCHAR" />
+        <result column="OUTNUM" property="outnum" jdbcType="VARCHAR" />
+        <result column="INNUM" property="innum" jdbcType="VARCHAR" />
+        <result column="PYES" property="pyes" jdbcType="VARCHAR" />
+        <result column="PNO" property="pno" jdbcType="VARCHAR" />
+        <result column="PSALE" property="psale" jdbcType="VARCHAR" />
+        <result column="RAILSTATION" property="railstation" jdbcType="VARCHAR" />
+        <result column="FWZ" property="fwz" jdbcType="VARCHAR" />
+        <result column="FWD" property="fwd" jdbcType="VARCHAR" />
+    </resultMap>
+       
+    
+    <!-- 	查询所有数据 -->
+    <sql id="selectColumns"> 
+	    <![CDATA[ select YEARMONTH,PCLASS,PNAME,PMODEL,ANAME,AMODEL,MATNR,TRAINTYPE,OUTNUM,INNUM,PYES,PNO,PSALE,RAILSTATION,FWZ,FWD 
+	     from THM_FS54]]>
+    </sql>
+
+    <sql id="where_fragement">
+        <trim prefix="WHERE (1=1 AND" prefixOverrides="AND|OR">
+        <if test="matnrValue != null and matnrValue.size != 0">
+            <![CDATA[ and TRIM(LEADING '0' from MATNR) in]]>
+            <foreach collection="matnrValue" item="item" index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="matnrInterval != null and matnrInterval.size != 0">
+            <foreach collection="matnrInterval" index="index" item="item">
+                <!--#{item}-->
+                <foreach collection="item" index="start"  item="end" separator="union">
+                    OR TRIM(LEADING '0' from MATNR) BETWEEN #{start} AND #{end}
+                </foreach>
+            </foreach>
+        </if>
+        <![CDATA[ and 1=1)]]>
+        <if test="cpxh != null and cpxh != '' and cpxh.size != 0">
+				<![CDATA[and ( ]]>
+            <foreach collection="cpxh" item="item"
+                     index="index" open="" separator=" OR " close=""> 
+                     (PMODEL = '${item}' OR PMODEL LIKE '${item}、%' OR PMODEL LIKE '%、${item}' OR PMODEL LIKE '%、${item}、%')
+            </foreach>
+            	<![CDATA[)]]>
+        </if>
+        <if test="aname != null and aname != '' and aname.size != 0">
+				<![CDATA[and ANAME in]]>
+            <foreach collection="aname" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="trainmodel != null and trainmodel != '' and trainmodel.size != 0">
+				<![CDATA[and ( ]]>
+            <foreach collection="trainmodel" item="item"
+                     index="index" open="" separator=" OR " close=""> 
+                     (TRAINTYPE = '${item}' OR TRAINTYPE LIKE '${item}、%' OR TRAINTYPE LIKE '%、${item}' OR TRAINTYPE LIKE '%、${item}、%')
+            </foreach>
+            	<![CDATA[)]]>
+        </if>
+        <if test="fwz != null and fwz != '' and fwz.size != 0">
+				<![CDATA[and FWZ in]]>
+            <foreach collection="fwz" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="fwd != null and fwd != '' and fwd.size != 0">
+				<![CDATA[and FWD in]]>
+            <foreach collection="fwd" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <![CDATA[and YEARMONTH = #{yearMonth}]]>
+        </trim>
+        
+    </sql> 
+    <sql id="orderby_fragement">
+		<![CDATA[ ORDER BY YEARMONTH,CONCAT(PCLASS,PNAME,PMODEL,ANAME,AMODEL,MATNR,TRAINTYPE,OUTNUM,INNUM),RAILSTATION,FWZ,FWD ]]>
+    </sql>
+    
+    <select id="selectData" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_FS55">
+        <include refid="selectColumns" />
+        <include refid="where_fragement" /> 
+        <include refid="orderby_fragement" /> 
+    </select>
+    
+    
+    
+    
+    
+    
+	<!-- 	保存读取的数据 -->
+	<insert id="saveData" parameterType="java.util.List">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_FS54 where YEARMONTH = #{yearMonth}
+        </selectKey>
+        <if test="count > 0">
+            delete from THM_FS54 where YEARMONTH = #{yearMonth};
+            
+            insert into THM_FS54(YEARMONTH,PCLASS,PNAME,PMODEL,ANAME,AMODEL,MATNR,TRAINTYPE,OUTNUM,INNUM,PYES,PNO,PSALE,RAILSTATION,FWZ,FWD) values
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="itemValue" close=";" separator="," index="index">
+                   ( '${itemValue[0]}','${itemValue[1]}','${itemValue[2]}','${itemValue[3]}','${itemValue[4]}','${itemValue[5]}','${itemValue[6]}','${itemValue[7]}',
+                   	'${itemValue[8]}','${itemValue[9]}','${itemValue[10]}','${itemValue[11]}','${itemValue[12]}','${itemValue[13]}','${itemValue[14]}','${itemValue[15]}')
+                </foreach>
+            </if>
+            
+        </if>
+        <if test="count==0">
+            insert into THM_FS54(YEARMONTH,PCLASS,PNAME,PMODEL,ANAME,AMODEL,MATNR,TRAINTYPE,OUTNUM,INNUM,PYES,PNO,PSALE,RAILSTATION,FWZ,FWD) values
+            <if test="list != null and list != '' and list.size != 0">
+                <foreach collection="list" item="itemValue" close=";" separator="," index="index">  
+                   ( '${itemValue[0]}','${itemValue[1]}','${itemValue[2]}','${itemValue[3]}','${itemValue[4]}','${itemValue[5]}','${itemValue[6]}','${itemValue[7]}',
+                   	'${itemValue[8]}','${itemValue[9]}','${itemValue[10]}','${itemValue[11]}','${itemValue[12]}','${itemValue[13]}','${itemValue[14]}','${itemValue[15]}')
+                </foreach>
+            </if>
+        </if>
+    </insert>
+	
+    <select id="selectFwz" resultType="java.util.Map">
+        <![CDATA[ select DISTINCT b.id, b.NAME AS FWZ from t_sys_code_type a, t_sys_code b  where a.id=b.codeTypeId and a.id = "00005" and b.NAME like "%${fwzLike}%" and b.id like "%${fwzIdLike}%"; ]]>
+    </select>
+    
+    <select id="selectFwd" resultType="java.util.Map">
+        <![CDATA[ select DISTINCT b.id, b.NAME AS FWD from t_sys_code_type a, t_sys_code b  where a.id=b.codeTypeId and a.id = "00006" and b.NAME like "%${fwdLike}%" and b.id like "%${fwdIdLike}%"; ]]>
+    </select>
+    
+    <select id="selectCx" resultType="java.util.Map">
+        <![CDATA[ select DISTINCT b.id, b.NAME AS CX from t_sys_code_type a, t_sys_code b  where a.id=b.codeTypeId and a.id = "00015" and b.NAME like "%${cxLike}%" and b.id like "%${cxIdLike}%"; ]]>
+    </select>
+    
+    <select id="getCpxh" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT PMODEL from THM_FS54 where PMODEL like "%${cpxhLike}%"; ]]>
+    </select>
+    
+    <select id="getAname" resultType="java.lang.String">
+        <![CDATA[ select DISTINCT ANAME from THM_FS54 where ANAME like "%${anameLike}%"; ]]>
+    </select>
+    
+    
+    <sql id="selectColumns1"> 
+	    <![CDATA[ select TRIM(LEADING '0' from MATERIAL) AS MATERIAL from MDM_TMATERIAL ]]>
+    </sql>
+    <sql id="where_fragement1">
+        where 1=1
+        <if test="materialList != null and materialList != '' and materialList.size != 0">
+				<![CDATA[and TRIM(LEADING '0' from MATERIAL) in]]>
+            <foreach collection="materialList" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+                <![CDATA[or MATERIAL in]]>
+            <foreach collection="materialList" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+    </sql>     
+    <select id="selectMaterialInList" resultType="java.lang.String">
+        <include refid="selectColumns1" />
+        <include refid="where_fragement1" /> 
+    </select>
+    
+</mapper>
+

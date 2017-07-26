@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS53">
+
+
+    <resultMap id="fs" type="com.yjdj.view.core.entity.mybeans.THM_FS53">
+        <result column="MONTH" property="month" jdbcType="VARCHAR" />
+        <result column="NUM" property="num" jdbcType="VARCHAR" />
+        <result column="GZLX" property="gzlx" jdbcType="VARCHAR" />
+        <result column="CPXH" property="cpxh" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="selectColumns"> 
+	    <![CDATA[ select substring(MONTH,5,2) AS MONTH,COUNT(XXBH) AS NUM,GZLX,CPXH 
+	     from THM_FS50]]>
+    </sql>
+
+    <sql id="where_fragement">
+        where 1=1
+        <if test="gzlxList != null and gzlxList != '' and gzlxList.size != 0">
+				<![CDATA[and GZLX in]]>
+            <foreach collection="gzlxList" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="year != null and year != ''">
+				<![CDATA[and substring(MONTH,1,4) = #{year}]]>
+        </if>
+    </sql> 
+    
+    <sql id="groupby_fragement">
+		<![CDATA[ GROUP BY substring(MONTH,5,2),GZLX,CPXH ]]>
+    </sql>
+    
+    
+    <sql id="selectColumns1"> 
+	    <![CDATA[ select substring(MONTH,5,2) AS MONTH,COUNT(XXBH) AS NUM,GZLX 
+	     from THM_FS50]]>
+    </sql>
+
+    <sql id="where_fragement1">
+        where 1=1
+        <if test="gzlxList1 != null and gzlxList1 != '' and gzlxList1.size != 0">
+				<![CDATA[and GZLX in]]>
+            <foreach collection="gzlxList1" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="year1 != null and year1 != ''">
+				<![CDATA[and substring(MONTH,1,4) = #{year1}]]>
+        </if>
+    </sql> 
+    
+    <sql id="groupby_fragement1">
+		<![CDATA[ GROUP BY substring(MONTH,5,2),GZLX]]>
+    </sql>
+    
+    <sql id="selectColumns2"> 
+	    <![CDATA[ select substring(MONTH,5,2) AS MONTH,COUNT(XXBH) AS NUM 
+	     from THM_FS50]]>
+    </sql>
+
+    <sql id="where_fragement2">
+        where 1=1
+        <if test="gzlxList2 != null and gzlxList2 != '' and gzlxList2.size != 0">
+				<![CDATA[and GZLX in]]>
+            <foreach collection="gzlxList2" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <if test="year2 != null and year2 != ''">
+				<![CDATA[and substring(MONTH,1,4) = #{year2}]]>
+        </if>
+    </sql> 
+    
+    <sql id="groupby_fragement2">
+		<![CDATA[ GROUP BY substring(MONTH,5,2)]]>
+    </sql>
+    
+    
+    <select id="selectData" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_FS53">
+        <include refid="selectColumns" />
+        <include refid="where_fragement" /> 
+        <include refid="groupby_fragement" /> 
+    </select>
+    
+    <select id="selectDataWithMonth" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_FS53">
+        <include refid="selectColumns1" />
+        <include refid="where_fragement1" /> 
+        <include refid="groupby_fragement1" /> 
+    </select>
+    
+    <select id="selectDataTotal" resultMap="fs" resultType="com.yjdj.view.core.entity.mybeans.THM_FS53">
+        <include refid="selectColumns2" />
+        <include refid="where_fragement2" /> 
+        <include refid="groupby_fragement2" /> 
+    </select>
+    
+    
+    
+    
+    <resultMap id="fs1" type="com.yjdj.view.core.entity.mybeans.MdmGzlx">
+        <result column="GZLX" property="gzlx" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <select id="selectGzlx" resultMap="fs1" resultType="com.yjdj.view.core.entity.mybeans.MdmGzlx">
+        <![CDATA[ select DISTINCT GZLX from THM_FS50  where GZLX like "%${gzlxLike}%"; ]]>
+    </select>
+</mapper>
+

@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS07">
+
+    <!--控制时间 公司和客户1-->
+    <sql id="where_fragement_01">
+        <!--<if test="entity!=null">-->
+        <if test="BUKRS != null and BUKRS.size != 0">
+            <![CDATA[ and BUKRS in]]>
+            <foreach collection="BUKRS" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="KUNNR != null and KUNNR.size != 0">
+            <![CDATA[ and KUNNR in]]>
+            <foreach collection="KUNNR" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+
+    </sql>
+
+    <!--控制时间 公司和客户2-->
+    <sql id="where_fragement_05">
+        <!--<if test="entity!=null">-->
+        <if test="BUKRS != null and BUKRS.size != 0">
+            <![CDATA[ AND BUKRS in]]>
+            <foreach collection="BUKRS" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="KUNNR != null and KUNNR.size != 0">
+            <![CDATA[ and KUNNR in]]>
+            <foreach collection="KUNNR" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+
+    </sql>
+
+    <!--控制时间 等于区间内-->
+    <sql id="where_fragement_02">
+        <if test="dateYearMonthStart != null and dateYearMonthStart != ''">  <![CDATA[and FISCPER >= #{dateYearMonthStart}]]>
+        </if>
+        <if test="dateYearMonthEnd != null and dateYearMonthEnd != ''"> <![CDATA[ and FISCPER <= #{dateYearMonthEnd} ]]>
+        </if>
+    </sql>
+    <!--控制时间 小于区间初期-->
+    <sql id="where_fragement_03">
+        <if test="dateYearMonthStart != null and dateYearMonthStart != ''">  <![CDATA[and FISCPER < #{dateYearMonthStart}]]>
+        </if>
+    </sql>
+    <!--控制时间 小于等于区间末期-->
+    <sql id="where_fragement_04">
+        <if test="dateYearMonthEnd != null and dateYearMonthEnd != ''">  <![CDATA[and FISCPER <= #{dateYearMonthEnd}]]>
+        </if>
+    </sql>
+
+    <!--&lt;!&ndash;除账龄外的前半张表&ndash;&gt;-->
+    <sql id="selectColumns_01">
+        select  bukrs,
+        gs_txt,
+        kunnr,
+        kh_txt,
+        hkont,
+        dqxssr,
+        qcye,
+        xj_s,
+        zyywsr,
+        qtywsr,
+        xxsj,
+        qt,
+        xj_h,
+        xianjin,
+        yhcd,
+        sycd,
+        yunxin,
+        dizhang,
+        qmye,
+        ys_sixmonth,
+        ys_sixone,
+        ys_onetwo,
+        ys_twothree,
+        ys_threefour,
+        ys_fourfive,
+        ys_fiveyear,
+        zb_sixmonth,
+        zb_sixone,
+        zb_onetwo,
+        zb_twothree,
+        zb_threefour,
+        zb_fourfive,
+        zb_fiveyear,
+        zb_xiaoji
+        from THM_IMP_FS07 where 1=1
+        <if test="BUKRS != null and BUKRS.size != 0">
+            <![CDATA[ and BUKRS in]]>
+            <foreach collection="BUKRS" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="KUNNR != null and KUNNR.size != 0">
+            <![CDATA[ and KUNNR in]]>
+            <foreach collection="KUNNR" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="dateYearMonthStart != null and dateYearMonthStart != '' and dateYearMonthEnd != null and dateYearMonthEnd != ''">
+        and impdate BETWEEN #{dateYearMonthStart} and #{dateYearMonthEnd}
+        </if>
+        UNION all
+        (SELECT  * from
+        (select lm.BUKRS,a.TXTMD as GS_TXT,lm.KUNNR,b.TXTMD as KH_TXT,lm.HKONT,d.DQXSSR,e.QCYE,k.XJ_S,f.ZYYWSR,g.QTYWSR,h.XXSJ,(k.XJ_S-f.ZYYWSR-g.QTYWSR-h.XXSJ) as QT,m.XJ_H,p.XIANJIN,r.YHCD,t.SYCD,v.YUNXIN,(m.XJ_H-p.XIANJIN-r.YHCD-t.SYCD-v.YUNXIN) as DIZHANG,w.QMYE,x.YS_SIXMONTH,y.YS_SIXONE,z.YS_ONETWO,ab.YS_TWOTHREE, bc.YS_THREEFOUR,cd.YS_FOURFIVE,de.YS_FIVEYEAR,ef.ZB_SIXMONTH,fg.ZB_SIXONE,gh.ZB_ONETWO,hi.ZB_TWOTHREE, ij.ZB_THREEFOUR,jk.ZB_FOURFIVE,kl.ZB_FIVEYEAR,(ef.ZB_SIXMONTH+fg.ZB_SIXONE+gh.ZB_ONETWO+hi.ZB_TWOTHREE+ij.ZB_THREEFOUR+jk.ZB_FOURFIVE+kl.ZB_FIVEYEAR)as ZB_XIAOJI
+          from THM_FS07_08 lm
+          join MDM_TCOMP_CODE a
+          on a.COMP_CODE=lm.BUKRS
+          join MDM_TCUSTOMER b
+          on b.CUSTOMER=lm.KUNNR
+
+          left join
+          (select BUKRS,KUNNR,sum(MONTH_DMBTR)*(-1) AS DQXSSR
+          from THM_FS07_05
+          where (HKONT LIKE '6001%' OR HKONT LIKE '6051%')
+          <include refid="where_fragement_01" />
+          <include refid="where_fragement_02" />
+          group by BUKRS,KUNNR) d
+          on lm.BUKRS=d.BUKRS and lm.KUNNR=d.KUNNR
+
+          left join
+          (select BUKRS,KUNNR,sum(MONTH_DMBTR) AS QCYE
+          from THM_FS07_05
+          where HKONT LIKE '1122%' and (HKONT!='1122010100' and HKONT!='1122020100')
+          <include refid="where_fragement_01" />
+          <include refid="where_fragement_03" />
+          group by BUKRS,KUNNR) e
+          on lm.BUKRS=e.BUKRS and lm.KUNNR=e.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(MONTH_DMBTR)*(-1) AS ZYYWSR
+        from THM_FS07_05
+        where HKONT LIKE '6001%'
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_02" />
+        group by BUKRS,KUNNR) f
+        on lm.BUKRS=f.BUKRS and lm.KUNNR=f.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(MONTH_DMBTR)*(-1) AS QTYWSR
+        from THM_FS07_05
+        where HKONT LIKE '6051%'
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_02" />
+        group by BUKRS,KUNNR) g
+        on lm.BUKRS=g.BUKRS and lm.KUNNR=g.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(MONTH_DMBTR)*(-1) AS XXSJ
+        from THM_FS07_05
+        where HKONT='2221010200'
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_02" />
+        group by BUKRS,KUNNR) h
+        on lm.BUKRS=h.BUKRS and lm.KUNNR=h.KUNNR
+
+        left join
+        (select i.BUKRS,i.KUNNR,sum(i.DMBTR) as XJ_S
+        from THM_FS07_06 i
+        where 1=1
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_02" />
+        group by i.BUKRS,i.KUNNR)k
+        on lm.BUKRS=k.BUKRS and lm.KUNNR=k.KUNNR
+
+        left join
+        (select l.BUKRS,l.KUNNR,sum(l.DMBTR)*(-1) as XJ_H
+        from THM_FS07_0105_13 l
+        where 1=1
+        <include refid="where_fragement_01" />
+        <![CDATA[ and BUDAT<= #{budatend} and BUDAT >= #{budatstart}]]>
+        group by l.BUKRS,l.KUNNR)m
+        on lm.BUKRS=m.BUKRS and lm.KUNNR=m.KUNNR
+
+        left join
+        (select o.BUKRS,o.ZKUNNR,sum(o.XIANJIN_DMBTR-o.FJZ_DMBTR) as XIANJIN
+        from THM_FS07_01 o
+        where 1=1
+        <if test="BUKRS != null and BUKRS.size != 0">
+            <![CDATA[ and o.BUKRS in]]>
+            <foreach collection="BUKRS" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="ZKUNNR != null and ZKUNNR.size != 0">
+            <![CDATA[ and o.ZKUNNR in]]>
+            <foreach collection="ZKUNNR" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="dateYearMonthStart != null and dateYearMonthStart != ''">  <![CDATA[and o.FISCPER >= #{dateYearMonthStart}]]>
+        </if>
+        <if test="dateYearMonthEnd != null and dateYearMonthEnd != ''"> <![CDATA[ and o.FISCPER <= #{dateYearMonthEnd} ]]>
+        </if>
+        group by o.BUKRS,o.ZKUNNR)p
+        on lm.BUKRS=p.BUKRS and lm.KUNNR=p.ZKUNNR
+
+        left join
+        (select q.BUKRS,q.ZKUNNR,sum(q.YHCD_DMBTR-q.YS_DMBTR-q.FJZ_DMBTR) as YHCD
+        from THM_FS07_02 q
+        where 1=1
+        <if test="BUKRS != null and BUKRS.size != 0">
+            <![CDATA[ and q.BUKRS in]]>
+            <foreach collection="BUKRS" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="ZKUNNR != null and ZKUNNR.size != 0">
+            <![CDATA[ and q.ZKUNNR in]]>
+            <foreach collection="ZKUNNR" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="dateYearMonthStart != null and dateYearMonthStart != ''">  <![CDATA[and q.FISCPER >= #{dateYearMonthStart}]]>
+        </if>
+        <if test="dateYearMonthEnd != null and dateYearMonthEnd != ''"> <![CDATA[ and q.FISCPER <= #{dateYearMonthEnd} ]]>
+        </if>
+        group by q.BUKRS,q.ZKUNNR)r
+        on  lm.BUKRS=r.BUKRS and lm.KUNNR=r.ZKUNNR
+
+        left join
+        (select s.BUKRS,s.ZKUNNR,sum(s.SYCD_DMBTR-s.YS_DMBTR-s.FJZ_DMBTR) as SYCD
+        from THM_FS07_03 s
+        where 1=1
+        <if test="BUKRS != null and BUKRS.size != 0">
+            <![CDATA[ and s.BUKRS in]]>
+            <foreach collection="BUKRS" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="ZKUNNR != null and ZKUNNR.size != 0">
+            <![CDATA[ and s.ZKUNNR in]]>
+            <foreach collection="ZKUNNR" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="dateYearMonthStart != null and dateYearMonthStart != ''">  <![CDATA[and s.FISCPER >= #{dateYearMonthStart}]]>
+        </if>
+        <if test="dateYearMonthEnd != null and dateYearMonthEnd != ''"> <![CDATA[ and s.FISCPER <= #{dateYearMonthEnd} ]]>
+        </if>
+        group by s.BUKRS,s.ZKUNNR)t
+        on  lm.BUKRS=t.BUKRS and lm.KUNNR=t.ZKUNNR
+
+        left join
+        (select u.BUKRS,u.ZKUNNR,sum(u.YX_DMBTR) as YUNXIN
+        from THM_FS07_04 u
+        where 1=1
+        <if test="BUKRS != null and BUKRS.size != 0">
+            <![CDATA[ and u.BUKRS in]]>
+            <foreach collection="BUKRS" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="ZKUNNR != null and ZKUNNR.size != 0">
+            <![CDATA[ and u.ZKUNNR in]]>
+            <foreach collection="ZKUNNR" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="dateYearMonthStart != null and dateYearMonthStart != ''">  <![CDATA[and u.FISCPER >= #{dateYearMonthStart}]]>
+        </if>
+        <if test="dateYearMonthEnd != null and dateYearMonthEnd != ''"> <![CDATA[ and u.FISCPER <= #{dateYearMonthEnd} ]]>
+        </if>
+        group by u.BUKRS,u.ZKUNNR)v
+        on lm.BUKRS=v.BUKRS and lm.KUNNR=v.ZKUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(MONTH_DMBTR) AS QMYE
+        from THM_FS07_05
+        where HKONT LIKE '1122%' and ( HKONT!='1122010100' and HKONT!='1122020100')
+        <include refid="where_fragement_01" />
+        <include refid="where_fragement_04" />
+        group by BUKRS,KUNNR) w
+        on lm.BUKRS=w.BUKRS and lm.KUNNR=w.KUNNR
+
+        <!--:账龄-->
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as YS_SIXMONTH
+        from THM_FS07_09
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date1} and ZZFBDT >= #{date2}]]>
+        group by BUKRS,KUNNR
+        ) x
+        on lm.BUKRS=x.BUKRS and lm.KUNNR=x.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as YS_SIXONE
+        from THM_FS07_09
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date3} and ZZFBDT >= #{date4}]]>
+        group by BUKRS,KUNNR
+        ) y
+        on lm.BUKRS=y.BUKRS and lm.KUNNR=y.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as YS_ONETWO
+        from THM_FS07_09
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date5} and ZZFBDT >= #{date6}]]>
+        group by BUKRS,KUNNR
+        ) z
+        on lm.BUKRS=z.BUKRS and lm.KUNNR=z.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as YS_TWOTHREE
+        from THM_FS07_09
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date7} and ZZFBDT >= #{date8}]]>
+        group by BUKRS,KUNNR
+        ) ab
+        on lm.BUKRS=ab.BUKRS and lm.KUNNR=ab.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as YS_THREEFOUR
+        from THM_FS07_09
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date9} and ZZFBDT >= #{date10}]]>
+        group by BUKRS,KUNNR
+        ) bc
+        on lm.BUKRS=bc.BUKRS and lm.KUNNR=bc.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as YS_FOURFIVE
+        from THM_FS07_09
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date11} and ZZFBDT >= #{date12}]]>
+        group by BUKRS,KUNNR
+        ) cd
+        on lm.BUKRS=cd.BUKRS and lm.KUNNR=cd.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as YS_FIVEYEAR
+        from THM_FS07_09
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date13}]]>
+        group by BUKRS,KUNNR
+        ) de
+        on lm.BUKRS=de.BUKRS and lm.KUNNR=de.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as ZB_SIXMONTH
+        from THM_FS07_10
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date1} and ZZFBDT >= #{date2}]]>
+        group by BUKRS,KUNNR
+        ) ef
+        on lm.BUKRS=ef.BUKRS and lm.KUNNR=ef.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as ZB_SIXONE
+        from THM_FS07_10
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date3} and ZZFBDT >= #{date4}]]>
+        group by BUKRS,KUNNR
+        ) fg
+        on lm.BUKRS=fg.BUKRS and lm.KUNNR=fg.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as ZB_ONETWO
+        from THM_FS07_10
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date5} and ZZFBDT >= #{date6}]]>
+        group by BUKRS,KUNNR
+        ) gh
+        on lm.BUKRS=gh.BUKRS and lm.KUNNR=gh.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as ZB_TWOTHREE
+        from THM_FS07_10
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date7} and ZZFBDT >= #{date8}]]>
+        group by BUKRS,KUNNR
+        ) hi
+        on lm.BUKRS=hi.BUKRS and lm.KUNNR=hi.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as ZB_THREEFOUR
+        from THM_FS07_10
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date9} and ZZFBDT >= #{date10}]]>
+        group by BUKRS,KUNNR
+        ) ij
+        on lm.BUKRS=ij.BUKRS and lm.KUNNR=ij.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as ZB_FOURFIVE
+        from THM_FS07_10
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date11} and ZZFBDT >= #{date12}]]>
+        group by BUKRS,KUNNR
+        ) jk
+        on lm.BUKRS=jk.BUKRS and lm.KUNNR=jk.KUNNR
+
+        left join
+        (select BUKRS,KUNNR,sum(DMSHB) as ZB_FIVEYEAR
+        from THM_FS07_10
+        where 1=1
+        <include refid="where_fragement_05" />
+        <![CDATA[and ( (AUGDT != '00000000'and AUGDT> #{date1} )or AUGDT='00000000') and BUDAT<= #{date1} and ZZFBDT <= #{date13} ]]>
+        group by BUKRS,KUNNR
+        ) kl
+        on lm.BUKRS=kl.BUKRS and lm.KUNNR=kl.KUNNR
+
+        where 1=1
+        <if test="BUKRS != null and BUKRS.size != 0">
+            <![CDATA[ and lm.BUKRS in]]>
+            <foreach collection="BUKRS" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        <if test="KUNNR != null and KUNNR.size != 0">
+            <![CDATA[ and lm.KUNNR in]]>
+            <foreach collection="KUNNR" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+        </if>
+        group by lm.BUKRS,lm.KUNNR
+        order  by lm.BUKRS, w.QMYE DESC) t  where
+        not EXISTS (select 1 from (select * from THM_IMP_FS07 where 1=1
+        <if test="dateYearMonthStart != null and dateYearMonthStart != '' and dateYearMonthEnd != null and dateYearMonthEnd != ''">
+            and impdate BETWEEN #{dateYearMonthStart} and #{dateYearMonthEnd}
+        </if>
+        ) s where s.bukrs=t.bukrs and s.kunnr=t.kunnr and s.hkont=t.hkont)
+        )
+    </sql>
+    <!--判断分页-->
+    <sql id="limit_fragement">
+        <if test="flag == 0">
+            <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+        </if>
+    </sql>
+    <!--：-->
+    <select id="selectDataTrue_07" resultType="com.yjdj.view.core.entity.mybeans.THM_FS07">
+        <include refid="selectColumns_01" />
+        <include refid="limit_fragement" />
+    </select>
+
+    <!-- 数据导入 -->
+    <insert id="saveOrUpdateData" >
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_IMP_FS07 where  bukrs = '${bukrs}' and kunnr = '${kunnr}' and hkont = '${hkont}' and impdate = '${impdate}'
+        </selectKey>
+        <if test="count > 0">
+            UPDATE THM_IMP_FS07
+            <set>
+                dqxssr = ${dqxssr},
+                qcye = ${qcye},
+                xj_s = ${xj_s},
+                zyywsr = ${zyywsr},
+                qtywsr = ${qtywsr},
+                xxsj = ${xxsj},
+                qt = ${qt},
+                xj_h = ${xj_h},
+                xianjin = ${xianjin},
+                yhcd = ${yhcd},
+                sycd = ${sycd},
+                yunxin = ${yunxin},
+                dizhang = ${dizhang},
+                qmye = ${qmye},
+                ys_sixmonth = ${ys_sixmonth},
+                ys_sixone = ${ys_sixone},
+                ys_onetwo = ${ys_onetwo},
+                ys_twothree = ${ys_twothree},
+                ys_threefour = ${ys_threefour},
+                ys_fourfive = ${ys_fourfive},
+                ys_fiveyear = ${ys_fiveyear},
+                zb_sixmonth = ${zb_sixmonth},
+                zb_sixone = ${zb_sixone},
+                zb_onetwo = ${zb_onetwo},
+                zb_twothree = ${zb_twothree},
+                zb_threefour = ${zb_threefour},
+                zb_fourfive = ${zb_fourfive},
+                zb_fiveyear = ${zb_fiveyear},
+                zb_xiaoji = ${zb_xiaoji}
+            </set>
+            where  bukrs = '${bukrs}' and kunnr = '${kunnr}' and hkont = '${hkont}' and impdate = '${impdate}'
+        </if>
+        <if test="count==0">
+            insert into THM_IMP_FS07(
+            bukrs,
+            gs_txt,
+            kunnr,
+            kh_txt,
+            hkont,
+            dqxssr,
+            qcye,
+            xj_s,
+            zyywsr,
+            qtywsr,
+            xxsj,
+            qt,
+            xj_h,
+            xianjin,
+            yhcd,
+            sycd,
+            yunxin,
+            dizhang,
+            qmye,
+            ys_sixmonth,
+            ys_sixone,
+            ys_onetwo,
+            ys_twothree,
+            ys_threefour,
+            ys_fourfive,
+            ys_fiveyear,
+            zb_sixmonth,
+            zb_sixone,
+            zb_onetwo,
+            zb_twothree,
+            zb_threefour,
+            zb_fourfive,
+            zb_fiveyear,
+            zb_xiaoji,
+            impdate
+            ) values(
+            '${bukrs}',
+            '${gs_txt}',
+            '${kunnr}',
+            '${kh_txt}',
+            '${hkont}',
+            ${dqxssr},
+            ${qcye},
+            ${xj_s},
+            ${zyywsr},
+            ${qtywsr},
+            ${xxsj},
+            ${qt},
+            ${xj_h},
+            ${xianjin},
+            ${yhcd},
+            ${sycd},
+            ${yunxin},
+            ${dizhang},
+            ${qmye},
+            ${ys_sixmonth},
+            ${ys_sixone},
+            ${ys_onetwo},
+            ${ys_twothree},
+            ${ys_threefour},
+            ${ys_fourfive},
+            ${ys_fiveyear},
+            ${zb_sixmonth},
+            ${zb_sixone},
+            ${zb_onetwo},
+            ${zb_twothree},
+            ${zb_threefour},
+            ${zb_fourfive},
+            ${zb_fiveyear},
+            ${zb_xiaoji},
+            '${impdate}'
+            )
+        </if>
+    </insert>
+
+</mapper>
+

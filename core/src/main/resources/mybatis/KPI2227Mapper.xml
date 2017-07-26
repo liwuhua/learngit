@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperKPI2227">
+      
+	
+	<!-- 质量损失类别编号 -->
+    <select id="getLossTypeCode" parameterType="java.lang.String" resultType="java.lang.String">
+		      
+		       SELECT  DISTINCT categorynum FROM  THM_KPI2227_01
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[and categorynum like "%${name}%"  ]]>
+                </if>
+                  and categorynum!="" and categorynum!="/"
+                  ORDER BY  categorynum
+                 limit #{start}, #{limit}
+   </select>
+   
+   
+   	<!-- 质量问题发生单位 -->
+    <select id="getOccurPlant" parameterType="java.lang.String" resultType="java.lang.String">
+		      
+		       SELECT  DISTINCT occurrunit FROM  THM_KPI2227_01
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[and occurrunit like "%${name}%"  ]]>
+                </if>
+                  and occurrunit!="" and occurrunit!="/"
+                  ORDER BY  occurrunit
+                 limit #{start}, #{limit}
+   </select>
+   
+    <!-- 责任单位 -->
+    <select id="getDutyPlant" parameterType="java.lang.String" resultType="java.lang.String">
+		      
+		       SELECT  DISTINCT dutyunit FROM  THM_KPI2227_01
+                 where 1=1
+                 <if test="name != null and name != ''">
+                  <![CDATA[and dutyunit like "%${name}%"  ]]>
+                </if>
+                  and dutyunit!="" and dutyunit!="/"
+                  ORDER BY  dutyunit
+                 limit #{start}, #{limit}
+   </select>
+	
+	
+ <!--  厂内  当年的某个月的数据 -->            
+<select id="getInplantAccount" parameterType="map"  resultType="map">
+       
+<!--         SELECT CONCAT(trim(LEADING '0' from SUBSTRING(YYMM,5,6)),'月') month,IFNULL(sum(actlossmonty),0)total
+        FROM `THM_KPI2227_01` where  1=1 -->
+        
+         SELECT  IFNULL(sum(actlossmonty),0)intotal
+          FROM `THM_KPI2227_01` where  1=1
+        <if test="dateYearMonth!=null and dateYearMonth!=''">
+             and  YYMM=#{dateYearMonth}        
+        </if> 
+
+</select>
+
+ 
+<!-- 厂外 当年的某个月的数据 -->
+<select id="getOutplantAccount" parameterType="map"  resultType="map">
+        SELECT  IFNULL(sum(SS),0)outtotal 
+        FROM `THM_FS50` where 1=1 
+		<if test="dateYearMonth!=null and dateYearMonth!=''">
+            and   month=#{dateYearMonth}        
+        </if> 
+</select>
+
+
+<select id="getPlantAccount" parameterType="map"  resultType="map">
+                CALL KPI2227(#{endYearMonth})
+</select>
+
+
+<!--质量损失当年累计值 -->
+<select id="getTotal" parameterType="map"  resultType="map">
+              select SUM(alltotal) total from THM_KPI2227_03 
+              where ymonth  BETWEEN #{startYearMonth}  and #{endYearMonth}
+</select>
+
+<!-- 查询485表中的公司数据最早的月份 -->
+<select id="getLatestDate" parameterType="string"   resultType="map">
+  <![CDATA[
+				SELECT
+					MAX(yymm) latestYM
+				FROM
+					(
+						SELECT
+							concat(GJAHR, MONAT) yymm
+						FROM
+							THM_KPI0105_03
+						WHERE
+							concat(GJAHR, MONAT) <= #{endYearMonth}
+						AND ZTYP = 3
+					) t
+  ]]>
+</select> 
+
+
+<!--计算损失率  -->
+<select id="getLossMate" parameterType="map"  resultType="map">
+					
+		<![CDATA[  
+			 
+			 select IFNULL(mate,0) mate,ymonth ,income
+               from ( 			
+			 SELECT 
+				CASE WHEN (income IS NOT NULL  and  alltotal is not null) THEN REPLACE(CONVERT(FORMAT(((alltotal/income)*10000),2),CHAR),",","")
+				     WHEN (income IS  NULL or alltotal is  null) then 0
+				     end mate,a.ymonth ymonth,income
+				FROM THM_KPI2227_03 a
+				INNER JOIN (
+				select
+				   inc.incomeAll as income,#{everyMonth}  ymonth  
+				from  
+				  (
+                select sum(a.incomeAll) as incomeAll,a.year_t from  (
+				   select   (sa.sum_all-jy.sum_jy)   as  incomeAll,sa.year_t  from    
+					(select (sum(sum_DMBTR))*(-1)   as  sum_all,substring(#{everyMonth},1,4) as year_t  from  
+						 (select  BUKRS, GJAHR, HKONT, FISCPER,SUM_DMBTR from  THM_BSEG_RV_13  t   
+						   where  t.FISCPER=#{everyMonth}
+						 ) t   
+					)  sa 
+  				  	join  
+						(
+						select (sum(sum_DMBTR))*(-1)   as  sum_jy,substring(#{everyMonth},1,4) as year_t   from  
+							(select  BUKRS, GJAHR, HKONT, FISCPER, SUM_DMBTR 
+							from   THM_BSEG_RV_09  t  where
+							(t.HKONT like  '6001%'  or t.HKONT  like  '6051%' )   and  t.FISCPER=#{everyMonth}  
+							 union  all  
+							select  BUKRS, GJAHR, HKONT, FISCPER, SUM_DMBTR 
+							from   THM_BSEG_RV_11  t  where
+							(t.HKONT like  '6001%'  or t.HKONT  like  '6051%' )   and   t.FISCPER=#{everyMonth} 
+						   )  t  
+						)  jy  on sa.year_t=jy.year_t 
+					  union all
+                  
+				       select  (mon.incomeAll-ifnull(lastmon.incomeAll,0.00)) as incomeAll,mon.year_t  from 
+					   (select  round(sum(t.ZYYSR)-sum(t.ZGSJY),2) as  incomeAll,
+				        substring(#{everyMonth},1,4) as  year_t   
+				        from  THM_KPI0105_03  t   where  t.GJAHR=substring(#{everyMonth},1,4) 
+				         and  t.MONAT = substring(#{everyMonth},5,2)   and t. ZTYP='3'
+						)  mon  
+				       join 
+					   (
+				       select  round(sum(t.ZYYSR)-sum(t.ZGSJY),2) as  incomeAll,
+				        substring(#{everyMonth},1,4) as  year_t   
+				        from  THM_KPI0105_03  t   where  t.GJAHR=substring(#{everyMonth},1,4) 
+				         and  t.MONAT = substring(#{everyMonth}-1,5,2)   and t. ZTYP='3'   
+						) lastmon  on mon.year_t=lastmon.year_t  
+          )   a  group by a.year_t
+          )   inc  
+         ) b  on a.ymonth=b.ymonth
+			)a;
+
+			  ]]>
+							
+			
+        
+</select>
+
+<!-- 厂内 查询得到每个月的明细占比 -->
+<select id="getInMonthDetail" parameterType="map" resultType="map">
+     
+			<!-- SELECT
+			    b.categorytxt  categorytxt ,
+			    a.categorycode categorycode,
+				SUM(actlossmonty) account  
+			FROM
+				THM_KPI2227_01 a
+			  LEFT JOIN THM_KPI2227_05 b on a.categorycode=b.categorycode
+			WHERE
+				yymm=#{dateYearMonth}
+			GROUP BY
+				  b.categorytxt,
+				  a.categorycode
+			ORDER BY
+				account; -->
+			
+			 SELECT
+			    b.reasoncodetxt  reasoncodetxt ,
+			    a.reasoncode   reasoncode,
+				  SUM(actlossmonty) account  
+			FROM
+				THM_KPI2227_01 a
+			  LEFT JOIN THM_KPI2227_06 b on a.reasoncode=b.reasoncode
+			WHERE
+				yymm=#{dateYearMonth}
+			GROUP BY
+				  b.reasoncodetxt,
+				  a.reasoncode
+			ORDER BY
+				account desc;
+</select>
+
+<!-- 厂外 查询得到每个月的明细占比 -->
+<select id="getOutMonthDetail"  parameterType="map" resultType="map">
+				   
+				  <!--  SELECT
+						b.categorytxt categorytxt,
+						a.lbdm        categorycode, 
+						SUM(SS)        account
+					FROM
+						THM_FS50 a
+					  LEFT JOIN THM_KPI2227_05 b on a.lbdm=b.categorycode
+					WHERE  month=#{dateYearMonth}
+					GROUP BY
+						 b.categorytxt,
+						 a.lbdm
+					ORDER BY
+						account; -->
+						
+					SELECT
+						b.reasoncodetxt reasoncodetxt,
+						a.yydm          reasoncode, 
+						SUM(SS)        account
+					FROM
+						THM_FS50 a
+					  LEFT JOIN THM_KPI2227_06 b on a.yydm=b.reasoncode
+					WHERE  month=#{dateYearMonth}
+					GROUP BY
+						 b.reasoncodetxt,
+						 a.yydm
+					ORDER BY
+						account desc;
+
+</select>
+
+
+<!-- 厂内  各质量损失类别下钻至质量损失原因 -->
+<select id="getIncauseByType" parameterType="map" resultType="map">
+   <!--    select reasoncode, SUM(actlossmonty) account  from THM_KPI2227_01
+      where yymm=#{dateYearMonth} and  categorycode=#{categorycode}
+      GROUP BY reasoncode -->
+      
+      
+         SELECT
+			a.reasoncode reasoncode,
+		    reasoncodetxt,
+			SUM(actlossmonty) account
+		FROM THM_KPI2227_01 a
+		INNER JOIN THM_KPI2227_06 b on  a.reasoncode=b.reasoncode
+		WHERE
+			yymm = #{dateYearMonth}    and  a.categorycode=#{categorycode}
+		GROUP BY
+			a.reasoncode,
+		    reasoncodetxt;
+</select>
+
+
+<!-- 厂外  各质量损失类别下钻至质量损失原因 -->
+<select id="getOutcauseByType" parameterType="map" resultType="map">
+      
+<!--  select reasoncode, SUM(actlossmonty) account  from THM_KPI2227_02
+      where yymm=#{dateYearMonth} and  categorycode=#{categorycode}
+      GROUP BY reasoncode -->
+      
+        SELECT
+		    b.reasoncodetxt reasoncodetxt,
+			yydm reasoncode,
+			SUM(ss) account
+		FROM
+			THM_FS50 a 
+		INNER JOIN THM_KPI2227_06 b on a.YYDM=b.reasoncode
+		WHERE
+			MONTH = #{dateYearMonth} and lbdm=#{categorycode}
+		GROUP BY
+			yydm,b.reasoncodetxt
+      
+</select>
+
+
+<!-- 厂内  质量损失原因下钻至责任单位 -->
+<select id="getInDutyunitByCause" parameterType="map" resultType="map">
+    
+<!--     select dutyunit zrdw ,projetype cpxh,SUM(actlossmonty) account 
+    from THM_KPI2227_01
+    where yymm=#{dateYearMonth}  and reasoncode=#{reasoncode}  
+    GROUP by dutyunit,projetype 
+    ORDER BY account desc; -->
+    
+    SELECT "合计" zrdw,"" cpxh, sum(account)account  from (
+   select dutyunit zrdw ,projetype cpxh,SUM(actlossmonty) account 
+    from THM_KPI2227_01
+      where yymm=#{dateYearMonth}  and reasoncode=#{reasoncode}  
+    GROUP by dutyunit,projetype 
+    ORDER BY account desc
+) a 
+ union all 
+select dutyunit zrdw ,projetype cpxh,SUM(actlossmonty) account 
+    from THM_KPI2227_01
+    where yymm=#{dateYearMonth}  and reasoncode=#{reasoncode}  
+    GROUP by dutyunit,projetype 
+    ORDER BY account desc;
+    
+</select>
+
+
+<!-- 厂外  质量损失原因下钻至责任单位 -->
+<select id="getOutDutyunitByCause" parameterType="map" resultType="map">
+      
+    <!--    select zrdw,cpxh,SUM(ss) account
+      from THM_FS50
+      where month=#{dateYearMonth} and yydm=#{reasoncode}
+      GROUP by zrdw,cpxh  ORDER BY account desc; -->
+      
+      SELECT "合计" zrdw,"" cpxh, sum(account)account  from (
+       select zrdw,cpxh,SUM(ss) account
+      from THM_FS50
+        where month=#{dateYearMonth} and yydm=#{reasoncode}
+      GROUP by zrdw,cpxh  ORDER BY account desc
+    ) a 
+     union all 
+       select zrdw,cpxh,SUM(ss) account
+      from THM_FS50
+        where month=#{dateYearMonth} and yydm=#{reasoncode}
+      GROUP by zrdw,cpxh  ORDER BY account desc;
+      
+</select>
+
+
+<!-- 查出所有的项目类型 -->
+<select id="getProjecttypes" resultType="map">
+      
+					SELECT
+						projetypecode,
+						projetype
+					FROM
+						THM_KPI2227_04
+      
+</select>
+
+
+
+
+<!--型号统计故障总数   场外统计-->
+<select id="getFaultCountByModel" parameterType="map" resultType="map">
+													
+							<!-- 	SELECT
+									a.projetypecode,
+									productmodel,
+									ifnull(sum(faultnum),0) count
+								FROM
+									THM_KPI2227_02 a
+								LEFT JOIN THM_KPI2227_04 b ON a.projetypecode = b.projetypecode
+								WHERE
+								      yymm = #{dateYearMonth}
+							    AND a.projetypecode = #{projetypecode}
+								GROUP BY  a.projetypecode, productmodel
+								ORDER BY count desc; -->
+								
+								SELECT
+									cpfl,
+									cpxh,
+									ifnull(sum(amount),0) count
+								FROM
+									THM_FS50 
+								WHERE  month =  #{dateYearMonth}
+							    AND    cpfl = #{projetypecode}
+								GROUP BY  cpfl, cpxh
+								ORDER BY count desc;
+								
+</select>
+
+<!-- 故障类型统计总数  projetype 取前5条   场外统计-->
+<select id="getFaultCountByType" parameterType="map" resultType="map">
+		
+							   <!--       SELECT
+										a.projetypecode,
+										faulttype,
+										ifnull(sum(faultnum),0) count
+									FROM
+										THM_KPI2227_02 a
+									LEFT JOIN THM_KPI2227_04 b ON a.projetypecode = b.projetypecode
+									WHERE
+				                      yymm = #{dateYearMonth}
+			                        AND a.projetypecode = #{projetypecode}
+									GROUP BY a.projetypecode, faulttype
+						            ORDER BY count desc; -->
+						            
+
+		                            SELECT
+										cpfl,
+										gzlx,
+										ifnull(sum(amount),0) count
+									FROM
+										THM_FS50 a
+									WHERE  month = #{dateYearMonth}
+							          AND  cpfl  = #{projetypecode}
+									GROUP BY cpfl, gzlx
+						            ORDER BY count desc;
+						
+</select>
+
+<!-- 对具体型号下钻1层  故障类型  故障数量   -->
+<select id="getLayerByModel" parameterType="map" resultType="map">
+         	     SELECT
+						gzlx,
+						ifnull(sum(amount),0) count
+					FROM
+						THM_FS50
+					WHERE
+						month = #{dateYearMonth}
+					AND CPFL = #{projetypecode}
+ 					AND CPXH = #{productmodel}
+					GROUP BY
+						gzlx
+					ORDER BY count desc;
+       
+</select>
+
+<!-- 故障类型点击下钻展示格式   产品型号	故障数量  -->
+<select id="getLayerByType" parameterType="map" resultType="map">
+                    <!-- 故障类型和产品型号只有场外才有 -->
+					<!-- 	    SELECT
+								productmodel,
+								ifnull(sum(faultnum),0) count
+							FROM
+								THM_KPI2227_02
+							WHERE
+								yymm = #{dateYearMonth}
+							AND projetypecode = #{projetypecode}
+							AND faulttype = #{faulttype}
+							GROUP BY
+								productmodel
+							ORDER BY count desc; -->
+							
+							SELECT
+								cpxh,
+								ifnull(sum(amount),0) count
+							FROM
+								THM_FS50 
+								WHERE month = #{dateYearMonth}
+							    AND CPFL = #{projetypecode}
+							AND gzlx = #{faulttype}
+							GROUP BY CPXH
+							ORDER BY count desc;
+</select>
+
+
+<!--  <select id="getAllTcustomer" resultType="com.yjdj.view.core.entity.mybeans.MdmTcustomer">
+        <![CDATA[ SELECT fs.KUNNR as customer,zsj.TXTMD as txtmd from (SELECT DISTINCT KUNNR from ${tableName}) fs JOIN MDM_TCUSTOMER zsj on zsj.customer = fs.KUNNR
+                  where 1=1 ]]>
+        <if test="customer != null and customer != ''">
+            <![CDATA[ AND fs.KUNNR LIKE "%${customer}%" ]]>
+        </if>
+        <if test="txtmd != null and txtmd != ''">
+            <![CDATA[ AND zsj.TXTMD LIKE "%${txtmd}%" ]]>
+        </if>
+        <![CDATA[ ORDER BY KUNNR ]]>
+</select> -->
+
+ <select id="getCode" resultType="java.util.LinkedHashMap">
+       <if test="tablebs==1">
+	          SELECT  projetypecode,projetype  from ${tableName}   where 1=1 
+	        <if test="code != null and code != ''">
+	             AND projetypecode LIKE "%${code}%" 
+	        </if>
+	        <if test="txtmd != null and txtmd != ''">
+	            AND projetype LIKE "%${txtmd}%" 
+	        </if>
+	          ORDER BY projetypecode; 
+      </if>
+ 
+      <if test="tablebs==2">
+	          select DISTINCT categorycode,categorytxt from ${tableName} 
+	                  where 1=1 
+	        <if test="code != null and code != ''">
+	             AND categorycode LIKE "%${code}%" 
+	        </if>
+	        <if test="txtmd != null and txtmd != ''">
+	            AND categorytxt LIKE "%${txtmd}%" 
+	        </if>
+	          ORDER BY categorycode; 
+      </if>
+      
+       <if test="tablebs==3">
+	          SELECT DISTINCT reasoncode,reasoncodetxt  from ${tableName} 
+	                  where 1=1 
+	        <if test="code != null and code != ''">
+	             AND reasoncode LIKE "%${code}%" 
+	        </if>
+	        <if test="txtmd != null and txtmd != ''">
+	            AND reasoncodetxt LIKE "%${txtmd}%" 
+	        </if>
+	          ORDER BY reasoncode; 
+      </if>
+</select>
+
+
+
+
+<select id="isCodeIntable" parameterType="map" resultType="map">
+          
+          <!--质量损失类别代码 -->
+         <if test="codebs==1 and codebs !=0">
+	        SELECT COUNT(1)count FROM `THM_KPI2227_05` WHERE categorycode = #{code};
+        </if>    
+        
+         <!-- 质量损失原因代码 -->
+        <if test=" codebs==2 and codebs !=0">
+	          SELECT COUNT(1)count FROM `THM_KPI2227_06` WHERE reasoncode = #{code};
+        </if>  
+        
+        <!-- 项目类型  项目类型描述-->
+       <if test=" codebs==3 and codebs !=0">
+	        SELECT COUNT(1)count  FROM `THM_KPI2227_04` WHERE projetype = #{code};
+       </if>  
+						   
+</select>
+
+<select id="getDeadline" parameterType="map" resultType="map">
+ 
+   select   distinct substring(max(BUDAT),1,6)yymm  from THM_KPI0105_01 where HKONT LIKE '6001%' or HKONT LIKE '6051%'
+	 union all
+  select max(yymm) from (
+	 select  distinct  max(yymm)yymm from THM_KPI2227_01
+	 union all 
+	 select  distinct  max(MONTH)yymm  from THM_FS50
+  )t
+ 
+ 
+ 
+</select>
+
+<select id="isExists" parameterType="map" resultType="map">
+           select count(1)count from THM_KPI2227_01   where categorynum=#{lbbh};
+</select>
+
+<!-- 查询结果 -->
+<select id="getResult" parameterType="map" resultType="java.util.LinkedHashMap">
+           set @rownum=0;
+	             select 
+	                 @rownum:=@rownum+1 xh,
+			         date,
+					 yymm,
+					 categorynum,
+					 productmodel,
+					 categorytxt categorycode,
+					 reasoncodetxt reasoncode,
+					 occurrunit, 
+				     discoprocess,  
+				     productname,
+					 faultnum,
+					 unit,
+					 qualitydesc,
+					 ducumnum,
+					 noqualistatus,
+					 format(timeloss,2)timeloss,
+					 format(materialloss,2)materialloss,
+					 format(otherloss,2)otherloss,
+					 format(prelossmonty,2)prelossmonty,
+					 format(actlossmonty,2)actlossmonty,
+					 format(payaccou,2)payaccou,
+					 dutyunit,
+					 projetype
+					 from THM_KPI2227_01 a
+					 inner join THM_KPI2227_05  c on a.categorycode=c.categorycode
+					 inner join THM_KPI2227_06  d on a.reasoncode=d.reasoncode
+			WHERE  1 = 1
+			
+          <if test="lbbh != null  and lbbh.size!=0">
+        	    and categorynum in
+            <foreach collection="lbbh" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+           </if>
+          
+        <if test="lbdm != null  and lbdm.size!=0">
+        		    and a.categorycode in
+            <foreach collection="lbdm" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+           </if>
+           
+         <if test="yydm != null  and yydm.size!=0">
+         		   and a.reasoncode in
+            <foreach collection="yydm" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+           </if>
+           
+           <if test="xmlx != null  and xmlx.size!=0">
+           		 and projetype in
+            <foreach collection="xmlx" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+           </if>
+           
+           
+         <if test="fsdw != null  and fsdw.size!=0">
+            	and occurrunit in
+            <foreach collection="fsdw" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+           </if>
+           
+           
+           
+           <if test="zrdw != null  and zrdw.size!=0">
+           		 and dutyunit in
+            <foreach collection="zrdw" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+           </if>
+           
+            
+         <!--  <if test="jnw != null  and jnw.size!=0">
+            	and abroadordomesti in
+            <foreach collection="zrdw" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+           </if>
+               
+          <if test="xzjx != null  and xzjx.size!=0">
+            	 and newlyorcheck in
+            <foreach collection="zrdw" item="item"
+                     index="index" open="(" separator="," close=")"> #{item}
+            </foreach>
+           </if> -->
+           
+    
+            
+           <if  test="startTime != null  and startTime!='' and endTime != null  and endTime!='' ">
+               	 and date between #{startTime} and #{endTime}
+           </if>
+             
+        
+        <if test="flag == 0">
+           <if test="startitem != null  and pageitem != null ">
+                limit #{startitem},#{pageitem};
+           </if>
+	   </if>
+						    
+</select>
+
+
+
+
+
+<insert id="operateData">
+    
+    <selectKey keyProperty="count" resultType="int" order="BEFORE"> 
+        select count(1) from THM_KPI2227_01   where categorynum=#{DATA.lbbh}
+    </selectKey>
+
+
+    <if test="DATA.czbs==1 and count==0 ">
+ <!--     INSERT INTO THM_KPI2227_01 VALUES (
+     	 #{DATA.time},#{DATA.yue},#{DATA.lbbh},#{DATA.cpxh},#{DATA.lbdm},#{DATA.yydm},#{DATA.fsdw},
+     	 #{DATA.fxgx},#{DATA.th},#{DATA.cpmc},#{DATA.gzsl},#{DATA.dw},#{DATA.wtms}, #{DATA.djbh},
+     	 #{DATA.zt},#{DATA.gsss},#{DATA.clss},#{DATA.qtss},#{DATA.yjss},#{DATA.sjsse},#{DATA.pcje},
+     	 #{DATA.zrdw},#{DATA.jnw},#{DATA.xzjx},#{DATA.ddh},#{DATA.ylh},#{DATA.xmlx},
+     	 #{DATA.isfh},#{DATA.spqk},#{DATA.fx},#{DATA.cgy}
+     ) -->
+     
+        INSERT INTO THM_KPI2227_01 VALUES (
+     	 #{DATA.time},#{DATA.yue},#{DATA.lbbh},#{DATA.cpxh},#{DATA.lbdm},#{DATA.yydm},#{DATA.fsdw},
+     	 #{DATA.fxgx},#{DATA.cpmc},#{DATA.gzsl},#{DATA.dw},#{DATA.wtms}, #{DATA.djbh},
+     	 #{DATA.zt},#{DATA.gsss},#{DATA.clss},#{DATA.qtss},#{DATA.yjss},#{DATA.sjsse},#{DATA.pcje},
+		 #{DATA.zrdw},#{DATA.xmlx}
+     )
+     
+    </if>
+    
+   <if test=" DATA.czbs==2 or (DATA.czbs ==1 and count>0)">
+        UPDATE THM_KPI2227_01
+        <set>
+      <!--     date=#{DATA.time},yymm=#{DATA.yue},categorynum=#{DATA.lbbh},productmodel=#{DATA.cpxh},categorycode=#{DATA.lbdm},reasoncode=#{DATA.yydm},
+          occurrunit=#{DATA.fsdw},discoprocess=#{DATA.fxgx},picturecode=#{DATA.th},productname=#{DATA.cpmc},faultnum=#{DATA.gzsl},unit=#{DATA.dw},
+          qualitydesc=#{DATA.wtms},ducumnum=#{DATA.djbh},noqualistatus=#{DATA.zt},timeloss=#{DATA.gsss},materialloss=#{DATA.clss},otherloss=#{DATA.qtss},
+	      prelossmonty=#{DATA.yjss},actlossmonty=#{DATA.sjsse},payaccou=#{DATA.pcje},dutyunit=#{DATA.zrdw},abroadordomesti=#{DATA.jnw},newlyorcheck=#{DATA.xzjx},
+	      ordernum=#{DATA.ddh},obligatenum=#{DATA.ylh},projetype=#{DATA.xmlx},isaccordance=#{DATA.isfh},fareconditin=#{DATA.spqk},analyzee=#{DATA.fx},
+	      purchaser=#{DATA.cgy} -->
+	      
+	      date=#{DATA.time},yymm=#{DATA.yue},categorynum=#{DATA.lbbh},productmodel=#{DATA.cpxh},categorycode=#{DATA.lbdm},reasoncode=#{DATA.yydm},
+          occurrunit=#{DATA.fsdw},discoprocess=#{DATA.fxgx},productname=#{DATA.cpmc},faultnum=#{DATA.gzsl},unit=#{DATA.dw},
+          qualitydesc=#{DATA.wtms},ducumnum=#{DATA.djbh},noqualistatus=#{DATA.zt},timeloss=#{DATA.gsss},materialloss=#{DATA.clss},otherloss=#{DATA.qtss},
+	      prelossmonty=#{DATA.yjss},actlossmonty=#{DATA.sjsse},payaccou=#{DATA.pcje}, dutyunit=#{DATA.zrdw},projetype=#{DATA.xmlx}
+	      
+        </set>
+           where categorynum=#{DATA.lbbh}
+    </if>
+
+    <if test="DATA.czbs==3">
+            DELETE from THM_KPI2227_01   where categorynum=#{DATA.lbbh}
+    </if>
+    
+</insert>
+
+</mapper>
+
+

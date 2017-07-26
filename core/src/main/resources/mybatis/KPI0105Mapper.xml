@@ -1,0 +1,909 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperKPI0105">
+
+	<resultMap id="kpi01" type="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_01">
+		<result column="incomeAll" property="incomeAll" jdbcType="DOUBLE" />
+		<result column="profitAll" property="profitAll" jdbcType="DOUBLE" />
+		<result column="burks" property="burks" jdbcType="VARCHAR" />
+		<result column="comName" property="comName" jdbcType="VARCHAR" />
+		<result column="profitBukrs" property="profitBukrs" jdbcType="DOUBLE" />		
+	</resultMap>
+	
+	<resultMap id="kpi02" type="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_02">
+		<result column="s_date" property="s_date" jdbcType="VARCHAR" />
+		<result column="bukrs" property="bukrs" jdbcType="VARCHAR" />
+		<result column="comName" property="comName" jdbcType="VARCHAR" />
+		<result column="customer" property="customer" jdbcType="VARCHAR" />
+		<result column="cust_group" property="cust_group" jdbcType="VARCHAR" />
+		<result column="cust_type" property="cust_type" jdbcType="VARCHAR" />
+		<result column="dmbtr_sh_all" property="dmbtr_sh_all" jdbcType="DOUBLE" />
+		<result column="dmbtr_sh" property="dmbtr_sh" jdbcType="DOUBLE" />
+		<result column="dmbtr_s" property="dmbtr_s" jdbcType="DOUBLE" />
+		<result column="dmbtr_h" property="dmbtr_h" jdbcType="DOUBLE" />
+		<result column="badloan" property="badloan" jdbcType="DOUBLE" />
+		<result column="hyys" property="hyys" jdbcType="DOUBLE" />
+		<result column="hyhz" property="hyhz" jdbcType="DOUBLE" />
+	</resultMap>
+	
+	<resultMap id="kpi03" type="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_03">
+		<result column="zt1" property="zt1" jdbcType="DOUBLE" />
+		<result column="zt2" property="zt2" jdbcType="DOUBLE" />
+		<result column="zt3" property="zt3" jdbcType="DOUBLE" />
+		<result column="zzc" property="zzc" jdbcType="DOUBLE" />
+		
+		
+		<result column="zlt1" property="zlt1" jdbcType="DOUBLE" />
+		<result column="zlt2" property="zlt2" jdbcType="DOUBLE" />
+		<result column="zlt3" property="zlt3" jdbcType="DOUBLE" />
+		<result column="zlkh" property="zlkh" jdbcType="DOUBLE" />
+		
+	    <result column="zzcp" property="zzcp" jdbcType="DOUBLE" />
+		<result column="zlkp" property="zlkp" jdbcType="DOUBLE" />
+		
+		
+	    <result column="zzcp" property="zzcp" jdbcType="DOUBLE" />
+		<result column="zlkp" property="zlkp" jdbcType="DOUBLE" />
+		
+	   <result column="zsmx" property="zsmx" jdbcType="DOUBLE" />
+	   <result column="zlmx" property="zlmx" jdbcType="DOUBLE" />
+	   <result column="zhmx" property="zhmx" jdbcType="DOUBLE" />
+	
+	</resultMap>
+
+<!-- 营收利润，年度计划 -->
+<select id="getYearPlan" parameterType="map" resultMap="kpi03"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_03">
+  <![CDATA[  select  t.zt1/10000 as zt1, 
+ t.zt2/10000 as zt2,  
+ t.zt3/10000 as zt3, 
+ t.zzc/10000 as zzc,
+ t.zlt1/10000 as zlt1,  
+ t.zlt2/10000 as zlt2, 
+ t.zlt3/10000 as zlt3, 
+ t.zlkh/10000 as zlkh,
+ t.zzcp/100 as zzcp,  
+ t.zlkp/100 as zlkp,   
+ t.zsmx/10000 as zsmx,
+ t.zlmx/10000 as zlmx,
+ t.zhmx/10000  as zhmx  
+ from THM_KPI0105_05  t where t.GJAHR='${year}' ]]>
+</select>
+
+<!-- 营业收入金额（当年累计） 和   净利润金额（当年累计） ，union  all 的是海外公司累计 -->
+<select id="getYearAll" parameterType="map" resultMap="kpi01"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_01">
+    <!--
+        select
+            inc.incomeAll/100000000.0 as incomeAll,
+            p.profitAll/100000000.0 as profitAll from  
+           (select sum(a.incomeAll) as incomeAll,a.year_t from  (
+            select   (sa.sum_all-jy.sum_jy)   as  incomeAll,sa.year_t  from    
+                 (select (sum(sum_DMBTR))*(-1)   as  sum_all,substring('${startdate}',1,4) as year_t  from  
+                          (select  BUKRS, GJAHR, HKONT, FISCPER,SUM_DMBTR from  THM_BSEG_RV_13  t   
+                            where  t.FISCPER>='${startdate}'  and  t.FISCPER<='${enddate}' 
+                          ) t   
+                 )  sa   
+                 join  
+                         (
+                         select (sum(sum_DMBTR))*(-1)   as  sum_jy,substring('${startdate}',1,4) as year_t   from  
+                                 (select  BUKRS, GJAHR, HKONT, FISCPER, SUM_DMBTR 
+                                 from   THM_BSEG_RV_09  t  where
+                                 (t.HKONT like  '6001%'  or t.HKONT  like  '6051%' )   and  t.FISCPER>='${startdate}'  and  t.FISCPER<='${enddate}'   
+                                  union  all  
+                                 select  BUKRS, GJAHR, HKONT, FISCPER, SUM_DMBTR 
+                                 from   THM_BSEG_RV_11  t  where
+                                 (t.HKONT like  '6001%'  or t.HKONT  like  '6051%' )   and   t.FISCPER>='${startdate}'  and  t.FISCPER<='${enddate}'  
+                            )  t  
+                         )  jy  on sa.year_t=jy.year_t 
+                   union all
+            select  round(sum(t.ZYYSR)-sum(t.ZGSJY),2) as  incomeAll,
+            substring('${startdate}',1,4) as  year_t   
+           from  THM_KPI0105_03  t   where  t.GJAHR=substring('${startdate}',1,4) 
+            and  t.MONAT = substring('${enddate}',5,2)   and t.ZTYP='3'  
+           )   a  group by a.year_t
+           )   inc
+                 left join  
+                  (select t.zmgslr as profitAll, substring('${startdate}',1,4) as  year_t from THM_KPI0105_03  t 
+                  where t.GJAHR=substring('${startdate}',1,4) 
+                  and  t.ZTYP='1' 
+                  and  t.MONAT=substring('${enddate}',5,2) 
+                  )  p on 
+                  inc.year_t = p.year_t  
+    -->
+  <![CDATA[ 
+   SELECT
+	inc.incomeAll / 100000000.0 AS incomeAll,
+	p.profitAll / 100000000.0 AS profitAll
+    FROM
+            (
+                    SELECT
+                            sum(a.incomeAll) AS incomeAll,
+                            a.year_t
+                    FROM
+                            (
+                                    SELECT
+                                            (sa.sum_all - jy.sum_jy) AS incomeAll,
+                                            sa.year_t
+                                    FROM
+                                            (
+                                                    SELECT
+                                                            (sum(sum_DMBTR)) * (- 1) AS sum_all,
+                                                            substring('${startdate}', 1, 4) AS year_t
+                                                    FROM
+                                                            (
+                                                                    SELECT
+                                                                    BUKRS,
+                                                                    GJAHR,
+                                                                    HKONT,
+                                                                    FISCPER,
+                                                                    SUM_DMBTR
+                                                            FROM
+                                                                    THM_BSEG_RV_08 t
+                                                            WHERE
+                                                                    (
+                                                                            t.HKONT LIKE '6001%'
+                                                                            OR t.HKONT LIKE '6051%'
+                                                                    )
+                                                            AND t.FISCPER >= '${startdate}'
+                                                            AND t.FISCPER <= '${enddate}'
+                                                            UNION ALL
+                                                                    SELECT
+                                                                            BUKRS,
+                                                                            GJAHR,
+                                                                            HKONT,
+                                                                            FISCPER,
+                                                                            SUM_DMBTR
+                                                                    FROM
+                                                                            THM_BSEG_RV_10 t
+                                                                    WHERE
+                                                                            (
+                                                                                    t.HKONT LIKE '6001%'
+                                                                                    OR t.HKONT LIKE '6051%'
+                                                                            )
+                                                                    AND t.FISCPER >= '${startdate}'
+                                                                    AND t.FISCPER <= '${enddate}'
+                                                            ) t
+                                            ) sa
+                                    JOIN (
+                                            SELECT
+                                                    (sum(sum_DMBTR)) * (- 1) AS sum_jy,
+                                                    substring('${startdate}', 1, 4) AS year_t
+                                            FROM
+                                                    (
+                                                            SELECT
+                                                                    BUKRS,
+                                                                    GJAHR,
+                                                                    HKONT,
+                                                                    FISCPER,
+                                                                    SUM_DMBTR
+                                                            FROM
+                                                                    THM_BSEG_RV_09 t
+                                                            WHERE
+                                                                    (
+                                                                            t.HKONT LIKE '6001%'
+                                                                            OR t.HKONT LIKE '6051%'
+                                                                    )
+                                                            AND t.FISCPER >= '${startdate}'
+                                                            AND t.FISCPER <= '${enddate}'
+                                                            UNION ALL
+                                                                    SELECT
+                                                                            BUKRS,
+                                                                            GJAHR,
+                                                                            HKONT,
+                                                                            FISCPER,
+                                                                            SUM_DMBTR
+                                                                    FROM
+                                                                            THM_BSEG_RV_11 t
+                                                                    WHERE
+                                                                            (
+                                                                                    t.HKONT LIKE '6001%'
+                                                                                    OR t.HKONT LIKE '6051%'
+                                                                            )
+                                                                    AND t.FISCPER >= '${startdate}'
+                                                                    AND t.FISCPER <= '${enddate}'
+                                                    ) t
+                                    ) jy ON sa.year_t = jy.year_t
+                                    UNION ALL
+                                            SELECT
+                                                    round(
+                                                            sum(t.ZYYSR) - sum(t.ZGSJY),
+                                                            2
+                                                    ) AS incomeAll,
+                                                    substring('${startdate}', 1, 4) AS year_t
+                                            FROM
+                                                    THM_KPI0105_03 t
+                                            WHERE
+                                                    t.GJAHR = substring('${startdate}', 1, 4)
+                                            AND t.MONAT = (select MAX(MONAT) from THM_KPI0105_03 where ZTYP='3' and GJAHR=substring('${enddate}', 1, 4) and MONAT<=substring('${enddate}', 5, 2))
+                                            AND t.ZTYP = '3'
+                            ) a
+                    GROUP BY
+                            a.year_t
+            ) inc
+    LEFT JOIN (
+            SELECT
+                    t.zmgslr AS profitAll,
+                    substring('${startdate}', 1, 4) AS year_t
+            FROM
+                    THM_KPI0105_03 t
+            WHERE
+                    t.GJAHR = substring('${startdate}', 1, 4)
+            AND t.ZTYP = '1'
+            AND t.MONAT = substring('${enddate}', 5, 2)
+    ) p ON inc.year_t = p.year_t
+  ]]>
+</select>
+
+
+<!-- 营收，净利润 按公司一级钻取  -->
+<select id="getYearAllBukrs" parameterType="map" resultMap="kpi01"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_01">
+    <!-- 
+    select inc.incomeAll/100000000.0 as incomeAll,
+           p.profitAll/100000000.0 as profitAll,inc.comName 
+      from (select sum(a.incomeAll) as incomeAll, a.comName
+              from (select (sa.sum_all - IFNULL(jy.sum_jy,0.00)) as incomeAll, sa.comName
+                      from (select (sum(sum_DMBTR)) * (-1) as sum_all,
+                                   m.txtmd as comName
+                              from (select BUKRS, GJAHR, HKONT, FISCPER, SUM_DMBTR
+                                      from THM_BSEG_RV_13 t
+                                     where  t.FISCPER>='${startdate}'  and  t.FISCPER<='${enddate}') t
+                              left join MDM_TCOMP_CODE m
+                                on t.bukrs = m.comp_code 
+                             group by t.bukrs ) sa
+                  left     join (select (sum(sum_DMBTR)) * (-1) as sum_jy,
+                                  m.txtmd as comName
+                             from (select BUKRS, GJAHR, HKONT, FISCPER, SUM_DMBTR
+                                     from THM_BSEG_RV_09 t
+                                    where (t.HKONT like '6001%' or
+                                          t.HKONT like '6051%')
+                                      and t.FISCPER >= '${startdate}'
+                                      and t.FISCPER <= '${enddate}'
+                                   union all
+                                   select BUKRS, GJAHR, HKONT, FISCPER, SUM_DMBTR
+                                     from THM_BSEG_RV_11 t
+                                    where (t.HKONT like '6001%' or
+                                          t.HKONT like '6051%')
+                                      and   t.FISCPER>='${startdate}'  and  t.FISCPER<='${enddate}') t
+                             left join MDM_TCOMP_CODE m
+                               on t.bukrs = m.comp_code
+                            group by  t.bukrs ) jy
+                        on sa.comName = jy.comName 
+                    union all
+                    select round(sum(t.ZYYSR) - sum(t.ZGSJY), 2) as incomeAll,
+                           t.zbukrs as comName
+                      from THM_KPI0105_03 t
+                     where t.GJAHR = substring('${enddate}', 1, 4)    and t.MONAT = substring('${enddate}', 5, 2)
+                       and t. ZTYP = '3'
+                     group by t.zbukrs) a
+             group by a.comName) inc
+      join (select t.zmgslr as profitAll,
+                   t.zbukrs as comName,
+                   max(concat(t.GJAHR, t.monat)) as profitAllMaxDate
+              from THM_KPI0105_03 t
+             where  t.GJAHR = substring('${enddate}', 1, 4) 
+             and t.MONAT = substring('${enddate}', 5, 2)    
+             group by t.zbukrs) p
+        on inc.comName = p.comName   
+        order by inc.incomeAll desc 
+    -->
+  <![CDATA[
+        SELECT
+                inc.incomeAll/100000000.0 AS incomeAll,
+                p.profitAll/100000000.0 AS profitAll,
+                inc.comName
+        FROM
+                (
+                        SELECT
+                                sum(a.incomeAll) AS incomeAll,
+                                a.comName
+                        FROM
+                                (
+                                        SELECT
+                                                (
+                                                        sa.sum_all - IFNULL(jy.sum_jy, 0.00)
+                                                ) AS incomeAll,
+                                                sa.comName
+                                        FROM
+                                                (
+                                                        SELECT
+                                                                (sum(sum_DMBTR)) * (- 1) AS sum_all,
+                                                                m.txtmd AS comName
+                                                        FROM
+                                                                (
+                                                                        SELECT
+                                                                                BUKRS,
+                                                                                GJAHR,
+                                                                                HKONT,
+                                                                                FISCPER,
+                                                                                SUM_DMBTR
+                                                                        FROM
+                                                                                THM_BSEG_RV_08 t
+                                                                        WHERE
+                                                                                (
+                                                                                        t.HKONT LIKE '6001%'
+                                                                                        OR t.HKONT LIKE '6051%'
+                                                                                )
+                                                                        AND t.FISCPER >= '${startdate}'
+                                                                        AND t.FISCPER <= '${startdate}'
+                                                                        UNION ALL
+                                                                                SELECT
+                                                                                        BUKRS,
+                                                                                        GJAHR,
+                                                                                        HKONT,
+                                                                                        FISCPER,
+                                                                                        SUM_DMBTR
+                                                                                FROM
+                                                                                        THM_BSEG_RV_10 t
+                                                                                WHERE
+                                                                                        (
+                                                                                                t.HKONT LIKE '6001%'
+                                                                                                OR t.HKONT LIKE '6051%'
+                                                                                        )
+                                                                                AND t.FISCPER >= '${startdate}'
+                                                                                AND t.FISCPER <= '${enddate}'
+                                                                ) t
+                                                        LEFT JOIN MDM_TCOMP_CODE m ON t.bukrs = m.comp_code
+                                                        GROUP BY
+                                                                t.bukrs
+                                                ) sa
+                                        LEFT JOIN (
+                                                SELECT
+                                                        (sum(sum_DMBTR)) * (- 1) AS sum_jy,
+                                                        m.txtmd AS comName
+                                                FROM
+                                                        (
+                                                                SELECT
+                                                                        BUKRS,
+                                                                        GJAHR,
+                                                                        HKONT,
+                                                                        FISCPER,
+                                                                        SUM_DMBTR
+                                                                FROM
+                                                                        THM_BSEG_RV_09 t
+                                                                WHERE
+                                                                        (
+                                                                                t.HKONT LIKE '6001%'
+                                                                                OR t.HKONT LIKE '6051%'
+                                                                        )
+                                                                     AND t.FISCPER >= '${startdate}' 
+                                                                     AND t.FISCPER <= '${enddate}' 
+                                                                UNION ALL
+                                                                        SELECT
+                                                                                BUKRS,
+                                                                                GJAHR,
+                                                                                HKONT,
+                                                                                FISCPER,
+                                                                                SUM_DMBTR
+                                                                        FROM
+                                                                                THM_BSEG_RV_11 t
+                                                                        WHERE
+                                                                                (
+                                                                                        t.HKONT LIKE '6001%'
+                                                                                        OR t.HKONT LIKE '6051%'
+                                                                                )
+                                                                        AND t.FISCPER >= '${startdate}'
+                                                                        AND t.FISCPER <= '${enddate}'
+                                                        ) t
+                                                LEFT JOIN MDM_TCOMP_CODE m ON t.bukrs = m.comp_code
+                                                GROUP BY
+                                                        t.bukrs
+                                        ) jy ON sa.comName = jy.comName
+                                        UNION ALL
+                                                SELECT
+                                                        round(
+                                                                sum(t.ZYYSR) - sum(t.ZGSJY),
+                                                                2
+                                                        ) AS incomeAll,
+                                                        t.zbukrs AS comName
+                                                FROM
+                                                        THM_KPI0105_03 t
+                                                WHERE
+                                                        t.GJAHR = substring('${enddate}', 1, 4)
+                                                AND t.MONAT = (select MAX(MONAT) from THM_KPI0105_03 where ZTYP='3' and GJAHR=substring('${enddate}', 1, 4) and MONAT<=substring('${enddate}', 5, 2))
+                                                AND t.ZTYP = '3'
+                                                GROUP BY
+                                                        t.zbukrs
+                                ) a
+                        GROUP BY
+                                a.comName
+                ) inc
+        JOIN (
+                SELECT
+                        t.zmgslr AS profitAll,
+                        t.zbukrs AS comName,
+                        max(concat(t.GJAHR, t.monat)) AS profitAllMaxDate
+                FROM
+                        THM_KPI0105_03 t
+                WHERE
+                        t.GJAHR = substring('${enddate}', 1, 4)
+                AND t.MONAT = substring('${enddate}', 5, 2)
+                GROUP BY
+                        t.zbukrs
+        ) p ON inc.comName = p.comName
+        ORDER BY
+                inc.incomeAll DESC
+  ]]>
+</select>
+
+
+<!-- 应收账款，月度统计-->
+<select id="getDueTo" parameterType="map" resultMap="kpi02"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_02">
+  <![CDATA[select    t.dmbtr_s/10000.0  as  dmbtr_s,
+  t.dmbtr_h/10000.0  as  dmbtr_h,
+  t.sh_date as s_date,t.dmbtr_sh/10000.0  as  dmbtr_sh,
+  t.dmbtr_sh_all/10000.0  as  dmbtr_sh_all 
+  from  (
+   select  s.dmbtr_s + IFNULL(hy_s,0.00) as dmbtr_s,
+           abs(IFNULL(h.dmbtr_h,0.00)) + IFNULL(hy_h,0.00) as dmbtr_h,
+        (sh.dmbtr_sh +IFNULL(hyys,0)- IFNULL(hyysdxs,0))  as  dmbtr_sh,sh.sh_date,(sh.dmbtr_sh + IFNULL(hyys,0) - IFNULL(hyysdxs,0) + IFNULL(hyhz,0)) as dmbtr_sh_all from   
+	   (
+		select  sum(t.dmbtr) as dmbtr_sh,'${enddate}'  as sh_date   from THM_KPI0105_01  t   where  
+		    t.budat<='${enddate}'    
+		)  sh   
+	    join 
+	   (
+		 select  sum(t.dmbtr) as dmbtr_s,'${enddate}'  as s_date  
+		 from THM_KPI0105_11  t  
+		 where t.budat>='${enddate}' and t.budat<='${enddate}'    
+	   )   s  on sh.sh_date=s.s_date 
+	    join 
+	  (
+	     select  sum(t.dmbtr) as dmbtr_h,'${enddate}'  as h_date   from THM_KPI0105_13  t 
+			where  t.budat>='${enddate}' and t.budat<='${enddate}'   
+	   )   h on sh.sh_date=h.h_date  
+	   left join (
+	       select  sum(a.ZYSZK)  as hyys,sum(a.ZYSZKDXS)  as hyysdxs,sum(a.ZHZJE)  as hyhz,sum(a.ZBQXZYSZK) as hy_s,sum(a.ZBQHK) as hy_h,'${enddate}'  as hy_date  from 
+			(
+			select  t.ZYSZK,t.ZYSZKDXS,t.ZHZJE,ZBQXZYSZK,ZBQHK,concat(t.GJAHR,t.MONAT) as budat from    (select ZBUKRS,GJAHR,MONAT,ZTYP,
+                                                        case when trim(ZYYSR)='' then '0.00' else ZYYSR end as ZYYSR,
+                                                        case when trim(ZGSJY)='' then '0.00' else ZGSJY end as ZGSJY,
+                                                        case when trim(ZYSZK)='' then '0.00' else ZYSZK end as ZYSZK,
+                                                        case when trim(ZYSZKDXS)='' then '0.00' else ZYSZKDXS end as ZYSZKDXS,
+                                                        case when trim(ZHZJE)='' then '0.00' else ZHZJE end as ZHZJE,
+                                                        case when trim(ZBQXZYSZK)='' then '0.00' else ZBQXZYSZK end as ZBQXZYSZK,
+                                                        case when trim(ZBQHK)='' then '0.00' else ZBQHK end as ZBQHK,
+                                                        ZMGSLR  
+                                                from MDM_B485) /*THM_KPI0105_03*/   t  
+			)  a  where  a.budat='${enddate}'   
+	   ) hy on sh.sh_date=hy.hy_date 		
+ )  t  
+  order by  dmbtr_sh desc        
+		]]>
+</select> 
+
+
+<!-- 海外公司，应收和坏账 -->
+<select id="getHYFirstBukrsType" parameterType="map" resultMap="kpi02"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_02">
+  <![CDATA[ 
+        SELECT
+                t.hyys,
+                t.hyhz,
+                t.hyys_all,
+                t.hyhz_s as dmbtr_s,
+                t.hyhz_h as dmbtr_h,
+                t.hy_date,
+                t.comName
+        FROM
+                (
+                        SELECT
+                                (IFNULL(sum(a.ZYSZK), 0) - IFNULL(sum(a.ZYSZKDXS), 0)) AS hyys,
+                                (
+                                        IFNULL(sum(a.ZYSZK), 0) - IFNULL(sum(a.ZYSZKDXS), 0) + IFNULL(sum(a.ZHZJE), 0)
+                                ) AS hyys_all,
+                                IFNULL(sum(a.ZHZJE), 0) AS hyhz,
+                                IFNULL(sum(a.ZBQXZYSZK), 0) AS hyhz_s,
+                                IFNULL(sum(a.ZBQHK), 0) AS hyhz_h,
+                                '201703' AS hy_date,
+                                a.comName
+                        FROM
+                                (
+                                        SELECT
+                                                t.ZYSZK,
+                                                t.ZYSZKDXS,
+                                                t.ZHZJE,
+                                                t.ZBQXZYSZK,
+                                                t.ZBQHK,
+                                                concat(t.GJAHR, t.MONAT) AS budat,
+                                                t.zbukrs AS comName
+                                        FROM
+                                         (select ZBUKRS,GJAHR,MONAT,ZTYP,
+                                                        case when trim(ZYYSR)='' then '0.00' else ZYYSR end as ZYYSR,
+                                                        case when trim(ZGSJY)='' then '0.00' else ZGSJY end as ZGSJY,
+                                                        case when trim(ZYSZK)='' then '0.00' else ZYSZK end as ZYSZK,
+                                                        case when trim(ZYSZKDXS)='' then '0.00' else ZYSZKDXS end as ZYSZKDXS,
+                                                        case when trim(ZHZJE)='' then '0.00' else ZHZJE end as ZHZJE,
+                                                        case when trim(ZBQXZYSZK)='' then '0.00' else ZBQXZYSZK end as ZBQXZYSZK,
+                                                        case when trim(ZBQHK)='' then '0.00' else ZBQHK end as ZBQHK,
+                                                        ZMGSLR  
+                                                from MDM_B485) /*THM_KPI0105_03*/ t
+                                        WHERE
+                                                t.ztyp = '3'
+                                ) a
+                        WHERE
+                                budat = '${enddate}'
+                        GROUP BY
+                                a.comName
+                ) t
+        ORDER BY
+                t.hyys DESC
+  ]]>
+</select> 
+
+<!--指定月份下， 按照公司 分组，一级下钻 -->
+<select id="getFirstBukrsType" parameterType="map" resultMap="kpi02"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_02">
+  <![CDATA[  select    t.dmbtr_s  as  dmbtr_s,
+  t.dmbtr_h  as  dmbtr_h,t.sh_date,t.dmbtr_sh as dmbtr_sh,
+  t.badloan  as badloan,t.dmbtr_sh_all  as dmbtr_sh_all,t.comName,t.bukrs 
+  from    (
+   select  sum(s.dmbtr_s) as dmbtr_s,
+       sum(abs(IFNULL(h.dmbtr_h,0.00))) as dmbtr_h,
+       sum((sh.dmbtr_sh)) as  dmbtr_sh,badloan,
+       sum(dmbtr_sh_all) as dmbtr_sh_all,
+       sh.sh_date,sh.comName,sh.bukrs  from   
+	   (
+		 select  dh.dmbtr_sh as dmbtr_sh_all,(dh.dmbtr_sh-IFNULL(bd.badloan,0)) as dmbtr_sh, dh.sh_date,IFNULL(bd.badloan,0) as badloan,dh.comName,dh.bukrs from 
+		(
+		 select  sum(t.dmbtr) as dmbtr_sh,'${enddate}' as sh_date,
+		  t.bukrs,m.txtmd  as comName  from THM_KPI0105_01  t   
+		  left join MDM_TCOMP_CODE  m  on 
+		  t.bukrs = m.comp_code  
+		  where  t.budat<='${enddate}' 
+		  group by  t.bukrs,m.txtmd
+		)  dh
+		left join 					
+		(
+		   select  round(sum(a.badloan),0)   as badloan,a.bukrs  from  
+			 (
+			 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='360' ) as  badloan,a.bukrs  
+			from 
+			 (
+			   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+			 )   a  where   a.ZZFBDT<='${date1}' AND   a.ZZFBDT>='${date2}'  group by  bukrs 
+			union all 
+			 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='721' ) as  badloan,a.bukrs   
+			from 
+			(
+			   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+			)   a  where   a.ZZFBDT<='${date3}' AND   a.ZZFBDT>='${date4}'  group by  bukrs 
+			union all 
+			 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1081' ) as  badloan,a.bukrs   
+			from 
+			(
+			   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+			)   a  where   a.ZZFBDT<='${date5}' AND   a.ZZFBDT>='${date6}'  group by  bukrs  
+			union all 
+			 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1441' ) as  badloan,a.bukrs   
+			from 
+			(
+			   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+			)   a  where   a.ZZFBDT<='${date7}' AND   a.ZZFBDT>='${date8}'  group by  bukrs   
+			union all 
+			 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1801' ) as  badloan,a.bukrs 
+			from 
+			(
+			   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+			)   a  where   a.ZZFBDT<'${date8}' group by  bukrs        
+		)   a  group by a.bukrs  
+	) bd  on dh.bukrs=bd.bukrs     
+ )  sh   
+ left  join  
+ (select  sum(t.dmbtr) as dmbtr_s,'${enddate}' as s_date,m.txtmd  as  comName   from THM_KPI0105_11  t    
+                        left join MDM_TCOMP_CODE  m  on 
+                        t.bukrs = m.comp_code  
+                        where  t.budat>='${startdate}' and t.budat<='${enddate}'  
+                       group by   t.bukrs,m.txtmd    
+ )  s  on sh.sh_date=s.s_date  and  sh.comName=s.comName 
+ left   join 
+ (select  sum(t.dmbtr) as dmbtr_h,'${enddate}' as h_date,m.txtmd  as  comName   from THM_KPI0105_13  t    
+                        left join MDM_TCOMP_CODE  m  on 
+                        t.bukrs = m.comp_code  
+                        where  t.budat>='${startdate}' and t.budat<='${enddate}'  
+                       group by   t.bukrs,m.txtmd     
+ )   h on sh.sh_date=h.h_date  and  sh.comName = h.comName 	
+ group by sh.comName,sh.sh_date 	
+)  t  
+order by  dmbtr_sh desc   
+		]]>
+</select> 
+
+
+<!--指定月份下， 按照客户类别 分组，一级下钻 -->
+<select id="getFirstCustType" parameterType="map" resultMap="kpi02"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_02">
+  <![CDATA[  select    t.dmbtr_s as  dmbtr_s,t.dmbtr_h as  dmbtr_h,
+  t.sh_date,t.dmbtr_sh as dmbtr_sh,t.dmbtr_sh_all as dmbtr_sh_all,
+  t.badloan as badloan,
+  t.cust_type,t.CUST_GROUP     
+  from  (
+   select  
+         sum(IFNULL(s.dmbtr_s, 0.00)) as dmbtr_s,
+         sum(abs(IFNULL(h.dmbtr_h, 0.00))) as dmbtr_h,
+         sum((sh.dmbtr_sh)) as dmbtr_sh,
+         sum((sh.badloan)) as badloan,
+         sum((sh.dmbtr_sh_all)) as dmbtr_sh_all,
+         sh.sh_date,
+         IFNULL(gr.txtmd,'其他类型客户') as cust_type,
+         gr.CUST_GROUP 
+   from   
+	   (
+		 select  dh.dmbtr_sh as dmbtr_sh_all,(dh.dmbtr_sh-IFNULL(bd.badloan,0)) as dmbtr_sh,IFNULL(bd.badloan,0) as badloan,dh.sh_date,dh.kunrg from  
+		(
+		select  sum(t.dmbtr) as dmbtr_sh,'${enddate}' as sh_date,t.kunrg from THM_KPI0105_01  t     
+          where   substring(t.budat,1,6)<='${enddate}'   
+           group by  t.kunrg   
+		)  dh   
+		left join 					
+		(
+		select  sum(a.badloan) as badloan,a.kunnr as kunrg from   
+		(
+				 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='360' ) as  badloan,a.kunnr   
+					from 
+					 (
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					 )   a  where   a.ZZFBDT<='${date1}' AND   a.ZZFBDT>='${date2}'  group by  kunnr
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='721' ) as  badloan,a.kunnr   
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					)   a  where   a.ZZFBDT<='${date3}' AND   a.ZZFBDT>='${date4}'  group by  kunnr  
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1081' ) as  badloan,a.kunnr   
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					)   a  where   a.ZZFBDT<='${date5}' AND   a.ZZFBDT>='${date6}'  group by  kunnr  
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1441' ) as  badloan,a.kunnr    
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					)   a  where   a.ZZFBDT<='${date7}' AND   a.ZZFBDT>='${date8}'  group by  kunnr   
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1801' ) as  badloan,a.kunnr 
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					)   a  where   a.ZZFBDT<'${date8}' group by  kunnr   
+		     )   a   group by a.kunnr    
+       )  bd  on dh.kunrg=bd.kunrg       
+)  sh   
+left  join 
+(select  sum(t.dmbtr) as dmbtr_s,'${enddate}' as s_date,t.kunnr as kunrg  from THM_KPI0105_11  t    
+          where t.budat>='${startdate}' and t.budat<='${enddate}'   
+          group by t.kunnr
+)   s  on sh.sh_date=s.s_date  and  sh.kunrg=s.kunrg 
+left   join 
+(select  sum(t.dmbtr) as dmbtr_h,'${enddate}' as h_date,t.kunnr as kunrg  from THM_KPI0105_13  t    
+          where t.budat>='${startdate}' and t.budat<='${enddate}'   
+          group by t.kunnr   
+)   h on sh.sh_date=h.h_date    and  sh.kunrg = h.kunrg  
+left join 
+ (
+   select    m.customer as cust_sales,m.industry as CUST_GROUP,t.txtmd  from 
+    MDM_PCUSTOMER  m join   MDM_TINDUSTRY  t   on   
+    m.industry = t.industry 
+  ) gr on sh.kunrg = gr.cust_sales 
+    group by gr.txtmd,sh.sh_date  	  
+)  t  
+order by  dmbtr_sh desc     
+		]]>
+</select> 
+
+
+
+<!-- 指定月份下，指定公司，找具体客户，二级下钻  -->
+<select id="getSecondBukrsType" parameterType="map" resultMap="kpi02"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_02">
+<![CDATA[ select  t.dmbtr_s/10000.0  as  dmbtr_s,
+ t.dmbtr_h/10000.0  as  dmbtr_h,t.sh_date,t.dmbtr_sh/10000.0  as  dmbtr_sh,
+ t.badloan/10000.0  as badloan,t.dmbtr_sh_all/10000.0  as dmbtr_sh_all,
+ t.txtmd as customer  
+  from    (
+   select 
+   IFNULL(s.dmbtr_s,0.00) as dmbtr_s,
+   abs(IFNULL(h.dmbtr_h,0.00)) as dmbtr_h,
+   (sh.dmbtr_sh) as  dmbtr_sh,
+   (sh.dmbtr_sh_all) as  dmbtr_sh_all,
+   sh.badloan,
+   sh.sh_date,IFNULL(gr.txtmd,'其他类型客户') as txtmd  
+   from   
+	   (
+		 select  dh.dmbtr_sh as dmbtr_sh_all,(dh.dmbtr_sh-IFNULL(bd.badloan,0)) as dmbtr_sh,IFNULL(bd.badloan,0) as badloan,dh.sh_date,dh.kunrg from  
+		(
+		select  sum(t.dmbtr) as dmbtr_sh,'${enddate}' as sh_date,t.kunrg from THM_KPI0105_01  t     
+          where    substring(t.budat,1,6)<='${enddate}' and   t.bukrs='${bukrs}'   
+           group by  t.kunrg   
+		)  dh   
+		left join 					
+		(
+		select  sum(a.badloan) as badloan,a.kunnr as kunrg from   
+		(
+				 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='360' ) as  badloan,a.kunnr   
+					from 
+					 (
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}'  
+					   and   bukrs='${bukrs}' 
+					 )   a  where   a.ZZFBDT<='${date1}' AND   a.ZZFBDT>='${date2}'  group by  kunnr
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='721' ) as  badloan,a.kunnr   
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}'  
+					   and   bukrs='${bukrs}' 
+					)   a  where   a.ZZFBDT<='${date3}' AND   a.ZZFBDT>='${date4}'  group by  kunnr  
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1081' ) as  badloan,a.kunnr   
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}'  
+					   and   bukrs='${bukrs}'  
+					)   a  where   a.ZZFBDT<='${date5}' AND   a.ZZFBDT>='${date6}'  group by  kunnr  
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1441' ) as  badloan,a.kunnr    
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}'  
+					   and   bukrs='${bukrs}'  
+					)   a  where   a.ZZFBDT<='${date7}' AND   a.ZZFBDT>='${date8}'  group by  kunnr   
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1801' ) as  badloan,a.kunnr 
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					   and   bukrs='${bukrs}'  
+					)   a  where   a.ZZFBDT<'${date8}' group by   kunnr    
+		     )   a   group by a.kunnr    
+       )  bd  on dh.kunrg=bd.kunrg       
+)  sh   
+left  join 
+( select  sum(t.dmbtr) as dmbtr_s,'${enddate}' as s_date,t.kunnr as kunrg  from THM_KPI0105_11  t    
+          where  t.budat>='${startdate}' and t.budat<='${enddate}'   and t.bukrs='${bukrs}' 
+          group by t.kunnr
+)   s  on sh.sh_date=s.s_date  and  sh.kunrg=s.kunrg 
+left   join 
+(select  sum(t.dmbtr) as dmbtr_h,'${enddate}' as h_date,t.kunnr as kunrg  from THM_KPI0105_13  t    
+          where  t.budat>='${startdate}' and t.budat<='${enddate}'   and t.bukrs='${bukrs}' 
+          group by t.kunnr   
+)   h on sh.sh_date=h.h_date    and  sh.kunrg = h.kunrg  
+left join MDM_TCUSTOMER  gr on sh.kunrg = gr.customer 
+    group by gr.txtmd,sh.sh_date  	  
+ )  t  
+order by  dmbtr_sh desc  
+ limit 10  
+		]]>
+</select> 
+
+<!--指定月份下， 指定客户类型，二级下钻 -->
+<select id="getSecondCustType" parameterType="map" resultMap="kpi02"  resultType="com.yjdj.view.core.entity.mybeans.THM_KPI_0105_02">
+  <![CDATA[  
+  select t.dmbtr_s/10000.0  as  dmbtr_s,
+		 t.dmbtr_h/10000.0  as  dmbtr_h,
+		 t.sh_date,t.dmbtr_sh/10000.0 as  dmbtr_sh,
+		 t.dmbtr_sh_all/10000.0 as  dmbtr_sh_all,
+		 t.badloan/10000.0 as badloan,t.customer     
+		  from    (
+		   select  IFNULL(s.dmbtr_s,0.00) as dmbtr_s,
+		   abs(IFNULL(h.dmbtr_h,0.00)) as dmbtr_h,(sh.dmbtr_sh) as  dmbtr_sh,(sh.dmbtr_sh_all) as  dmbtr_sh_all,
+		   sh.badloan,
+		   sh.sh_date,IFNULL(cm.txtmd,'其他类型客户') as customer 
+		    from   
+			   (
+			 select  dh.dmbtr_sh as dmbtr_sh_all,(dh.dmbtr_sh-IFNULL(bd.badloan,0)) as dmbtr_sh,dh.sh_date,IFNULL(bd.badloan,0) as badloan,dh.kunrg from  
+				(
+				select  sum(t.dmbtr) as dmbtr_sh,'${enddate}' as sh_date,t.kunrg from THM_KPI0105_01  t     
+		          where    substring(t.budat,1,6)<='${enddate}'  
+		           group by  t.kunrg   
+				)  dh   
+				left join 					
+				(
+				select  sum(a.badloan) as badloan,kunnr as kunrg from   
+				(
+			 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='360' ) as  badloan,a.kunnr   
+					from 
+					 (
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					 )   a  where   a.ZZFBDT<='${date1}' AND   a.ZZFBDT>='${date2}'  group by  kunnr
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='721' ) as  badloan,a.kunnr   
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					)   a  where   a.ZZFBDT<='${date3}' AND   a.ZZFBDT>='${date4}'  group by  kunnr  
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1081' ) as  badloan,a.kunnr   
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					)   a  where   a.ZZFBDT<='${date5}' AND   a.ZZFBDT>='${date6}'  group by  kunnr  
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1441' ) as  badloan,a.kunnr    
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					)   a  where   a.ZZFBDT<='${date7}' AND   a.ZZFBDT>='${date8}'  group by  kunnr   
+					union all 
+					 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1801' ) as  badloan,a.kunnr 
+					from 
+					(
+					   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+					)   a  where   a.ZZFBDT<'${date8}' group by   kunnr 
+				  )   a   group by a.kunnr   
+		       )  bd  on dh.kunrg=bd.kunrg       
+		)  sh   
+		left  join 
+		( select  sum(t.dmbtr) as dmbtr_s,'${enddate}' as s_date,t.kunnr as kunrg  from THM_KPI0105_11  t    
+		          where   t.budat>='${startdate}' and t.budat<='${enddate}'  
+		          group by t.kunnr
+		)   s  on sh.sh_date=s.s_date  and  sh.kunrg=s.kunrg 
+		left   join 
+		( select  sum(t.dmbtr) as dmbtr_h,'${enddate}' as h_date,t.kunnr as kunrg  from THM_KPI0105_13  t    
+		          where   t.budat>='${startdate}' and t.budat<='${enddate}'  
+		          group by t.kunnr      
+		)   h on sh.sh_date=h.h_date    and  sh.kunrg = h.kunrg  
+	   join 
+		(
+          select    m.customer as cust_sales,m.industry as CUST_GROUP,t.txtmd from 
+            MDM_PCUSTOMER  m join   MDM_TINDUSTRY  t   on   
+            m.industry = t.industry  
+	        where m.industry='${cust_type}' 
+        )  gr on sh.kunrg = gr.cust_sales   
+        left join  MDM_TCUSTOMER  cm on sh.kunrg = cm.customer 
+	)  t  
+order by  dmbtr_sh desc  
+limit 10         
+		]]>
+</select> 
+
+
+<!-- 查询485表中的公司数据最早的月份 -->
+<select id="getLatestDate" parameterType="map"   resultType="map">
+  <![CDATA[
+      select max(s.ym)  as latestYM from  
+			(
+			  select count(t.ZBUKRS) as ct, t.ym  from  
+			     (
+			        select  t.ZBUKRS,concat(t.GJAHR,t.MONAT)   as  ym   from    THM_KPI0105_03   t    group by t.ZBUKRS,concat(t.GJAHR,t.MONAT) order by concat(t.GJAHR,t.MONAT) 
+			     )  t    group by t.ym 
+			)  s 
+  ]]>
+</select> 
+
+<!-- 计算一个日期的坏账 -->
+<select id="getBadAccountValue" parameterType="map"   resultType="map">
+ <![CDATA[
+ select  sum(a.badloan)/10000.0  as badloan from  
+	 (
+	 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='360' ) as  badloan 
+	from 
+	 (
+	   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+	 )   a  where   a.ZZFBDT<='${date1}' AND   a.ZZFBDT>='${date2}' 
+	union all 
+	 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='721' ) as  badloan 
+	from 
+	(
+	   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+	)   a  where   a.ZZFBDT<='${date3}' AND   a.ZZFBDT>='${date4}'   
+	union all 
+	 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1081' ) as  badloan 
+	from 
+	(
+	   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+	)   a  where   a.ZZFBDT<='${date5}' AND   a.ZZFBDT>='${date6}'   
+	union all 
+	 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1441' ) as  badloan 
+	from 
+	(
+	   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+	)   a  where   a.ZZFBDT<='${date7}' AND   a.ZZFBDT>='${date8}'  
+	union all 
+	 select   IFNULL(sum(a.DMSHB),0)*(select  ZRATE  from  THM_KPI0105_06 t where t.ZSTA='1801' ) as  badloan 
+	from 
+	(
+	   select  *  from THM_KPI0105_07    where    ((AUGDT!='00000000'  and  AUGDT>'${date0}' )  or AUGDT='00000000' )   and  budat<='${date0}' 
+	)   a  where   a.ZZFBDT<'${date8}'     
+)   a 
+ ]]>
+ </select>
+
+</mapper>

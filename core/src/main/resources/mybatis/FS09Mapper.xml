@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS09">
+
+    <sql id="selectColumns">
+        <if test="compCodeValue != null and compCodeValue != '' and compCodeValue.size != 0">
+            <![CDATA[ and BUKRS in]]>
+            <foreach collection="compCodeValue" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        <![CDATA[ AND FISCPER >=#{dateYearMonthStart} AND FISCPER <= #{dateYearMonthEnd} ]]>
+    </sql>
+
+    <select id="getDmbtr" resultType="java.util.HashMap">
+        SELECT DISTINCT (SELECT  SUM(DMBTR) FROM THM_FS09_01  WHERE FKBER='5101'  AND  HKONT='5000160100' <include refid="selectColumns" />) AS  "3",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160212' <include refid="selectColumns" />) AS "4",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160401'  <include refid="selectColumns" />) AS "5",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160405'  <include refid="selectColumns" />) AS "6",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160402'  <include refid="selectColumns" />) AS "7",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160403'  <include refid="selectColumns" />) AS "8",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160404'  <include refid="selectColumns" />) AS "9",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160407'  <include refid="selectColumns" />) AS "10",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160406'  <include refid="selectColumns" />) AS "11",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160801'  <include refid="selectColumns" />) AS "12",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160600'  <include refid="selectColumns" />) AS "14",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160500'  <include refid="selectColumns" />) AS "15",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER in ('5101','5001') AND HKONT='5000170000'  <include refid="selectColumns" />) AS "18",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER in ('5101','5001') AND HKONT='5000190000'  <include refid="selectColumns" />) AS "20",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER in ('5101','5001') AND HKONT in ('5000210100','5000010100','5000020100','5000030100','5000040100','5000050100','5000060100')   <include refid="selectColumns" />) AS "21",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000220400'  <include refid="selectColumns" />) AS "22",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT IN ('5000240100','5000240200','5000241200')  <include refid="selectColumns" />) AS "25",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000250100'  <include refid="selectColumns" />) AS "26",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000260100'  <include refid="selectColumns" />) AS "27",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000270000'  <include refid="selectColumns" />) AS "28",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT IN ('5000280000','5000220200')  <include refid="selectColumns" />) AS "29",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER='5101' AND HKONT='5000160700'  <include refid="selectColumns" />) AS "30",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000290000'  <include refid="selectColumns" />) AS "31",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000300000'  <include refid="selectColumns" />) AS "32",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000330000'  <include refid="selectColumns" />) AS "33",
+        (SELECT  SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000990000'  <include refid="selectColumns" />) AS "35"
+        FROM THM_FS09_01
+    </select>
+
+    <select id="getTemp" resultType="java.lang.Double">
+        <![CDATA[ SELECT SUM(DMBTR) FROM THM_FS09_01 WHERE FKBER IN ('5101','5001') AND HKONT='5000190000' AND BUKRS IN ('5004','5005') AND FISCPER >=#{dateYearMonthStart} AND FISCPER <= #{dateYearMonthEnd} ]]>
+    </select>
+
+    
+    <select id="test" parameterType="map" resultType="java.util.HashMap" statementType="CALLABLE">
+        {CALL FS09 ( #{compCodeValue ,jdbcType=VARCHAR, mode=IN}, 
+        #{dateYearMonthStart,jdbcType=VARCHAR, mode=IN}, 
+        #{dateYearMonthEnd,jdbcType=VARCHAR, mode=IN}, 
+        #{b,jdbcType=VARCHAR, mode=IN}, 
+        #{year,jdbcType=VARCHAR, mode=IN})
+        }
+    </select>  
+    
+    
+    <select id="getTxt" parameterType="map" resultType="java.util.HashMap">
+        SELECT DISTINCT
+		(SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='1') AS "1",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='2') AS "2",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='3') AS "3",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='4') AS "4",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='5') AS "5",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='6') AS "6",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='7') AS "7",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='8') AS "8",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='9') AS "9",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='10') AS "10",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='11') AS "11",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='12') AS "12",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='13') AS "13",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='14') AS "14",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='15') AS "15",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='16') AS "16",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='17') AS "17",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='18') AS "18",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='19') AS "19",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='20') AS "20",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='21') AS "21",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='22') AS "22",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='23') AS "23",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='24') AS "24",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='25') AS "25",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='26') AS "26",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='27') AS "27",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='28') AS "28",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='29') AS "29",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='30') AS "30",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='31') AS "31",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='32') AS "32",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='33') AS "33",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='34') AS "34",
+        (SELECT ITEMNAME FROM THM_FS09_01_FIELD WHERE ITEMNO='35') AS "35"
+		FROM THM_FS09_01_FIELD
+    </select>
+    
+    <insert id="saveOrUpdateData">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE"> 
+            select count(*) from THM_IMP_FS09 where STARTYEARMONTH = #{startYearMonth} and ENDYEARMONTH = #{endYearMonth}  and COMCODE = #{comCode};
+        </selectKey>
+        <if test="count > 0">
+            <if test="tmpDataList != null  and tmpDataList.size != 0">
+                <foreach collection="tmpDataList" item="item" index="index" separator=";" >
+                    UPDATE THM_IMP_FS09 
+                    <set>
+                        THISYEARDMBTR = #{item.thisYearDmbtr}, LASTYEARDMBTR = #{item.lastYearDmbtr}
+                    </set>
+                    WHERE itemNo = #{item.itemNo} and startYearMonth = #{startYearMonth}  and endYearMonth =#{endYearMonth}   and comCode =#{comCode}
+                </foreach> 
+            </if>                 
+        </if>
+        <if test="count==0">
+            insert into THM_IMP_FS09(ITEMNO,COMCODE,STARTYEARMONTH,ENDYEARMONTH,THISYEARDMBTR,LASTYEARDMBTR) values
+            <if test="tmpDataList != null  and tmpDataList.size != 0">
+                <foreach collection="tmpDataList" item="item" index="index" separator="," >  
+                    (#{item.itemNo},#{comCode}, #{startYearMonth}, #{endYearMonth},#{item.thisYearDmbtr}, #{item.lastYearDmbtr})
+                </foreach>
+            </if>
+        </if>
+    </insert>	
+    
+    <select id="selectComCodeBytxtmd" resultType="map">
+		 select COMP_CODE,TXTMD from MDM_TCOMP_CODE WHERE TXTMD = #{txtmd};
+   </select>
+
+</mapper>
+

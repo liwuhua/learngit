@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yjdj.view.core.mapper.IReportMapperFS46">
+    <!--查询数据-->
+    <select id="selectUserData" resultType="com.yjdj.view.core.entity.mybeans.THM_FS46">
+        select
+        t1.train_type train_type,
+        t1.place_subjection place_subjection,
+        count(t1.train_num) trainamount,
+        t2.count motoramount
+        from
+        (select
+        distinct
+        train_type,
+        train_num,
+        place_subjection
+        from
+        THM_FS47_ALLOCATION_new) t1
+        left join (select train_type,count(1) count from THM_FS47_MAP_new group by train_type) t2
+        on t1.train_type = t2.train_type
+        where 1 = 1
+        <if test="TRAIN_TYPE != null and TRAIN_TYPE != '' and TRAIN_TYPE.size != 0">
+            and train_type in
+            <foreach collection="TRAIN_TYPE" item="item"
+                     index="index" open="(" separator="," close=")"> #{item} </foreach>
+
+        </if>
+        group by t1.train_type,
+        t1.place_subjection
+        order by t1.train_type
+        <if test="flag == 0">
+            <include refid="limit"/>
+        </if>
+    </select>
+    <sql id="limit">
+        <![CDATA[ limit #{startitem},#{pageitem}; ]]>
+    </sql>
+    <!--导入操作-->
+<!--    <insert id="saveOrUpdateData" >
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from THM_FS46 where TRAINMODEL = #{DATA.trainmodel} and ORGNIZATION = #{DATA.orgnization}
+        </selectKey>
+        <if test="count > 0">
+            UPDATE THM_FS46
+            <set>
+                TRAINAMOUNT = #{DATA.trainamount},MOTORAMOUNT = #{DATA.motoramount}
+            </set>
+            where TRAINMODEL = #{DATA.trainmodel} and ORGNIZATION = #{DATA.orgnization}
+        </if>
+        <if test="count == 0">
+            insert into THM_FS46(TRAINMODEL,ORGNIZATION,TRAINAMOUNT,MOTORAMOUNT) values
+            (#{DATA.trainmodel},#{DATA.orgnization},#{DATA.trainamount},#{DATA.motoramount})
+        </if>
+    </insert>-->
+    <!-- 查询所有车型 -->
+    <select id="selectAllTrainModel" resultType="com.yjdj.view.core.entity.mybeans.THM_FS46">
+        select DISTINCT TRAINMODEL from THM_FS46 where 1=1 and TRAINMODEL like "%${TRAINMODEL}%"
+    </select>
+</mapper>
